@@ -4,7 +4,7 @@ pragma solidity ^0.8.7;
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
 
-contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
+contract BetGame is ChainlinkClient {
     using Chainlink for Chainlink.Request;
 
     //Contract details
@@ -25,10 +25,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
         bool accepted;
         bool active;
         bool closed;
-        uint256 createdDate;
-        uint256 activeDuration;
-        uint256 acceptedDuration;
-        string expirationDate;
+        // uint256 createdDate;
+        // uint256 activeDuration;
+        // uint256 acceptedDuration;
+        // string expirationDate;
     }
     uint256 betId = 0;
     mapping(uint256 => Bet) public allBets;
@@ -39,8 +39,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
     address private oracle;
     bytes32 private jobId;
     uint256 private fee;
-    mapping(uint256 => bytes32) private requestToBet;
-    mapping(bytes32 => uint256) private requestToValue;
+    mapping(bytes32 => uint256) private requestToBet;
 
     //Keepers Attributes
     uint256 public immutable interval;
@@ -72,14 +71,14 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
 
     // 2) Bet logic
     function createBet(
-        string[] _keywords,
-        string _source,
-        uint256 _acceptValue, //I mean the other side of the bet.  There is defo a better name
-        uint256 _duration,
-        string _endDate
-    ) public {
+        string[] memory _keywords,
+        string memory _source,
+        uint256 _acceptValue //I mean the other side of the bet.  There is defo a better name
+    ) public payable // uint256 _duration,
+    // string memory _endDate
+    {
         require(msg.value > minimumBet, "minimum bet not satisfied");
-        newBet = Bet({
+        Bet memory newBet = Bet({
             id: betId,
             creator: payable(msg.sender),
             acceptor: payable(address(0)),
@@ -89,17 +88,17 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
             acceptValue: _acceptValue,
             accepted: false,
             active: true,
-            closed: false,
-            createdDate: now,
-            duration: _duration,
-            expiration: _endDate
+            closed: false
+            // createdDate: block.timestamp,
+            // duration: _duration,
+            // expiration: _endDate
         });
-        activeBets.betId++;
+        betId++;
         activeBets.push(newBet.id);
     }
 
-    function acceptBet(uint256 _betId) public {
-        Bet bet = allBets[_betId];
+    function acceptBet(uint256 _betId) public payable {
+        Bet memory bet = allBets[_betId];
         require(bet.active == true, "bet not active");
         require(bet.accepted == false, "bet already accepted");
 
@@ -113,8 +112,8 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
         acceptedBets.push(bet.id);
     }
 
-    function removeBetFromArray(uint256[] _arr, uint256 _id) internal {
-        for (int256 i = 0; i < _arr.length; i++) {
+    function removeBetFromArray(uint256[] storage _arr, uint256 _id) internal {
+        for (uint256 i = 0; i < _arr.length; i++) {
             if (_arr[i] == _id) {
                 delete _arr[i];
                 _arr[i] = _arr[_arr.length - 1];
@@ -128,7 +127,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
     }
 
     function recieveResult(uint256 _id, uint256 _value) internal {
-        bet = allBets[_id];
+        Bet memory bet = allBets[_id];
         if (_value > 0) {
             bet.closed = true;
             bet.creator.transfer(bet.ammount);
@@ -146,7 +145,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
     }
 
     // 3) ORACLE LOGIC
-    function queryOracle(uint256 _id) {
+    function queryOracle(uint256 _id) internal {
         setPublicChainlinkToken();
         oracle = 0xc57B33452b4F7BB189bB5AfaE9cc4aBa1f7a4FD8;
         jobId = "d5270d1c311941d0b08bead21fea7747";
@@ -154,8 +153,8 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
         buildAPIURL(_id);
     }
 
-    function buildAPIURL(_id) private returns (string memory) {
-        bet = allBets[_id];
+    function buildAPIURL(uint256 _id) private {
+        Bet memory bet = allBets[_id];
         string
             memory start_string = "http://api.mediastack.com/v1/news?access_key=6d5eed71083f4b5bd2aad91193c29364&";
         string memory keywords_string = "keywords=";
@@ -178,7 +177,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
         );
         string
             memory end_string = "&countries=us&date=2022-02-24,2022-03-01&limit=1%22";
-        apiURL = string(
+        string memory apiURL = string(
             abi.encodePacked(
                 start_string,
                 keywords_string,
@@ -186,10 +185,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
                 end_string
             )
         );
-        requestVolumeData(apiUrl, _id);
+        requestVolumeData(apiURL, _id);
     }
 
-    function requestVolumeData(string memory _apiUrl, uint256 _id)
+    function requestVolumeData(string memory _apiURL, uint256 _id)
         public
         returns (bytes32 requestId)
     {
