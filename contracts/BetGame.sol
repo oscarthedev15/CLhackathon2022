@@ -24,6 +24,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
         uint256 acceptValue;
         bool accepted;
         bool active;
+        bool closed;
         uint256 createdDate;
         uint256 activeDuration;
         uint256 acceptedDuration;
@@ -38,6 +39,8 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
     address private oracle;
     bytes32 private jobId;
     uint256 private fee;
+    mapping(uint256 => bytes32) private requestToBet;
+    mapping(bytes32 => uint256) private requestToValue;
 
     //Keepers Attributes
     uint256 public immutable interval;
@@ -86,6 +89,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
             acceptValue: _acceptValue,
             accepted: false,
             active: true,
+            closed: false,
             createdDate: now,
             duration: _duration,
             expiration: _endDate
@@ -104,6 +108,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
 
         // would take % for dev wallet
         bet.accepted = true;
+        bet.ammount += msg.value;
         removeBetFromArray(activeBets, bet.id);
         acceptedBets.push(bet.id);
     }
@@ -122,11 +127,22 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
         queryOracle(_id);
     }
 
+    function recieveResult(uint256 _id, uint256 _value) internal {
+        bet = allBets[_id];
+        if (_value > 0) {
+            bet.closed = true;
+            bet.creator.transfer(bet.ammount);
+            removeBetFromArray(activeBets, _id);
+        }
+    }
+
     function fulfill(bytes32 _requestId, uint256 _volume)
         public
         recordChainlinkFulfillment(_requestId)
     {
         uint256 temp_volume = _volume / 100;
+        betId = requestToBet[_requestId];
+        recieveResult(betId, temp_volume);
     }
 
     // 3) ORACLE LOGIC
@@ -170,10 +186,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
                 end_string
             )
         );
-        requestVolumeData(apiUrl);
+        requestVolumeData(apiUrl, _id);
     }
 
-    function requestVolumeData(string memory _apiUrl)
+    function requestVolumeData(string memory _apiUrl, uint256 _id)
         public
         returns (bytes32 requestId)
     {
@@ -186,7 +202,9 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface {
         // Set the URL to perform the GET request on
         request.add("get", _apiURL);
         request.add("path", "pagination,total"); // Chainlink nodes 1.0.0 and later support this format
-        return sendChainlinkRequestTo(oracle, request, fee);
+        requestId = sendChainlinkRequestTo(oracle, request, fee);
+        requestToBet[requestId] = _id;
+        return requestId;
     }
 
     // // 3) Keeper component
