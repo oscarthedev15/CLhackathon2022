@@ -50,8 +50,9 @@ contract BetGame is ChainlinkClient {
     //##################################################################################
 
     // 1) CONTRACT DETAILS  LOGIC
-    constructor(uint256 _interval) {
+    constructor(uint256 _interval, uint256 _minimum) {
         owner = msg.sender;
+        minimumBet = _minimum;
         interval = _interval;
         lastTimeStamp = block.timestamp;
     }
@@ -73,10 +74,8 @@ contract BetGame is ChainlinkClient {
     function createBet(
         string[] memory _keywords,
         string memory _source,
-        uint256 _acceptValue //I mean the other side of the bet.  There is defo a better name
-    ) public payable // uint256 _duration,
-    // string memory _endDate
-    {
+        uint256 _acceptValue //I mean the other side of the bet.  There is defo a better name // uint256 _duration, // string memory _endDate
+    ) public payable {
         require(msg.value > minimumBet, "minimum bet not satisfied");
         Bet memory newBet = Bet({
             id: betId,
@@ -101,6 +100,7 @@ contract BetGame is ChainlinkClient {
         Bet memory bet = allBets[_betId];
         require(bet.active == true, "bet not active");
         require(bet.accepted == false, "bet already accepted");
+        require(msg.sender != bet.creator, "cannot accept your own bet");
 
         //should charge maintenence fee too
         require(bet.acceptValue == msg.value, "accepter money not correct");
