@@ -2,10 +2,12 @@
 pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
-import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
+
+// import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
 
 contract BetGame is ChainlinkClient {
     using Chainlink for Chainlink.Request;
+    //  using Chainlink for Chainlink.Request;
 
     //Contract details
     address public owner;
@@ -32,8 +34,8 @@ contract BetGame is ChainlinkClient {
     }
     uint256 betId = 0;
     mapping(uint256 => Bet) public allBets;
-    uint256[] activeBets;
-    uint256[] acceptedBets;
+    uint256[] public activeBets;
+    uint256[] public acceptedBets;
 
     //Oracle Attributes
     address private oracle;
@@ -50,9 +52,9 @@ contract BetGame is ChainlinkClient {
     //##################################################################################
 
     // 1) CONTRACT DETAILS  LOGIC
-    constructor(uint256 _interval, uint256 _minimum) {
+    constructor(uint256 _minimumBet, uint256 _interval) {
         owner = msg.sender;
-        minimumBet = _minimum;
+        minimumBet = _minimumBet;
         interval = _interval;
         lastTimeStamp = block.timestamp;
     }
@@ -74,9 +76,14 @@ contract BetGame is ChainlinkClient {
     function createBet(
         string[] memory _keywords,
         string memory _source,
-        uint256 _acceptValue //I mean the other side of the bet.  There is defo a better name // uint256 _duration, // string memory _endDate
-    ) public payable {
-        require(msg.value > minimumBet, "minimum bet not satisfied");
+        uint256 _acceptValue //I mean the other side of the bet.  There is defo a better name
+    ) public payable // uint256 _duration,
+    // string memory _endDate
+    {
+        require(
+            msg.value > (minimumBet * .01 ether),
+            "minimum bet not satisfied"
+        );
         Bet memory newBet = Bet({
             id: betId,
             creator: payable(msg.sender),
@@ -94,21 +101,26 @@ contract BetGame is ChainlinkClient {
         });
         betId++;
         activeBets.push(newBet.id);
+        allBets[newBet.id] = newBet;
     }
 
     function acceptBet(uint256 _betId) public payable {
         Bet memory bet = allBets[_betId];
         require(bet.active == true, "bet not active");
         require(bet.accepted == false, "bet already accepted");
-        require(msg.sender != bet.creator, "cannot accept your own bet");
 
         //should charge maintenence fee too
-        require(bet.acceptValue == msg.value, "accepter money not correct");
+        require(
+            (bet.acceptValue * .01 ether) == msg.value,
+            "accepter money not correct"
+        );
 
         // would take % for dev wallet
         bet.accepted = true;
         bet.ammount += msg.value;
+        bet.acceptor = payable(msg.sender);
         removeBetFromArray(activeBets, bet.id);
+        allBets[bet.id] = bet;
         acceptedBets.push(bet.id);
     }
 
@@ -205,31 +217,4 @@ contract BetGame is ChainlinkClient {
         requestToBet[requestId] = _id;
         return requestId;
     }
-
-    // // 3) Keeper component
-    // function checkUpkeep(bytes calldata checkData)
-    //     external
-    //     view
-    //     override
-    //     returns (bool upkeepNeeded, bytes memory performData)
-    // {
-    //     upkeepNeeded = ((block.timestamp - lastTimeStamp) > interval) && active;
-    //     performData = checkData;
-    // }
-
-    // function performUpkeep(bytes calldata performData) external override {
-    //     /**
-    //     We should add a check to make sure that there is enough LINK to make the API Request or add a revert in the requestVolumeData function
-    //     **/
-    //     if (((block.timestamp - lastTimeStamp) > interval) && active) {
-    //         lastTimeStamp = block.timestamp;
-    //         //Counter for testing it actually worked
-    //         counter = counter + 1;
-    //         requestVolumeData();
-    //     }
-    // }
-
-    // function toggleActivate() public {
-    //     active = !active;
-    // }
 }
