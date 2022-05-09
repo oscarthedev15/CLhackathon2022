@@ -9,6 +9,8 @@ contract BetGame is ChainlinkClient {
     using Chainlink for Chainlink.Request;
     //  using Chainlink for Chainlink.Request;
 
+  //  uint256 public volume;
+
     //Contract details
     address public owner;
     uint256 public serviceFee;
@@ -20,13 +22,13 @@ contract BetGame is ChainlinkClient {
         uint256 id;
         address payable creator;
         address payable acceptor;
-        string[] keywords;
-        string source;
+        string apiURL;
         uint256 ammount;
         uint256 acceptValue;
         bool accepted;
         bool active;
         bool closed;
+        uint256 countArts;
         // uint256 createdDate;
         // uint256 activeDuration;
         // uint256 acceptedDuration;
@@ -74,27 +76,27 @@ contract BetGame is ChainlinkClient {
 
     // 2) Bet logic
     function createBet(
-        string[] memory _keywords,
-        string memory _source,
-        uint256 _acceptValue //I mean the other side of the bet.  There is defo a better name
+        string memory _apiURL,
+        uint256 _acceptValue,
+        uint256 _countArts
     ) public payable // uint256 _duration,
     // string memory _endDate
     {
         require(
-            msg.value > (minimumBet * .01 ether),
+            msg.value >= (minimumBet * .01 ether),
             "minimum bet not satisfied"
         );
         Bet memory newBet = Bet({
             id: betId,
             creator: payable(msg.sender),
             acceptor: payable(address(0)),
-            keywords: _keywords,
-            source: _source,
+            apiURL: _apiURL,
             ammount: msg.value,
             acceptValue: _acceptValue,
             accepted: false,
             active: true,
-            closed: false
+            closed: false,
+            countArts: _countArts
             // createdDate: block.timestamp,
             // duration: _duration,
             // expiration: _endDate
@@ -140,10 +142,12 @@ contract BetGame is ChainlinkClient {
 
     function recieveResult(uint256 _id, uint256 _value) internal {
         Bet memory bet = allBets[_id];
-        if (_value > 0) {
+        if (_value > bet.countArts) {
             bet.closed = true;
             bet.creator.transfer(bet.ammount);
             removeBetFromArray(activeBets, _id);
+            allBets[_id] = bet;
+            removeBetFromArray(acceptedBets, _id);
         }
     }
 
@@ -152,6 +156,7 @@ contract BetGame is ChainlinkClient {
         recordChainlinkFulfillment(_requestId)
     {
         uint256 temp_volume = _volume / 100;
+      //  volume = temp_volume;
         betId = requestToBet[_requestId];
         recieveResult(betId, temp_volume);
     }
@@ -162,42 +167,8 @@ contract BetGame is ChainlinkClient {
         oracle = 0xc57B33452b4F7BB189bB5AfaE9cc4aBa1f7a4FD8;
         jobId = "d5270d1c311941d0b08bead21fea7747";
         fee = 0.1 * 10**18; // (Varies by network and job)
-        buildAPIURL(_id);
-    }
-
-    function buildAPIURL(uint256 _id) private {
         Bet memory bet = allBets[_id];
-        string
-            memory start_string = "http://api.mediastack.com/v1/news?access_key=6d5eed71083f4b5bd2aad91193c29364&";
-        string memory keywords_string = "keywords=";
-        string[] memory keywords = bet.keywords;
-        string memory source = bet.source;
-        for (uint256 i = 0; i < keywords.length; i++) {
-            string memory word = keywords[i];
-            if (i == keywords.length - 1) {
-                keywords_string = string(
-                    abi.encodePacked(keywords_string, word)
-                );
-            } else {
-                keywords_string = string(
-                    abi.encodePacked(keywords_string, word, ",")
-                );
-            }
-        }
-        string memory source_string = string(
-            abi.encodePacked("&source=", source)
-        );
-        string
-            memory end_string = "&countries=us&date=2022-02-24,2022-03-01&limit=1%22";
-        string memory apiURL = string(
-            abi.encodePacked(
-                start_string,
-                keywords_string,
-                source_string,
-                end_string
-            )
-        );
-        requestVolumeData(apiURL, _id);
+        requestVolumeData(bet.apiURL, _id);
     }
 
     function requestVolumeData(string memory _apiURL, uint256 _id)
@@ -212,7 +183,7 @@ contract BetGame is ChainlinkClient {
 
         // Set the URL to perform the GET request on
         request.add("get", _apiURL);
-        request.add("path", "pagination,total"); // Chainlink nodes 1.0.0 and later support this format
+        request.add("path", "totalResults"); // Chainlink nodes 1.0.0 and later support this format
         requestId = sendChainlinkRequestTo(oracle, request, fee);
         requestToBet[requestId] = _id;
         return requestId;
