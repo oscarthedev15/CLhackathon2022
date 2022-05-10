@@ -3,10 +3,10 @@ pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+//import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
+contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
     using Chainlink for Chainlink.Request;
 
     //Contract details
@@ -28,7 +28,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         address payable creator;
         address payable acceptor;
         string apiURL;
-        uint256 ammount;
+        uint256 amount;
         uint256 acceptValue;
         bool accepted;
         bool active;
@@ -57,11 +57,17 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     //##################################################################################
 
     // 1) CONTRACT DETAILS  LOGIC
-    constructor(uint256 _minimumBet, uint256 _interval) {
+    constructor(uint256 _minimumBet, uint256 _interval, address _link) {
         //owner = msg.sender;
         minimumBet = _minimumBet;
         interval = _interval;
         lastTimeStamp = block.timestamp;
+
+        if (_link == address(0)) {
+            setPublicChainlinkToken();
+        } else {
+            setChainlinkToken(_link);
+        }
     }
 
     // modifier restricted() {
@@ -69,11 +75,11 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     //     _;
     // }
 
-    function setDevWallet(address payable _devWallet) external onlyOwner {
+    function setDevWallet(address payable _devWallet) external  {
         devWallet = _devWallet;
     }
 
-    function setMinimumBet(uint256 _minimumBet) external onlyOwner {
+    function setMinimumBet(uint256 _minimumBet) external  {
         minimumBet = _minimumBet;
     }
 
@@ -102,7 +108,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
             creator: payable(msg.sender),
             acceptor: payable(address(0)),
             apiURL: _apiURL,
-            ammount: msg.value,
+            amount: msg.value,
             acceptValue: _acceptValue,
             accepted: false,
             active: true,
@@ -131,7 +137,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
 
         // would take % for dev wallet
         bet.accepted = true;
-        bet.ammount += msg.value;
+        bet.amount += msg.value;
         bet.acceptor = payable(msg.sender);
         removeBetFromArray(activeBets, bet.id);
         allBets[bet.id] = bet;
@@ -156,7 +162,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         Bet memory bet = allBets[_id];
         if (_value > bet.countArts) {
             bet.closed = true;
-            bet.creator.transfer(bet.ammount);
+            bet.creator.transfer(bet.amount);
             removeBetFromArray(activeBets, _id);
             allBets[_id] = bet;
             removeBetFromArray(acceptedBets, _id);
@@ -164,7 +170,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         else{
             if(block.timestamp >= bet.timeProps.expirationDate){
                 bet.closed = true;
-                bet.acceptor.transfer(bet.ammount);
+                bet.acceptor.transfer(bet.amount);
                 removeBetFromArray(activeBets, _id);
                 allBets[_id] = bet;
                 removeBetFromArray(acceptedBets, _id);
