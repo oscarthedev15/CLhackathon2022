@@ -3,10 +3,10 @@ pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
-//import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
+contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     using Chainlink for Chainlink.Request;
 
     //Contract details
@@ -28,7 +28,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
         address payable creator;
         address payable acceptor;
         string apiURL;
-        uint256 amount;
+        uint256 amount; 
         uint256 acceptValue;
         bool accepted;
         bool active;
@@ -51,8 +51,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
     //Keepers Attributes
     uint256 public immutable interval;
     uint256 public lastTimeStamp;
-    // uint256 public counter;
-    // bool public active = true;
 
     //##################################################################################
 
@@ -70,17 +68,21 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
         }
     }
 
-    // modifier restricted() {
-    //     require(msg.sender == owner, "only owner can call function");
-    //     _;
-    // }
-
-    function setDevWallet(address payable _devWallet) external  {
+    function setDevWallet(address payable _devWallet) external onlyOwner {
         devWallet = _devWallet;
     }
 
-    function setMinimumBet(uint256 _minimumBet) external  {
+    function setMinimumBet(uint256 _minimumBet) external onlyOwner {
         minimumBet = _minimumBet;
+    }
+
+    function setJobId(uint256 _jobId) external onlyOwner {
+        jobId = _jobId;
+    }
+
+    function setOracle(address _oracle) external onlyOwner {
+        oracle = _oracle;
+        fee = 0.1 * 10**18;
     }
 
     // 2) Bet logic
@@ -126,6 +128,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
         Bet memory bet = allBets[_betId];
         require(bet.active == true, "bet not active");
         require(bet.accepted == false, "bet already accepted");
+        require(bet.closed == false, "bet has been close");
 
         //should charge maintenence fee too
         require(
@@ -150,18 +153,22 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
                 delete _arr[i];
                 _arr[i] = _arr[_arr.length - 1];
                 _arr.pop();
+                break;
             }
         }
     }
 
     function checkBet(uint256 _id) public {
-        queryOracle(_id);
+        setPublicChainlinkToken();
+        Bet memory bet = allBets[_id];
+        requestVolumeData(bet.apiURL, _id);
     }
 
     function recieveResult(uint256 _id, uint256 _value) internal {
         Bet memory bet = allBets[_id];
         if (_value > bet.countArts) {
             bet.closed = true;
+            bet.active = false;
             bet.creator.transfer(bet.amount);
             removeBetFromArray(activeBets, _id);
             allBets[_id] = bet;
@@ -170,6 +177,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
         else{
             if(block.timestamp >= bet.timeProps.expirationDate){
                 bet.closed = true;
+                bet.active = false;
                 bet.acceptor.transfer(bet.amount);
                 removeBetFromArray(activeBets, _id);
                 allBets[_id] = bet;
@@ -188,15 +196,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
         recieveResult(betId, temp_volume);
     }
 
-    //3) ORACLE LOGIC
-    function queryOracle(uint256 _id) internal {
-        setPublicChainlinkToken();
-        oracle = 0xc57B33452b4F7BB189bB5AfaE9cc4aBa1f7a4FD8;
-        jobId = "d5270d1c311941d0b08bead21fea7747";
-        fee = 0.1 * 10**18; // (Varies by network and job)
-        Bet memory bet = allBets[_id];
-        requestVolumeData(bet.apiURL, _id);
-    }
+    //  3) ORACLE LOGIC
 
     function requestVolumeData(string memory _apiURL, uint256 _id)
         public
@@ -215,8 +215,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface{
         requestToBet[requestId] = _id;
         return requestId;
     }
-
-
 
     //    4) Keeper component
     function checkUpkeep(bytes calldata checkData)
