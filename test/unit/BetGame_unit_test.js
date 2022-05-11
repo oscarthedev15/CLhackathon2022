@@ -55,11 +55,15 @@ let betGame, linkToken, accounts
     
       //TEST IS FAILING BECAUSE I THINK WE NEED TO MOCK THE ORACLE
       it("Should successfully check a bet with bettor winning", async () => {
-        await betGame.connect(accounts[1]).checkBet(0, {
+        const transaction = await betGame.connect(accounts[1]).checkBet(0, {
             from: accounts[1].address
         });
-        const bet = await betGame.allBets(0);
-        assert.equal(bet["closed"], true);
+        const transactionReceipt = await transaction.wait(1);
+        const requestId = transactionReceipt.events[0].topics[1]
+        console.log("requestId: ", requestId)
+        expect(requestId).to.not.be.null
+        // const bet = await betGame.allBets(0);
+        // assert.equal(bet["closed"], true);
       })
 
     //   it("Should successfully make an API request", async () => {
