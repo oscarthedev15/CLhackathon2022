@@ -18,8 +18,8 @@ let betGame, linkToken, accounts
         additionalMessage = ` --linkaddress  ${linkTokenAddress}`
         betGame = await ethers.getContract("BetGame")
         accounts = await ethers.getSigners();
+        mockOracle = await ethers.getContract("MockOracle")
       
-
         await hre.run("fund-link", { contract: betGame.address, linkaddress: linkTokenAddress })
       })
 
@@ -28,8 +28,8 @@ let betGame, linkToken, accounts
         const _acceptValue = 1
         const _countArts = 25
         const _startdate = 0
-        const _endDate = 0
-        const _acceptDate = 0
+        const _endDate = 1652384534
+        const _acceptDate = 1652341334
         await betGame.createBet(_apiURL, _acceptValue, _countArts, _startdate, _endDate, _acceptDate, {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[0].address
@@ -53,8 +53,7 @@ let betGame, linkToken, accounts
         assert.equal(bet["accepted"], true);
       })
     
-      //TEST IS FAILING BECAUSE I THINK WE NEED TO MOCK THE ORACLE
-      it("Should successfully check a bet with bettor winning", async () => {
+      it("Should successfully make an api request", async () => {
         const transaction = await betGame.connect(accounts[1]).checkBet(0, {
             from: accounts[1].address
         });
@@ -62,27 +61,21 @@ let betGame, linkToken, accounts
         const requestId = transactionReceipt.events[0].topics[1]
         console.log("requestId: ", requestId)
         expect(requestId).to.not.be.null
-        // const bet = await betGame.allBets(0);
-        // assert.equal(bet["closed"], true);
       })
 
-    //   it("Should successfully make an API request", async () => {
-    //     const transaction = await apiConsumer.requestVolumeData()
-    //     const transactionReceipt = await transaction.wait(1)
-    //     const requestId = transactionReceipt.events[0].topics[1]
-    //     console.log("requestId: ", requestId)
-    //     expect(requestId).to.not.be.null
-    //   })
 
-    //   it("Should successfully make an API request and get a result", async () => {
-    //     const transaction = await apiConsumer.requestVolumeData()
-    //     const transactionReceipt = await transaction.wait(1)
-    //     const requestId = transactionReceipt.events[0].topics[1]
-    //     const callbackValue = 777
-    //     await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
-    //     const volume = await apiConsumer.volume()
-    //     assert.equal(volume.toString(), callbackValue.toString())
-    //   })
+      it("Should successfully make an API request and get a result", async () => {
+        const transaction = await betGame.connect(accounts[1]).checkBet(0, {
+          from: accounts[1].address
+      });
+        const transactionReceipt = await transaction.wait(1)
+        const requestId = transactionReceipt.events[0].topics[1]
+        const callbackValue = 26
+        await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
+        const mybet = await betGame.allBets(0);
+        console.log(mybet)
+        assert.equal(mybet["closed"], true)
+      })
 
     //   it("Our event should successfully fire event on callback", async () => {
     //     const callbackValue = 777

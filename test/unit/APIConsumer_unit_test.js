@@ -35,6 +35,7 @@ const { numToBytes32 } = require("@chainlink/test-helpers/dist/src/helpers")
         const callbackValue = 777
         await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
         const volume = await apiConsumer.volume()
+        console.log(volume);
         assert.equal(volume.toString(), callbackValue.toString())
       })
 
