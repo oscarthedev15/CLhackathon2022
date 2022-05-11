@@ -58,9 +58,9 @@ let betGame, linkToken, accounts
             from: accounts[1].address
         });
         const transactionReceipt = await transaction.wait(1);
-        const requestId = transactionReceipt.events[0].topics[1]
-        console.log("requestId: ", requestId)
-        expect(requestId).to.not.be.null
+        const requestId = transactionReceipt.events[0].topics[1];
+        console.log("requestId: ", requestId);
+        expect(requestId).to.not.be.null;
       })
 
 
@@ -70,7 +70,7 @@ let betGame, linkToken, accounts
       });
         const transactionReceipt = await transaction.wait(1)
         const requestId = transactionReceipt.events[0].topics[1]
-        const callbackValue = 26
+        const callbackValue = 2600
         await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
         const mybet = await betGame.allBets(0);
         console.log(mybet)

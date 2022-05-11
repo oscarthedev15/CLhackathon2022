@@ -194,8 +194,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         recordChainlinkFulfillment(_requestId)
     {
         uint256 temp_volume = _volume / 100;
-      //  volume = temp_volume;
         betId = requestToBet[_requestId];
+        // Bet memory bet = allBets[betId];
+        // bet.acceptValue = _volume;
+        // allBets[betId] = bet;
         recieveResult(betId, temp_volume);
     }
 
