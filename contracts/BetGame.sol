@@ -55,7 +55,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     //##################################################################################
 
     // 1) CONTRACT DETAILS  LOGIC
-    constructor(uint256 _minimumBet, uint256 _interval, address _link) {
+    constructor(uint256 _minimumBet, uint256 _interval, address _link, address _oracle, bytes32 _jobId, uint256 _fee) {
         //owner = msg.sender;
         minimumBet = _minimumBet;
         interval = _interval;
@@ -66,6 +66,9 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         } else {
             setChainlinkToken(_link);
         }
+        oracle = _oracle;
+        jobId = _jobId;
+        fee = _fee;
     }
 
     function setDevWallet(address payable _devWallet) external onlyOwner {
@@ -76,7 +79,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         minimumBet = _minimumBet;
     }
 
-    function setJobId(uint256 _jobId) external onlyOwner {
+    function setJobId(bytes32 _jobId) external onlyOwner {
         jobId = _jobId;
     }
 
@@ -159,7 +162,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     }
 
     function checkBet(uint256 _id) public {
-        setPublicChainlinkToken();
+       // setPublicChainlinkToken();
         Bet memory bet = allBets[_id];
         requestVolumeData(bet.apiURL, _id);
     }

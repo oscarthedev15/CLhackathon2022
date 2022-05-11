@@ -532,6 +532,21 @@
     "semver" "^5.5.0"
     "tmp" "0.0.33"
 
+"@eth-optimism/solc@^0.6.12-alpha.1":
+  "integrity" "sha512-Ky73mo+2iNJs/VTaT751nMeZ7hXns0TBAlffTOxIOsScjAZ/zi/KWsDUo3r89aV2JKXcYAU/bLidxF40MVJeUw=="
+  "resolved" "https://registry.npmjs.org/@eth-optimism/solc/-/solc-0.6.12-alpha.1.tgz"
+  "version" "0.6.12-alpha.1"
+  dependencies:
+    "command-exists" "^1.2.8"
+    "commander" "3.0.2"
+    "follow-redirects" "^1.12.1"
+    "fs-extra" "^0.30.0"
+    "js-sha3" "0.8.0"
+    "memorystream" "^0.3.1"
+    "require-from-string" "^2.0.0"
+    "semver" "^5.5.0"
+    "tmp" "0.0.33"
+
 "@ethereum-waffle/chai@^3.4.0":
   "integrity" "sha512-8mjgjWCe8XSCWuyJgVtJY8sm00VTczGBTDxBejgEBWN/J9x7QD8jdmWW8bfxdnqZbxiDCTvRFL58Wmd254BEqQ=="
   "resolved" "https://registry.npmjs.org/@ethereum-waffle/chai/-/chai-3.4.1.tgz"
@@ -1306,10 +1321,20 @@
     "ethers" "^4.0.0-beta.1"
     "source-map-support" "^0.5.19"
 
-"@openzeppelin/contracts@^3.3.0", "@openzeppelin/contracts@^3.4.0":
+"@openzeppelin/contracts@^3.3.0":
   "integrity" "sha512-z0zMCjyhhp4y7XKAcDAi3Vgms4T2PstwBdahiO0+9NaGICQKjynK3wduSRplTgk4LXmoO1yfDGO5RbjKYxtuxA=="
   "resolved" "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-3.4.2.tgz"
   "version" "3.4.2"
+
+"@openzeppelin/contracts@^3.4.0":
+  "integrity" "sha512-z0zMCjyhhp4y7XKAcDAi3Vgms4T2PstwBdahiO0+9NaGICQKjynK3wduSRplTgk4LXmoO1yfDGO5RbjKYxtuxA=="
+  "resolved" "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-3.4.2.tgz"
+  "version" "3.4.2"
+
+"@openzeppelin/contracts@^4.6.0":
+  "integrity" "sha512-8vi4d50NNya/bQqCmaVzvHNmwHvS0OBKb7HNtuNwEE3scXWrP31fKQoGxNMT+KbzmrNZzatE3QK5p2gFONI/hg=="
+  "resolved" "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-4.6.0.tgz"
+  "version" "4.6.0"
 
 "@resolver-engine/core@^0.3.3":
   "integrity" "sha512-eB8nEbKDJJBi5p5SrvrvILn4a0h42bKtbCTri3ZxCGt6UvoQyp7HnGOfki944bUjBSHKK3RvgfViHn+kqdXtnQ=="

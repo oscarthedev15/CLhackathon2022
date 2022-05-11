@@ -18,19 +18,21 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   if (chainId == 31337) {
     let linkToken = await get("LinkToken")
+    let MockOracle = await get("MockOracle")
     linkTokenAddress = linkToken.address
+    oracle = MockOracle.address
     additionalMessage = " --linkaddress " + linkTokenAddress
   } else {
     linkTokenAddress = networkConfig[chainId]["linkToken"]
     oracle = networkConfig[chainId]["oracle"]
   }
-   let minumumBet = 1;
-   let interval = 1;
+  const jobId = ethers.utils.toUtf8Bytes(networkConfig[chainId]["jobId"])
+  const fee = networkConfig[chainId]["fee"]
 
   const waitBlockConfirmations = developmentChains.includes(network.name)
     ? 1
     : VERIFICATION_BLOCK_CONFIRMATIONS
-  const args = [minumumBet, interval, linkTokenAddress]
+  const args = [1, 1, linkTokenAddress, oracle, jobId, fee]
   const betGame = await deploy("BetGame", {
     from: deployer,
     args: args,

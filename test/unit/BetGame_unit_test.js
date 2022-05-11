@@ -2,6 +2,7 @@ const { assert, expect } = require("chai")
 const { network, deployments, ethers } = require("hardhat")
 const { developmentChains } = require("../../helper-hardhat-config")
 const { numToBytes32 } = require("@chainlink/test-helpers/dist/src/helpers")
+const { assertServiceAgreementEmpty } = require("@chainlink/test-helpers/dist/src/contracts/coordinator")
 
 let betGame, linkToken, accounts
 
@@ -35,10 +36,9 @@ let betGame, linkToken, accounts
         })
         const activeBet = await betGame.activeBets(0);
         const bet = await betGame.allBets(activeBet);
-        console.log(bet);
+        assert.equal(bet["creator"], accounts[0].address)
         assert.equal(bet["active"], true);
         assert.equal(bet["accepted"], false);
-        expect(activeBet).to.not.be.null
       })
 
       it("Should successfully accept a bet", async () => {
@@ -48,16 +48,16 @@ let betGame, linkToken, accounts
         })
         const acceptedBetCount = await betGame.acceptedBets(0);
         const bet = await betGame.allBets(acceptedBetCount);
+        assert.equal(bet["acceptor"], accounts[1].address);
         assert.equal(bet["active"], true);
         assert.equal(bet["accepted"], true);
-        expect(acceptedBetCount).to.not.be.null
       })
     
       //TEST IS FAILING BECAUSE I THINK WE NEED TO MOCK THE ORACLE
       it("Should successfully check a bet with bettor winning", async () => {
         await betGame.connect(accounts[1]).checkBet(0, {
             from: accounts[1].address
-        })
+        });
         const bet = await betGame.allBets(0);
         assert.equal(bet["closed"], true);
       })
