@@ -233,12 +233,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     }
 
     function performUpkeep(bytes calldata performData) external override {
-        //We can set a separate interval to clean active bets (right now it is every block which can get expensive)
-        checkActiveBets();
-
         //Use this interval for the checkAcceptedBets (which will run the API)
         if ((block.timestamp - lastTimeStamp) > interval) {
             lastTimeStamp = block.timestamp;
+            checkActiveBets();
             checkAcceptedBets();
         }
     }
