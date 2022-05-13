@@ -101,4 +101,40 @@ let betGame, linkToken, accounts
     //       await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
     //     })
     //   })
+  
+  //Keepers Testing
+
+    it("should be able to call checkUpkeep", async () => {
+      const checkData = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(""))
+      await betGame.setInterval(200);
+      const { upkeepNeeded } = await betGame.callStatic.checkUpkeep(checkData)
+      assert.equal(upkeepNeeded, false)
     })
+
+    it("should not be able to call performUpkeep before time passes", async () => {
+      const checkData = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(""))
+      const interval = await betGame.interval()
+      await network.provider.send("evm_increaseTime", [interval.toNumber() - 1])
+      await betGame.performUpkeep(checkData)
+      await expect(betGame.performUpkeep(checkData)).to.be.revertedWith("Time interval not met")
+    })
+
+    it("should be able to call performUpkeep after time passes", async () => {
+      const checkData = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(""))
+      const interval = await betGame.interval()
+      await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
+      await betGame.performUpkeep(checkData)
+
+    })
+
+    it("should update the lastTimeStamp correctly", async () => {
+      const checkData = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(""))
+      const interval = await betGame.interval()
+      const before = await betGame.lastTimeStamp()
+      await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
+      await betGame.performUpkeep(checkData)
+      const after = await betGame.lastTimeStamp();
+      assert.isTrue(after > before);
+
+    })
+})
