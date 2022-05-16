@@ -85,7 +85,6 @@ let betGame, linkToken, accounts
 
       it("Should successfully make an API request and close a bet", async () => {
         const preBalance = await accounts[0].getBalance()
-        console.log(preBalance)
         const transaction = await betGame.connect(accounts[1]).checkBet(0, {
           from: accounts[1].address
       });
@@ -95,9 +94,7 @@ let betGame, linkToken, accounts
         await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
         const mybet = await betGame.allBets(0);
         const postBalance = await accounts[0].getBalance();
-        console.log(postBalance)
         const difference = postBalance - preBalance;
-        console.log(difference)
         assert(difference > ethers.utils.parseEther("0.019")); //allows for some gas lossage
         assert.equal(mybet["closed"], true)
         assert.equal(mybet["active"], false)
@@ -110,32 +107,6 @@ let betGame, linkToken, accounts
         }
       })
 
-    //   it("Our event should successfully fire event on callback", async () => {
-    //     const callbackValue = 777
-    //     // we setup a promise so we can wait for our callback from the `once` function
-    //     await new Promise(async (resolve, reject) => {
-    //       // setup listener for our event
-    //       apiConsumer.once("DataFullfilled", async () => {
-    //         console.log("DataFullfilled event fired!")
-    //         const volume = await apiConsumer.volume()
-    //         // assert throws an error if it fails, so we need to wrap
-    //         // it in a try/catch so that the promise returns event
-    //         // if it fails.
-    //         try {
-    //           assert.equal(volume.toString(), callbackValue.toString())
-    //           resolve()
-    //         } catch (e) {
-    //           reject(e)
-    //         }
-    //       })
-    //       const transaction = await apiConsumer.requestVolumeData()
-    //       const transactionReceipt = await transaction.wait(1)
-    //       const requestId = transactionReceipt.events[0].topics[1]
-    //       await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
-    //     })
-    //   })
-  
-  //Keepers Testing
 
     it("should be able to call checkUpkeep", async () => {
       const checkData = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(""))
