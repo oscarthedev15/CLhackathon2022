@@ -49,7 +49,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     mapping(bytes32 => uint256) private requestToBet;
 
     //Keepers Attributes
-    uint256 public immutable interval;
+    uint256 public interval;
     uint256 public lastTimeStamp;
 
     //##################################################################################
