@@ -8,7 +8,7 @@ let betGame, linkToken, accounts
 
 !developmentChains.includes(network.name)
   ? describe.skip
-  : describe("BetGame Unit Tests", async function () {
+  : describe("BetGame Unit Tests -- successfull story ", async function () {
     
       before(async () => {
         const chainId = network.config.chainId
@@ -23,14 +23,32 @@ let betGame, linkToken, accounts
         await hre.run("fund-link", { contract: betGame.address, linkaddress: linkTokenAddress })
       })
 
-      it("Should successfully create a bet", async () => {
+      it("cannot make a bet less than minimum bet (.001 eth)", async () => {
+        const now = Date.now()
         const _apiURL = "https://newsapi.org/v2/everything?q=+rocky,+arrest&searchin=title&language=en&pagesize=1&apiKey=340014d50e764937b75f19426bdd5265"
-        const _acceptValue = 1
+        const _acceptValue = ethers.utils.parseEther("0.01")
         const _countArts = 25
-        const _startdate = 0
-        const _endDate = 1652384534
-        const _acceptDate = 1652341334
-        await betGame.createBet(_apiURL, _acceptValue, _countArts, _startdate, _endDate, _acceptDate, {
+        const _endDate = now + 5000
+        const _acceptDate = now + 3000
+        try {
+          await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
+            value: ethers.utils.parseEther("0.0001"),
+            from: accounts[0].address
+        })
+          assert(false);
+        } catch (err) {
+            assert(err);
+        }
+      })
+
+      it("Should successfully create a bet", async () => {
+        const now = Date.now()
+        const _apiURL = "https://newsapi.org/v2/everything?q=+rocky,+arrest&searchin=title&language=en&pagesize=1&apiKey=340014d50e764937b75f19426bdd5265"
+        const _acceptValue = ethers.utils.parseEther("0.01")
+        const _countArts = 25
+        const _endDate = now + 5000
+        const _acceptDate = now + 3000
+        await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[0].address
         })
@@ -51,6 +69,7 @@ let betGame, linkToken, accounts
         assert.equal(bet["acceptor"], accounts[1].address);
         assert.equal(bet["active"], true);
         assert.equal(bet["accepted"], true);
+        
       })
     
       it("Should successfully make an api request", async () => {
@@ -64,7 +83,9 @@ let betGame, linkToken, accounts
       })
 
 
-      it("Should successfully make an API request and get a result", async () => {
+      it("Should successfully make an API request and close a bet", async () => {
+        const preBalance = await accounts[0].getBalance()
+        console.log(preBalance)
         const transaction = await betGame.connect(accounts[1]).checkBet(0, {
           from: accounts[1].address
       });
@@ -73,32 +94,19 @@ let betGame, linkToken, accounts
         const callbackValue = 2600
         await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
         const mybet = await betGame.allBets(0);
-        console.log(mybet)
+        const postBalance = await accounts[0].getBalance();
+        console.log(postBalance)
+        const difference = postBalance - preBalance;
+        console.log(difference)
+        assert(difference > ethers.utils.parseEther("0.019")); //allows for some gas lossage
         assert.equal(mybet["closed"], true)
+        assert.equal(mybet["active"], false)
+        try {
+          await betGame.activeBets(0)
+          await betGame.acceptedBets(0)
+          assert(false);
+        } catch (err) {
+            assert(err);
+        }
       })
-
-    //   it("Our event should successfully fire event on callback", async () => {
-    //     const callbackValue = 777
-    //     // we setup a promise so we can wait for our callback from the `once` function
-    //     await new Promise(async (resolve, reject) => {
-    //       // setup listener for our event
-    //       apiConsumer.once("DataFullfilled", async () => {
-    //         console.log("DataFullfilled event fired!")
-    //         const volume = await apiConsumer.volume()
-    //         // assert throws an error if it fails, so we need to wrap
-    //         // it in a try/catch so that the promise returns event
-    //         // if it fails.
-    //         try {
-    //           assert.equal(volume.toString(), callbackValue.toString())
-    //           resolve()
-    //         } catch (e) {
-    //           reject(e)
-    //         }
-    //       })
-    //       const transaction = await apiConsumer.requestVolumeData()
-    //       const transactionReceipt = await transaction.wait(1)
-    //       const requestId = transactionReceipt.events[0].topics[1]
-    //       await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
-    //     })
-    //   })
     })

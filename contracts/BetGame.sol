@@ -19,7 +19,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         uint256 createdDate; // Date that the bet is posted on marketplace
         uint256 acceptByDate; //Date that the bet must be accepted by
 
-        uint256 startDate; //Date that bet actually starts
+        uint256 startDate; //Date that bet was actually accepted
         uint256 expirationDate; //Date that the bet expires
 
     }
@@ -92,19 +92,19 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     function createBet(
         string memory _apiURL,
         uint256 _acceptValue,
-        uint256 _countArts, uint256 _startdate, uint256 _endDate, uint256 _acceptdate
+        uint256 _countArts, uint256 _endDate, uint256 _acceptdate
     ) public payable // uint256 _duration,
     // string memory _endDate
     {
         require(
-            msg.value >= (minimumBet * .01 ether),
+            msg.value >= (minimumBet),
             "minimum bet not satisfied"
         );
 
         TimeProps memory _timeProps = TimeProps({
             createdDate: block.timestamp,
             acceptByDate: _acceptdate,
-            startDate: _startdate,
+            startDate: 0,
             expirationDate: _endDate
         });
 
@@ -131,17 +131,18 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         Bet memory bet = allBets[_betId];
         require(bet.active == true, "bet not active");
         require(bet.accepted == false, "bet already accepted");
-        require(bet.closed == false, "bet has been close");
+        require(bet.closed == false, "bet has been closed");
 
         //should charge maintenence fee too
         require(
-            (bet.acceptValue * .01 ether) == msg.value,
+            (bet.acceptValue) == msg.value,
             "accepter money not correct"
         );
 
        // require(block.timestamp >= bet.acceptByDate, "Sorry the accept period for this bet has expired");
 
         // would take % for dev wallet
+        bet.timeProps.startDate = block.timestamp;
         bet.accepted = true;
         bet.amount += msg.value;
         bet.acceptor = payable(msg.sender);
