@@ -109,4 +109,65 @@ let betGame, linkToken, accounts
             assert(err);
         }
       })
+
+    //   it("Our event should successfully fire event on callback", async () => {
+    //     const callbackValue = 777
+    //     // we setup a promise so we can wait for our callback from the `once` function
+    //     await new Promise(async (resolve, reject) => {
+    //       // setup listener for our event
+    //       apiConsumer.once("DataFullfilled", async () => {
+    //         console.log("DataFullfilled event fired!")
+    //         const volume = await apiConsumer.volume()
+    //         // assert throws an error if it fails, so we need to wrap
+    //         // it in a try/catch so that the promise returns event
+    //         // if it fails.
+    //         try {
+    //           assert.equal(volume.toString(), callbackValue.toString())
+    //           resolve()
+    //         } catch (e) {
+    //           reject(e)
+    //         }
+    //       })
+    //       const transaction = await apiConsumer.requestVolumeData()
+    //       const transactionReceipt = await transaction.wait(1)
+    //       const requestId = transactionReceipt.events[0].topics[1]
+    //       await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
+    //     })
+    //   })
+  
+  //Keepers Testing
+
+    it("should be able to call checkUpkeep", async () => {
+      const checkData = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(""))
+      await betGame.setInterval(200);
+      const { upkeepNeeded } = await betGame.callStatic.checkUpkeep(checkData)
+      assert.equal(upkeepNeeded, false)
     })
+
+    it("should not be able to call performUpkeep before time passes", async () => {
+      const checkData = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(""))
+      const interval = await betGame.interval()
+      await network.provider.send("evm_increaseTime", [interval.toNumber() - 1])
+      await betGame.performUpkeep(checkData)
+      await expect(betGame.performUpkeep(checkData)).to.be.revertedWith("Time interval not met")
+    })
+
+    it("should be able to call performUpkeep after time passes", async () => {
+      const checkData = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(""))
+      const interval = await betGame.interval()
+      await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
+      await betGame.performUpkeep(checkData)
+
+    })
+
+    it("should update the lastTimeStamp correctly", async () => {
+      const checkData = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(""))
+      const interval = await betGame.interval()
+      const before = await betGame.lastTimeStamp()
+      await network.provider.send("evm_increaseTime", [interval.toNumber() + 1])
+      await betGame.performUpkeep(checkData)
+      const after = await betGame.lastTimeStamp();
+      assert.isTrue(after > before);
+
+    })
+})
