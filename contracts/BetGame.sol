@@ -37,7 +37,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         TimeProps timeProps;
     }
 
-    uint256 betId = 0;
+    uint256 public globalId;
     mapping(uint256 => Bet) public allBets;
     uint256[] public activeBets;
     uint256[] public acceptedBets;
@@ -105,6 +105,11 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
             "minimum bet not satisfied"
         );
 
+        require(
+            (_acceptdate < _endDate),
+            "accept date must be before end date"
+        );
+
         TimeProps memory _timeProps = TimeProps({
             createdDate: block.timestamp,
             acceptByDate: _acceptdate,
@@ -113,7 +118,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         });
 
         Bet memory newBet = Bet({
-            id: betId,
+            id: globalId,
             creator: payable(msg.sender),
             acceptor: payable(address(0)),
             apiURL: _apiURL,
@@ -126,7 +131,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
             timeProps: _timeProps
         });
 
-        betId++;
+        globalId = globalId + 1;
         activeBets.push(newBet.id);
         allBets[newBet.id] = newBet;
     }
@@ -141,6 +146,11 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         require(
             (bet.acceptValue) == msg.value,
             "accepter money not correct"
+        );
+
+        require(
+            block.timestamp <= bet.timeProps.acceptByDate,
+            "bet is no longer open for accepting"
         );
 
        // require(block.timestamp >= bet.acceptByDate, "Sorry the accept period for this bet has expired");
@@ -178,7 +188,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
             bet.closed = true;
             bet.active = false;
             bet.creator.transfer(bet.amount);
-            removeBetFromArray(activeBets, _id);
             allBets[_id] = bet;
             removeBetFromArray(acceptedBets, _id);
         }
@@ -187,7 +196,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
                 bet.closed = true;
                 bet.active = false;
                 bet.acceptor.transfer(bet.amount);
-                removeBetFromArray(activeBets, _id);
                 allBets[_id] = bet;
                 removeBetFromArray(acceptedBets, _id);
             }
@@ -199,7 +207,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         recordChainlinkFulfillment(_requestId)
     {
         uint256 temp_volume = _volume / 100;
-        betId = requestToBet[_requestId];
+        uint256 betId = requestToBet[_requestId];
         // Bet memory bet = allBets[betId];
         // bet.acceptValue = _volume;
         // allBets[betId] = bet;
