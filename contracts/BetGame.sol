@@ -87,6 +87,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         oracle = _oracle;
         fee = 0.1 * 10**18;
     }
+    
+    function setInterval(uint256 _interval) external onlyOwner {
+        interval = _interval;
+    }
 
     // 2) Bet logic
     function createBet(
@@ -223,6 +227,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     }
 
     //    4) Keeper component
+   //    4) Keeper component
     function checkUpkeep(bytes calldata checkData)
         external
         view
@@ -235,18 +240,25 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
 
     function performUpkeep(bytes calldata performData) external override {
         //Use this interval for the checkAcceptedBets (which will run the API)
-        if ((block.timestamp - lastTimeStamp) > interval) {
-            lastTimeStamp = block.timestamp;
-            checkActiveBets();
-            checkAcceptedBets();
-        }
+        // if ((block.timestamp - lastTimeStamp) > interval) {
+        //     lastTimeStamp = block.timestamp;
+        //     checkActiveBets();
+        //     checkAcceptedBets();
+        // }
+        require(
+            (block.timestamp - lastTimeStamp) > interval,
+            "Time interval not met"
+        );
+        lastTimeStamp = block.timestamp;
+        checkActiveBets();
+        checkAcceptedBets();
     }
 
     function checkAcceptedBets() private {
         //Check all accepted bets and checkBet if recently expired and still active (no manual bet check won)
-        for(uint i = 0 ; i < acceptedBets.length; i++){
+        for (uint256 i = 0; i < acceptedBets.length; i++) {
             Bet memory _currBet = allBets[acceptedBets[i]];
-            if(_currBet.timeProps.expirationDate <= block.timestamp){
+            if (_currBet.timeProps.expirationDate <= block.timestamp) {
                 checkBet(_currBet.id);
             }
         }
@@ -254,9 +266,12 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
 
     function checkActiveBets() private {
         //Cleans up any active bets that have expired without being accepted
-        for(uint j = 0 ; j < activeBets.length; j++){
+        for (uint256 j = 0; j < activeBets.length; j++) {
             Bet memory _currBet = allBets[activeBets[j]];
-            if(!_currBet.accepted && _currBet.timeProps.acceptByDate <= block.timestamp){
+            if (
+                !_currBet.accepted &&
+                _currBet.timeProps.acceptByDate <= block.timestamp
+            ) {
                 _currBet.active = false;
                 removeBetFromArray(activeBets, _currBet.id);
             }
