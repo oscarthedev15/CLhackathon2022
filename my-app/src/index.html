@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <!-- Moralis SDK code -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/moralis/dist/moralis.js"></script>
+  </head>
+  <body>
+    <h1>Gas Stats With Moralis</h1>
+
+    <button id="btn-login">Moralis Login</button>
+    <button id="btn-logout">Logout</button>
+
+    <script>
+      // connect to Moralis server
+
+      const serverUrl = "https://62v7ekkzllcl.usemoralis.com:2053/server";
+      const appId = "90KLD1VtpAWdAO1xZ2Atq6zArmUCXnKoqteK6hPX";
+      Moralis.start({ serverUrl, appId });
+
+    </script>
+  </body>
+</html>
