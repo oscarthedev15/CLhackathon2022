@@ -1,12 +1,12 @@
-require("@nomiclabs/hardhat-waffle")
-require("@nomiclabs/hardhat-etherscan")
-require("hardhat-deploy")
-require("solidity-coverage")
-require("hardhat-gas-reporter")
-require("hardhat-contract-sizer")
-require("./tasks")
-require("@appliedblockchain/chainlink-plugins-fund-link")
-require("dotenv").config()
+require('@nomiclabs/hardhat-waffle');
+require('@nomiclabs/hardhat-etherscan');
+require('hardhat-deploy');
+require('solidity-coverage');
+require('hardhat-gas-reporter');
+require('hardhat-contract-sizer');
+require('./tasks');
+require('@appliedblockchain/chainlink-plugins-fund-link');
+require('dotenv').config();
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -15,24 +15,31 @@ require("dotenv").config()
 const MAINNET_RPC_URL =
   process.env.MAINNET_RPC_URL ||
   process.env.ALCHEMY_MAINNET_RPC_URL ||
-  "https://eth-mainnet.alchemyapi.io/v2/your-api-key"
+  'https://eth-mainnet.alchemyapi.io/v2/your-api-key';
 const RINKEBY_RPC_URL =
-  process.env.RINKEBY_RPC_URL || "https://eth-rinkeby.alchemyapi.io/v2/your-api-key"
-const KOVAN_RPC_URL = process.env.KOVAN_RPC_URL || "https://eth-kovan.alchemyapi.io/v2/your-api-key"
+  process.env.RINKEBY_RPC_URL ||
+  'https://eth-rinkeby.alchemyapi.io/v2/your-api-key';
+const KOVAN_RPC_URL =
+  process.env.KOVAN_RPC_URL ||
+  'https://speedy-nodes-nyc.moralis.io/ac41dad5e8581c2b7463048b/eth/kovan';
 const POLYGON_MAINNET_RPC_URL =
-  process.env.POLYGON_MAINNET_RPC_URL || "https://polygon-mainnet.alchemyapi.io/v2/your-api-key"
-const PRIVATE_KEY = process.env.PRIVATE_KEY
+  process.env.POLYGON_MAINNET_RPC_URL ||
+  'https://polygon-mainnet.alchemyapi.io/v2/your-api-key';
+const PRIVATE_KEY =
+  '395dfbedf72f26307b0c07464b760857971fa56a7d4f658f1f24484a434a58c6';
 // optional
-const MNEMONIC = process.env.MNEMONIC || "Your mnemonic"
-const FORKING_BLOCK_NUMBER = process.env.FORKING_BLOCK_NUMBER
+const MNEMONIC = process.env.MNEMONIC || 'Your mnemonic';
+const FORKING_BLOCK_NUMBER = process.env.FORKING_BLOCK_NUMBER;
 
 // Your API key for Etherscan, obtain one at https://etherscan.io/
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "Your etherscan API key"
-const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "Your polygonscan API key"
-const REPORT_GAS = process.env.REPORT_GAS || false
+const ETHERSCAN_API_KEY =
+  process.env.ETHERSCAN_API_KEY || 'Your etherscan API key';
+const POLYGONSCAN_API_KEY =
+  process.env.POLYGONSCAN_API_KEY || 'Your polygonscan API key';
+const REPORT_GAS = process.env.REPORT_GAS || false;
 
 module.exports = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: 'kovan',
   networks: {
     hardhat: {
       // If you want to do some forking set `enabled` to true
@@ -90,14 +97,19 @@ module.exports = {
   },
   gasReporter: {
     enabled: REPORT_GAS,
-    currency: "USD",
-    outputFile: "gas-report.txt",
+    currency: 'USD',
+    outputFile: 'gas-report.txt',
     noColors: true,
     // coinmarketcap: process.env.COINMARKETCAP_API_KEY,
   },
   contractSizer: {
     runOnCompile: false,
-    only: ["APIConsumer", "KeepersCounter", "PriceConsumerV3", "RandomNumberConsumer"],
+    only: [
+      'APIConsumer',
+      'KeepersCounter',
+      'PriceConsumerV3',
+      'RandomNumberConsumer',
+    ],
   },
   namedAccounts: {
     deployer: {
@@ -111,17 +123,17 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: "0.8.7",
+        version: '0.8.7',
       },
       {
-        version: "0.6.6",
+        version: '0.6.6',
       },
       {
-        version: "0.4.24",
+        version: '0.4.24',
       },
     ],
   },
   mocha: {
     timeout: 200000, // 200 seconds max for running tests
   },
-}
+};
