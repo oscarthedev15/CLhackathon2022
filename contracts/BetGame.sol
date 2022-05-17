@@ -19,7 +19,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         uint256 createdDate; // Date that the bet is posted on marketplace
         uint256 acceptByDate; //Date that the bet must be accepted by
 
-        uint256 startDate; //Date that bet actually starts
+        uint256 startDate; //Date that bet was actually accepted
         uint256 expirationDate; //Date that the bet expires
 
     }
@@ -37,7 +37,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         TimeProps timeProps;
     }
 
-    uint256 betId = 0;
+    uint256 public globalId;
     mapping(uint256 => Bet) public allBets;
     uint256[] public activeBets;
     uint256[] public acceptedBets;
@@ -49,7 +49,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     mapping(bytes32 => uint256) private requestToBet;
 
     //Keepers Attributes
-    uint256 public immutable interval;
+    uint256 public interval;
     uint256 public lastTimeStamp;
 
     //##################################################################################
@@ -87,29 +87,38 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         oracle = _oracle;
         fee = 0.1 * 10**18;
     }
+    
+    function setInterval(uint256 _interval) external onlyOwner {
+        interval = _interval;
+    }
 
     // 2) Bet logic
     function createBet(
         string memory _apiURL,
         uint256 _acceptValue,
-        uint256 _countArts, uint256 _startdate, uint256 _endDate, uint256 _acceptdate
+        uint256 _countArts, uint256 _endDate, uint256 _acceptdate
     ) public payable // uint256 _duration,
     // string memory _endDate
     {
         require(
-            msg.value >= (minimumBet * .01 ether),
+            msg.value >= (minimumBet),
             "minimum bet not satisfied"
+        );
+
+        require(
+            (_acceptdate < _endDate),
+            "accept date must be before end date"
         );
 
         TimeProps memory _timeProps = TimeProps({
             createdDate: block.timestamp,
             acceptByDate: _acceptdate,
-            startDate: _startdate,
+            startDate: 0,
             expirationDate: _endDate
         });
 
         Bet memory newBet = Bet({
-            id: betId,
+            id: globalId,
             creator: payable(msg.sender),
             acceptor: payable(address(0)),
             apiURL: _apiURL,
@@ -122,7 +131,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
             timeProps: _timeProps
         });
 
-        betId++;
+        globalId = globalId + 1;
         activeBets.push(newBet.id);
         allBets[newBet.id] = newBet;
     }
@@ -131,17 +140,23 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         Bet memory bet = allBets[_betId];
         require(bet.active == true, "bet not active");
         require(bet.accepted == false, "bet already accepted");
-        require(bet.closed == false, "bet has been close");
+        require(bet.closed == false, "bet has been closed");
 
         //should charge maintenence fee too
         require(
-            (bet.acceptValue * .01 ether) == msg.value,
+            (bet.acceptValue) == msg.value,
             "accepter money not correct"
+        );
+
+        require(
+            block.timestamp <= bet.timeProps.acceptByDate,
+            "bet is no longer open for accepting"
         );
 
        // require(block.timestamp >= bet.acceptByDate, "Sorry the accept period for this bet has expired");
 
         // would take % for dev wallet
+        bet.timeProps.startDate = block.timestamp;
         bet.accepted = true;
         bet.amount += msg.value;
         bet.acceptor = payable(msg.sender);
@@ -173,7 +188,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
             bet.closed = true;
             bet.active = false;
             bet.creator.transfer(bet.amount);
-            removeBetFromArray(activeBets, _id);
             allBets[_id] = bet;
             removeBetFromArray(acceptedBets, _id);
         }
@@ -182,7 +196,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
                 bet.closed = true;
                 bet.active = false;
                 bet.acceptor.transfer(bet.amount);
-                removeBetFromArray(activeBets, _id);
                 allBets[_id] = bet;
                 removeBetFromArray(acceptedBets, _id);
             }
@@ -194,7 +207,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         recordChainlinkFulfillment(_requestId)
     {
         uint256 temp_volume = _volume / 100;
-        betId = requestToBet[_requestId];
+        uint256 betId = requestToBet[_requestId];
         // Bet memory bet = allBets[betId];
         // bet.acceptValue = _volume;
         // allBets[betId] = bet;
@@ -222,6 +235,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     }
 
     //    4) Keeper component
+   //    4) Keeper component
     function checkUpkeep(bytes calldata checkData)
         external
         view
@@ -234,18 +248,25 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
 
     function performUpkeep(bytes calldata performData) external override {
         //Use this interval for the checkAcceptedBets (which will run the API)
-        if ((block.timestamp - lastTimeStamp) > interval) {
-            lastTimeStamp = block.timestamp;
-            checkActiveBets();
-            checkAcceptedBets();
-        }
+        // if ((block.timestamp - lastTimeStamp) > interval) {
+        //     lastTimeStamp = block.timestamp;
+        //     checkActiveBets();
+        //     checkAcceptedBets();
+        // }
+        require(
+            (block.timestamp - lastTimeStamp) > interval,
+            "Time interval not met"
+        );
+        lastTimeStamp = block.timestamp;
+        checkActiveBets();
+        checkAcceptedBets();
     }
 
     function checkAcceptedBets() private {
         //Check all accepted bets and checkBet if recently expired and still active (no manual bet check won)
-        for(uint i = 0 ; i < acceptedBets.length; i++){
+        for (uint256 i = 0; i < acceptedBets.length; i++) {
             Bet memory _currBet = allBets[acceptedBets[i]];
-            if(_currBet.timeProps.expirationDate <= block.timestamp){
+            if (_currBet.timeProps.expirationDate <= block.timestamp) {
                 checkBet(_currBet.id);
             }
         }
@@ -253,9 +274,12 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
 
     function checkActiveBets() private {
         //Cleans up any active bets that have expired without being accepted
-        for(uint j = 0 ; j < activeBets.length; j++){
+        for (uint256 j = 0; j < activeBets.length; j++) {
             Bet memory _currBet = allBets[activeBets[j]];
-            if(!_currBet.accepted && _currBet.timeProps.acceptByDate <= block.timestamp){
+            if (
+                !_currBet.accepted &&
+                _currBet.timeProps.acceptByDate <= block.timestamp
+            ) {
                 _currBet.active = false;
                 removeBetFromArray(activeBets, _currBet.id);
             }

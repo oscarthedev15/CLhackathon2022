@@ -31,9 +31,9 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   const waitBlockConfirmations = developmentChains.includes(network.name)
     ? 1
-    : VERIFICATION_BLOCK_CONFIRMATIONS;
-  const args = [1, 1, linkTokenAddress, oracle, jobId, fee];
-  const betGame = await deploy('BetGame', {
+    : VERIFICATION_BLOCK_CONFIRMATIONS
+  const args = [1000000000000000, 1, linkTokenAddress, oracle, jobId, fee]
+  const betGame = await deploy("BetGame", {
     from: deployer,
     args: args,
     log: true,
