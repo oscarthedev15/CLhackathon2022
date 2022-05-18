@@ -15,6 +15,7 @@ import Container from '@mui/material/Container';
 import CalendarPicker from '@mui/x-date-pickers/CalendarPicker';
 import Button from '@mui/material/Button';
 
+import betgame from '../betgame';
 import web3 from '../web3';
 
 import { MyForm } from './Form';
@@ -22,17 +23,35 @@ import { MyForm } from './Form';
 function CreateBet() {
   // const [name, setName] = React.useState('Composed TextField');
   const [title, setTitle] = React.useState('Hey there');
+  const {
+    authenticate,
+    isAuthenticated,
+    isAuthenticating,
+    user,
+    account,
+    logout,
+  } = useMoralis();
 
   // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //     setName(event.target.value);
   //   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
-  };
-
   const createBet = async () => {
-    // await
+    console.log('Calling createBet function');
+    const userAddress = await user!.get('ethAddress');
+
+    await betgame.methods
+      .createBet(
+        'https://newsapi.org/v2/everything?q=+rocky,+arrest&searchin=title&language=en&pagesize=1&apiKey=340014d50e764937b75f19426bdd5265',
+        web3.utils.toWei('0.01', 'ether'),
+        2,
+        1652830000,
+        1652828000
+      )
+      .send({
+        from: userAddress,
+        value: web3.utils.toWei('0.01', 'ether'),
+      });
   };
 
   return (
@@ -42,12 +61,33 @@ function CreateBet() {
           title,
           acceptDeadline,
           outcomeDeadline,
-          amount,
-          keywords,
+          acceptAmount,
+          betAmount,
+          numArticles,
+          apiKeywords,
+          sources,
         }) => {
-          console.log(title, acceptDeadline, outcomeDeadline, amount, keywords);
+          console.log(
+            title,
+            acceptDeadline,
+            outcomeDeadline,
+            acceptAmount,
+            betAmount,
+            numArticles,
+            apiKeywords,
+            sources
+          );
         }}
       />
+      <Button onClick={createBet} variant="outlined">
+        Create
+      </Button>
+      {isAuthenticated ? (
+        <h1>{user!.get('ethAddress')}</h1>
+      ) : (
+        <h1>User is not authenticated!</h1>
+      )}
+
       {/* <Box>
         <Container maxWidth="sm" className="card">
           <h1>Create a Bet</h1>

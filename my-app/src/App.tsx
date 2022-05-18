@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      // add your logic here
+      // setCurrAccount(account);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
@@ -50,11 +50,11 @@ function App() {
   };
 
   const checkContract = async () => {
-    const balance = await web3.eth.getBalance(betgame.options.address);
-    setBalance(balance);
+    const address = await betgame.options.address;
+    setBalance(address);
 
-    const allBets = await betgame.methods.allBets().call();
-    setAllBets(allBets);
+    // const allBets = await betgame.methods.allBets().call();
+    // setAllBets(allBets);
   };
 
   return (
@@ -67,11 +67,18 @@ function App() {
         <Route path="/Your%20Stats" element={<YourStats />} />
       </Routes>
       <h1>Moralis Hello World!</h1>
-      <button onClick={login}>Moralis Metamask Login</button>
-      <button onClick={logOut} disabled={isAuthenticating}>
+      <button onClick={login} disabled={isAuthenticated}>
+        Moralis Metamask Login
+      </button>
+      <button onClick={logOut} disabled={isAuthenticating || !isAuthenticated}>
         Logout
       </button>
       <button onClick={checkContract}>Click to test contract connection</button>
+      {isAuthenticated ? (
+        <h1>{user!.get('ethAddress')}</h1>
+      ) : (
+        <h1>User is not authenticated!</h1>
+      )}
       <h1>{balance}</h1>
       <h1>{allBets}</h1>
     </div>
