@@ -1,98 +1,201 @@
-import { Box, FormControl, OutlinedInput } from '@mui/material';
-import Button from '@mui/material/Button';
-import FormHelperText from '@mui/material/FormHelperText';
-import Input from '@mui/material/Input';
-import InputAdornment from '@mui/material/InputAdornment';
-import TextField from '@mui/material/TextField';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { Form, Formik } from 'formik';
-import React, { useEffect } from 'react';
-import betgame from '../betgame';
-import web3 from '../web3';
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
+import { FormControl, FormLabel, Grid, OutlinedInput } from '@mui/material'
+import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import FormGroup from '@mui/material/FormGroup'
+import FormHelperText from '@mui/material/FormHelperText'
+import InputAdornment from '@mui/material/InputAdornment'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { Field, Form, Formik } from 'formik'
+import { CheckboxWithLabel } from 'formik-material-ui'
+import React, { useEffect } from 'react'
+import betgame from '../betgame'
+import web3 from '../web3'
 
 interface FormValues {
-  title: string;
-  acceptDeadline: number;
-  outcomeDeadline: number;
-  acceptAmount: number;
-  betAmount: number;
-  numArticles: number;
-  currKeyword: string;
-  apiKeywords: { id: number; keyword: string }[];
-  sources: string[];
+  title: string
+  acceptDeadline: Date
+  outcomeDeadline: Date
+  acceptAmount: number
+  betAmount: number
+  numArticles: number
+  currKeyword: string
+  apiKeywords: string[]
+  sources: string[]
 }
 
 interface Props {
-  onSubmit: (values: FormValues) => void;
+  onSubmit: (values: FormValues) => void
 }
 
 export const MyForm: React.FC<Props> = ({ onSubmit }) => {
-  const [minimumBet, setMinimumBet] = React.useState(0);
-  const [keywordID, setKeywordID] = React.useState(2);
-  // const [currKeyword, setCurrKeyword] = React.useState('i.e. Pop Book');
+  const [minimumBet, setMinimumBet] = React.useState(0)
+
+  const options = [
+    {
+      label: 'ABC News',
+      value: 'abc-news',
+    },
+    {
+      label: 'Associated Press',
+      value: 'associated-press',
+    },
+    {
+      label: 'BBC News',
+      value: 'bbc-news',
+    },
+    {
+      label: 'Bloomberg',
+      value: 'bloomberg',
+    },
+    {
+      label: 'Business Insider',
+      value: 'business-insider',
+    },
+    {
+      label: 'Buzzfeed',
+      value: 'buzzfeed',
+    },
+    {
+      label: 'CBS News',
+      value: 'cbs-news',
+    },
+    {
+      label: 'CNN',
+      value: 'cnn',
+    },
+    {
+      label: 'Entertainment Weekly',
+      value: 'entertainment-weekly',
+    },
+    {
+      label: 'ESPN',
+      value: 'espn',
+    },
+
+    {
+      label: 'Fortune',
+      value: 'fortune',
+    },
+    {
+      label: 'Fox News',
+      value: 'fox-news',
+    },
+    {
+      label: 'Google News',
+      value: 'google-news',
+    },
+    {
+      label: 'MTV News',
+      value: 'mtv-news',
+    },
+    {
+      label: 'NBC News',
+      value: 'nbc-news',
+    },
+    {
+      label: 'Newsweek',
+      value: 'newsweek',
+    },
+    {
+      label: 'New York Magazine',
+      value: 'new-york-magazine',
+    },
+    {
+      label: 'Politico',
+      value: 'politico',
+    },
+    {
+      label: 'Reuters',
+      value: 'reuters',
+    },
+    {
+      label: 'Techcrunch',
+      value: 'techcrunch',
+    },
+    {
+      label: 'The Huffington Post',
+      value: 'the-huffington-post',
+    },
+    {
+      label: 'The Verge',
+      value: 'the-verge',
+    },
+    {
+      label: 'The Wall Street Journal',
+      value: 'the-wall-street-journal',
+    },
+    {
+      label: 'Time',
+      value: 'time',
+    },
+    {
+      label: 'USA Today',
+      value: 'usa-today',
+    },
+    {
+      label: 'Vice News',
+      value: 'vice-news',
+    },
+    {
+      label: 'Wired',
+      value: 'wired',
+    },
+  ]
 
   useEffect(() => {
     // Create a scoped async function in the hook
     async function anyNameFunction() {
-      await setContractProps();
+      await setContractProps()
     }
     // Execute the created function directly
-    anyNameFunction();
-  }, []);
+    anyNameFunction()
+  }, [minimumBet])
 
   const setContractProps = async () => {
-    console.log('Setting contract properties');
-    let minBet = await betgame.methods.minimumBet().call();
-    minBet = web3.utils.fromWei(minBet);
-    setMinimumBet(minBet);
-  };
+    console.log('Setting contract properties')
+    let minBet = await betgame.methods.minimumBet().call()
+    minBet = web3.utils.fromWei(minBet)
+    setMinimumBet(minBet)
+  }
 
-  // const handleKeywordChange = () => {
-  //   setCurrKeyword(value);
-  // };
+  const addKeyword = (v: string[], k: string) => {
+    console.log('Adding keyword')
+    let newArr = v
+    newArr.push(k)
+    v = newArr
+    k = ''
+    console.log(v)
+    console.log(k)
+  }
 
-  const addKeyword = (
-    v: { id: number; keyword: string }[],
-    keyword: string
-  ) => {
-    // add keyword to apiKeywords array
-    let newArr = v;
-    let id = keywordID;
-    let newKeyword = { id, keyword };
-    newArr.push(newKeyword);
-    v = newArr;
-    // increment ID for next time
-    let tmp = keywordID + 1;
-    setKeywordID(tmp);
-    console.log(keywordID);
-  };
-
-  const deleteKeyword = () => {
-    // delete keyword from apiKeywords array using filter()?
-  };
+  const deleteKeyword = (v: string[], k: string) => {
+    console.log('Deleting keyword', k)
+    v = v.filter((e) => e !== k)
+    console.log(v)
+  }
 
   return (
     <Formik
       initialValues={{
         title: '',
-        acceptDeadline: Date.now(),
-        outcomeDeadline: Date.now(),
+        acceptDeadline: new Date(Date.now()),
+        outcomeDeadline: new Date(Date.now()),
         acceptAmount: 0.0,
         betAmount: 0.0,
         numArticles: 1,
         currKeyword: '',
-        apiKeywords: [{ id: 1, keyword: 'hi' }],
+        apiKeywords: [],
         sources: [],
       }}
       onSubmit={(values) => {
-        onSubmit(values);
+        onSubmit(values)
       }}
     >
-      {({ values, handleBlur, setFieldValue, handleChange }) => (
+      {({ values, handleChange, handleBlur, setFieldValue }) => (
         <Form>
           <div>
             <TextField
@@ -101,18 +204,18 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               multiline
               maxRows={4}
               value={values.title}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              onChange={handleChange('title')}
+              onBlur={handleBlur('title')}
             />
           </div>
-          {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
             <div>
               <DesktopDatePicker
                 label="Accept by date"
                 inputFormat="MM/dd/yyyy"
                 value={values.acceptDeadline}
                 onChange={(value) => {
-                  setFieldValue('acceptDeadline', value);
+                  setFieldValue('acceptDeadline', value)
                 }}
                 renderInput={(params) => <TextField {...params} />}
               />
@@ -123,13 +226,13 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 inputFormat="MM/dd/yyyy"
                 value={values.outcomeDeadline}
                 onChange={(value) => {
-                  setFieldValue('outcomeDeadline', value);
+                  setFieldValue('outcomeDeadline', value)
                 }}
                 renderInput={(params) => <TextField {...params} />}
               />
             </div>
-          </LocalizationProvider> */}
-          {/* <div>
+          </LocalizationProvider>
+          <div>
             <FormControl>
               <OutlinedInput
                 id="outlined-adornment-weight"
@@ -194,62 +297,91 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               Change this value only if you specified a number of articles as a
               condition of the bet.
             </p>
-          </div> */}
-          {/* <div>
+          </div>
+          <div>
             <TextField
               placeholder='i.e. "Pop Book"'
               label="Keywords"
               value={values.currKeyword}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              onChange={handleChange('currKeyword')}
+              onBlur={handleBlur('currKeyword')}
             />
-            <p>
-              Enter the apiKeywords that will be used to check news headlines,
-              hitting enter after each entry. Maximum number of apiKeywords is
-              8.
-            </p>
-          </div>
-          <div>
             <Button
-              onClick={() => addKeyword(values.apiKeywords, 'hello')}
+              onClick={() => {
+                addKeyword(values.apiKeywords, values.currKeyword)
+                setFieldValue('currKeyword', '')
+              }}
               variant="outlined"
             >
               Add
             </Button>
+            {/* <p>
+              Enter the keywords that will be used to check news headlines,
+              hitting enter after each entry. Maximum number of keywords is 8.
+            </p> */}
           </div>
-          <Stack direction="row" spacing={1}>
-            {values.apiKeywords.map((keyword) => (
-              <Chip
-                key={keyword.id}
-                label={keyword.keyword}
-                variant="outlined"
-                onDelete={deleteKeyword}
-              />
-              // <div key={keyword.id}>{keyword.keyword}</div>
-            ))}
-          </Stack>
+          <br />
+          {values.apiKeywords && values.apiKeywords.length > 0 ? (
+            <div>
+              <h4>Keywords:</h4>
+              <Stack direction="row" spacing={1} justifyContent="center">
+                {values.apiKeywords.map((keyword, index) => (
+                  <Chip
+                    key={index}
+                    label={keyword}
+                    variant="outlined"
+                    onDelete={() => {
+                      setFieldValue(
+                        'apiKeywords',
+                        values.apiKeywords.filter((e: string) => e !== keyword),
+                      )
+                    }}
+                  />
+                ))}
+              </Stack>
+            </div>
+          ) : (
+            <h4>Keywords will appear here once you add them.</h4>
+          )}
           <div>
-            <TextField
-              placeholder="TMZ
-              New York Times"
-              label="Sources"
-              multiline
-              maxRows={4}
-              value={values.sources}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-            <p>
-              Enter the news sources to query, hitting enter after each query.
-              Maximum number of sources is 4.
-            </p>
+            <FormControl style={{ display: 'flex' }}>
+              <FormLabel component="legend">Sources</FormLabel>
+              <FormGroup>
+                <Grid
+                  container
+                  // spacing={{ xs: 2 }}
+                  columns={{ xs: 4, sm: 8 }}
+                >
+                  {options.map((opt, index) => (
+                    <Grid
+                      item
+                      xs={6}
+                      sm={4}
+                      md={4}
+                      key={index}
+                      textAlign="left"
+                    >
+                      <Field
+                        type="checkbox"
+                        component={CheckboxWithLabel}
+                        name="sources"
+                        key={opt.value}
+                        value={opt.value}
+                        Label={{ label: opt.label }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </FormGroup>
+            </FormControl>
           </div>
+          <br />
           <Button type="submit" variant="outlined">
             Create
-          </Button> */}
+          </Button>
           <pre>{JSON.stringify(values, null, 2)}</pre>
         </Form>
       )}
     </Formik>
-  );
-};
+  )
+}
