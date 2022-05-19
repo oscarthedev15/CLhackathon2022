@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
-import logo from './logo.svg';
 import './App.css';
 import { useMoralis } from 'react-moralis';
 import ResponsiveAppBar from './components/Nav';
@@ -21,8 +20,8 @@ function App() {
     logout,
   } = useMoralis();
 
-  const [balance, setBalance] = React.useState('');
-  const [allBets, setAllBets] = React.useState(new Map());
+  const [balance, setBalance] = useState('');
+  const [allBets, setAllBets] = useState(new Map());
 
   useEffect(() => {
     if (isAuthenticated) {
