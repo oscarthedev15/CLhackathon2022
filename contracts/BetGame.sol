@@ -25,6 +25,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     }
     struct Bet {
         uint256 id;
+        string title;
         address payable creator;
         address payable acceptor;
         string apiURL;
@@ -96,7 +97,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
     function createBet(
         string memory _apiURL,
         uint256 _acceptValue,
-        uint256 _countArts, uint256 _endDate, uint256 _acceptdate
+        uint256 _countArts, uint256 _endDate, uint256 _acceptdate, string memory _title
     ) public payable // uint256 _duration,
     // string memory _endDate
     {
@@ -124,6 +125,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
 
         Bet memory newBet = Bet({
             id: globalId,
+            title: _title,
             creator: payable(msg.sender),
             acceptor: payable(address(0)),
             apiURL: _apiURL,

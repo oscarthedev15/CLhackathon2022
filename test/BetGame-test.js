@@ -30,8 +30,9 @@ let betGame, linkToken, accounts
         const _countArts = 25
         const _endDate = now + 5000
         const _acceptDate = now + 3000
+        const _title = "title";
         try {
-          await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
+          await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, _title, {
             value: ethers.utils.parseEther("0.0001"),
             from: accounts[0].address
         })
@@ -48,7 +49,8 @@ let betGame, linkToken, accounts
         const _countArts = 25;
         const _endDate = now + 5000;
         const _acceptDate = now + 3000;
-        await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
+        const _title = "title";
+        await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, _title, {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[0].address
         });
@@ -120,7 +122,8 @@ let betGame, linkToken, accounts
         const _countArts = 24;
         const _endDate = now + 5000;
         const _acceptDate = now + 3000;
-        await betGame.connect(accounts[2]).createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
+        const _title = "title";
+        await betGame.connect(accounts[2]).createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, _title, {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[2].address
         });
@@ -174,9 +177,10 @@ let betGame, linkToken, accounts
         const _apiURL = "https://newsapi.org/v2/everything?q=+rocky,+arrest&searchin=title&language=en&pagesize=1&apiKey=340014d50e764937b75f19426bdd5265";
         const _acceptValue = ethers.utils.parseEther("0.01");
         const _countArts = 24;
-        const _endDate = now+21;
-        const _acceptDate = now+20;
-        await betGame.connect(accounts[2]).createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
+        const _endDate = now+30;
+        const _acceptDate = now+27;
+        const _title = "title";
+        await betGame.connect(accounts[2]).createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, _title, {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[2].address
         });
