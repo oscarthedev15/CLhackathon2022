@@ -106,6 +106,11 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         );
 
         require(
+            _acceptValue >= (minimumBet),
+            "minimum bet not satisfied for accept value"
+        );
+
+        require(
             (_acceptdate < _endDate),
             "accept date must be before end date"
         );
@@ -136,7 +141,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         allBets[newBet.id] = newBet;
     }
 
-    function acceptBet(uint256 _betId) public payable {
+    function acceptBet(uint256 _betId, string memory _apiURL) public payable {
         Bet memory bet = allBets[_betId];
         require(bet.active == true, "bet not active");
         require(bet.accepted == false, "bet already accepted");
@@ -153,11 +158,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
             "bet is no longer open for accepting"
         );
 
-       // require(block.timestamp >= bet.acceptByDate, "Sorry the accept period for this bet has expired");
-
         // would take % for dev wallet
         bet.timeProps.startDate = block.timestamp;
         bet.accepted = true;
+        bet.apiURL = _apiURL;
         bet.amount += msg.value;
         bet.acceptor = payable(msg.sender);
         removeBetFromArray(activeBets, bet.id);
