@@ -1,5 +1,5 @@
 import Button from '@mui/material/Button'
-import React from 'react'
+import { useState } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
@@ -7,7 +7,7 @@ import { MyForm } from './Form'
 
 function CreateBet() {
   // const [name, setName] = React.useState('Composed TextField');
-  const [title, setTitle] = React.useState('Hey there')
+  const [title, setTitle] = useState('Hey there')
   const {
     authenticate,
     isAuthenticated,
