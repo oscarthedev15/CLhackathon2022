@@ -1,10 +1,8 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-//import "@chainlink/contracts/src/v0.8/KeeperRegistry.sol";
 
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
@@ -51,7 +49,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     mapping(bytes32 => uint256) private requestToBet;
 
     //Keepers Attributes
-    address public keeperRegistry;
+    KeeperRegistry public keeperRegistry;
     uint256 public interval;
     uint256 public lastTimeStamp;
     uint256 public keeperJobId;
@@ -79,7 +77,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     /// @param amountIn The exact amount of WETH that will be swapped for LINK.
     /// @return amountOut The amount of LINK received.
     function swapExactInputSingle(uint256 amountIn)
-        private
+        public
         returns (uint256 amountOut)
     {
         // msg.sender must approve this contract
@@ -105,55 +103,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
 
         // The call to `exactInputSingle` executes the swap.
         amountOut = swapRouter.exactInputSingle(params);
-    }
-
-    /// @notice swapExactOutputSingle swaps a minimum possible amount of WETH for a fixed amount of LINK.
-    /// @dev The calling address must approve this contract to spend its DAI for this function to succeed. As the amount of input DAI is variable,
-    /// the calling address will need to approve for a slightly higher amount, anticipating some variance.
-    /// @param amountOut The exact amount of WETH9 to receive from the swap.
-    /// @param amountInMaximum The amount of DAI we are willing to spend to receive the specified amount of WETH9.
-    /// @return amountIn The amount of DAI actually spent in the swap.
-    function swapExactOutputSingle(uint256 amountOut, uint256 amountInMaximum)
-        external
-        returns (uint256 amountIn)
-    {
-        // Transfer the specified amount of DAI to this contract.
-        // TransferHelper.safeTransferFrom(
-        //     DAI,
-        //     msg.sender,
-        //     address(this),
-        //     amountInMaximum
-        // );
-
-        // Approve the router to spend the specifed `amountInMaximum` of WETH.
-        // In production, you should choose the maximum amount to spend based on oracles or other data sources to acheive a better swap.
-        TransferHelper.safeApprove(weth, address(swapRouter), amountInMaximum);
-
-        ISwapRouter.ExactOutputSingleParams memory params = ISwapRouter
-            .ExactOutputSingleParams({
-                tokenIn: weth,
-                tokenOut: chainlinkTokenAddress(),
-                fee: poolFee,
-                recipient: address(this),
-                deadline: block.timestamp,
-                amountOut: amountOut,
-                amountInMaximum: amountInMaximum,
-                sqrtPriceLimitX96: 0
-            });
-
-        // Executes the swap returning the amountIn needed to spend to receive the desired amountOut.
-        amountIn = swapRouter.exactOutputSingle(params);
-
-        // For exact output swaps, the amountInMaximum may not have all been spent.
-        // If the actual amount spent (amountIn) is less than the specified maximum amount, we must refund the msg.sender and approve the swapRouter to spend 0.
-        if (amountIn < amountInMaximum) {
-            TransferHelper.safeApprove(weth, address(swapRouter), 0);
-            TransferHelper.safeTransfer(
-                weth,
-                address(this),
-                amountInMaximum - amountIn
-            );
-        }
     }
 
     //convert Eth from this contract to Chainlink
@@ -209,9 +158,17 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         interval = _interval;
     }
 
+    function getEthBalance() public view returns(uint256){
+        return address(this).balance;
+    }
+
     //Service Fee setters and getters for the bet service fee
     function setLinkServiceFee(uint256 _eth) external onlyOwner {
         serviceFee = _eth;
+    }
+
+    function setUpkeepCost(uint256 cost) public onlyOwner{
+        serviceFee = cost;
     }
 
     function getUpkeepCost() external view returns (uint256) {
@@ -219,7 +176,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     }
 
     function setKeeperRegistry(address _add) public onlyOwner {
-        keeperRegistry = _add;
+        keeperRegistry = KeeperRegistry(_add);
     }
 
     function setKeeperJob(uint256 jobId) public onlyOwner {
@@ -229,7 +186,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     //Funds keeper taking in a uint256 for amount of ETH to be converted
     function fundKeeper(uint256 _ethamount) public payable {
         uint256 amount = convertEthToLink(_ethamount);
-        // keeperRegistry.addFunds(keeperJobId, amount);
+        keeperRegistry.addFunds(keeperJobId, uint96(amount));
     }
 
     // 2) Bet logic
@@ -278,6 +235,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         globalId = globalId + 1;
         activeBets.push(newBet.id);
         allBets[newBet.id] = newBet;
+        // fundKeeper(serviceFee);
     }
 
     function acceptBet(uint256 _betId, string memory _apiURL) public payable {
@@ -305,7 +263,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         acceptedBets.push(bet.id);
 
         //fund the keeper registy
-        fundKeeper(serviceFee * 2);
+        fundKeeper(serviceFee);
     }
 
     function removeBetFromArray(uint256[] storage _arr, uint256 _id) internal {
@@ -429,3 +387,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     }
 }
 
+interface KeeperRegistry{
+    function addFunds(uint256 id, uint96 amount) external;
+}
