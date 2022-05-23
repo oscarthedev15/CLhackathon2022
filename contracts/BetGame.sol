@@ -4,6 +4,7 @@ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./KeeperRegistryInterface.sol";
 
@@ -50,6 +51,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
 
     //Keepers Attributes
     KeeperRegistryInterface public keeperRegistry;
+    address public keeperRegistryAddress;
     uint256 public interval;
     uint256 public lastTimeStamp;
     uint256 public keeperJobId;
@@ -112,6 +114,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
 
         swapRouter = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
         weth = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
+        keeperRegistryAddress = 0x4Cb093f226983713164A62138C3F718A5b595F73;
         keeperRegistry = KeeperRegistryInterface(0x4Cb093f226983713164A62138C3F718A5b595F73);
         keeperJobId = 3106;
     }
@@ -151,6 +154,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     }
 
     function setKeeperRegistry(address _add) public onlyOwner {
+        keeperRegistryAddress = _add;
         keeperRegistry = KeeperRegistryInterface(_add);
     }
 
@@ -159,9 +163,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     }
 
     //Funds keeper taking in a uint256 for amount of ETH (in wei) to be converted
-    function fundKeeper(uint256 _ethamount) public {
+    function fundKeeper(uint256 _ethamount) external {
         uint256 amount= convertEthToLink(_ethamount);
-        // keeperRegistry.addFunds(keeperJobId, uint96(_ethamount)); 
+        IERC20(chainlinkTokenAddress()).approve(keeperRegistryAddress, uint96(amount));
+        keeperRegistry.addFunds(keeperJobId, uint96(amount)); 
     }
 
     // 2) Bet logic
@@ -210,7 +215,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         globalId = globalId + 1;
         activeBets.push(newBet.id);
         allBets[newBet.id] = newBet;
-        convertEthToLink(serviceFee);
+        fundKeeper(serviceFee);
     }
 
     function acceptBet(uint256 _betId, string memory _apiURL) public payable {
@@ -238,7 +243,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         acceptedBets.push(bet.id);
 
         //fund the keeper registy
-        //convertEthToLink(serviceFee);
+        convertEthToLink(serviceFee);
     }
 
     function removeBetFromArray(uint256[] storage _arr, uint256 _id) internal {
@@ -319,6 +324,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         upkeepNeeded = ((block.timestamp - lastTimeStamp) > interval);
         performData = checkData;
     }
+
 
     function performUpkeep(bytes calldata performData) external override {
         //Use this interval for the checkAcceptedBets (which will run the API)
