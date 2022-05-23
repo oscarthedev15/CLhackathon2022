@@ -1,11 +1,11 @@
 import { FormHelperText, Typography, Stack, TextField, InputAdornment, 
-  FormGroup, Chip, Button, FormControl, FormLabel, Grid, OutlinedInput } from '@mui/material';
+  FormGroup, Chip, Button, FormControl, FormLabel, Grid, OutlinedInput, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { Field, Form, Formik } from 'formik'
 import { CheckboxWithLabel } from 'formik-material-ui'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import betgame from '../betgame'
 import web3 from '../web3'
 import * as Yup from 'yup';
@@ -27,7 +27,7 @@ interface Props {
 }
 
 export const MyForm: React.FC<Props> = ({ onSubmit }) => {
-  const [minimumBet, setMinimumBet] = React.useState(0)
+  const [minimumBet, setMinimumBet] = useState(0)
 
   const options = [
     {
@@ -152,9 +152,9 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
 
   const setContractProps = async () => {
     console.log('Setting contract properties')
-    // let minBet = await betgame.methods.minimumBet().call()
-    // minBet = web3.utils.fromWei(minBet)
-    // setMinimumBet(minBet)
+    let minBet = await betgame.methods.minimumBet().call()
+    minBet = web3.utils.fromWei(minBet)
+    setMinimumBet(minBet)
   }
 
   const addKeyword = (v: string[], k: string) => {
@@ -183,22 +183,28 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
       .required('Required.'),
     acceptDeadline: Yup.date()
       .min(today, 'Date cannot be in the past.')
-      .required('Required.'),
+      .max(Yup.ref('outcomeDeadline'), 'Accept by date cannot be after bet expiration date.')
+      .required('Required.')
+      .typeError('You must specify a date.'),
     outcomeDeadline: Yup.date()
-      .min(today, 'Date cannot be in the past.')
-      .required('Required.'),
+      .min(Yup.ref('acceptDeadline'), 'Bet expiration date cannot be before accept by date.')
+      .required('Required.')
+      .typeError('You must specify a date.'),
     betAmount: Yup.number()
       .typeError('You must specify a number.')
-      .min(0.01, 'Minimum bet amount is 0.01 ETH.')  //Change this to minbet
+      .min(minimumBet, `Minimum bet amount is ${minimumBet} ETH.`)
       .required('Required.'),
     acceptAmount: Yup.number()
       .typeError('You must specify a number.')
-      .min(0.01, 'Minimum bet amount is 0.01 ETH.')  //Change this to minbet
+      .min(minimumBet, `Minimum bet amount is ${minimumBet} ETH.`)
       .required('Required.'),
     numArticles: Yup.number()
       .typeError('You must specify a number.')
       .integer('You can only specify integers.')
-      .min(1, 'You cannot specify less than 1 article.'),
+      .min(1, 'You cannot specify less than 1 article.')
+      .required('Required.'),
+    apiKeywords: Yup.array()
+      .min(1, 'You must specify at least 1 keyword.')
   });
 
 
@@ -214,10 +220,15 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
         numArticles: 1,
         currKeyword: '',
         apiKeywords: [],
+        chooseSources: "no",
         sources: [],
       }}
       validationSchema={FormErrorsSchema}
       onSubmit={(values) => {
+        if(values.chooseSources === 'no') {
+          const allSources = options.map(option => option.value);
+          values.sources = allSources as any;
+        }
         onSubmit(values)
       }}
     >
@@ -255,6 +266,8 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 renderInput={(params) => ( 
                 <TextField 
                 {...params}
+                onChange={handleChange('acceptDeadline')}
+                onBlur={handleBlur('acceptDeadline')}
                 error={
                   touched.acceptDeadline && Boolean(errors.acceptDeadline)
                 }
@@ -274,7 +287,9 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 onChange={(value) => {
                   setFieldValue('outcomeDeadline', value)
                 }}
-                renderInput={(params) => <TextField {...params} 
+                renderInput={(params) => <TextField {...params}
+                onChange={handleChange('outcomeDeadline')}
+                onBlur={handleBlur('outcomeDeadline')}
                 error={
                   touched.outcomeDeadline && Boolean(errors.outcomeDeadline)
                 }
@@ -286,17 +301,19 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               />
             </div>
           </LocalizationProvider>
+{/* 
           <div className="spacing">
-            <FormControl>
-            {/* <p>Minimum bet amount is {minimumBet} ETH</p> */}
+            <FormControl id="betAmount">
+            <p>Minimum bet amount is {minimumBet} ETH</p>
             <FormHelperText id="outlined-weight-helper-text">
                 Bet Amount
             </FormHelperText>
               <OutlinedInput
-                id="outlined-adornment-weight"
+                id="betAmount"
                 // placeholder="0.001"
                 value={values.betAmount}
                 onChange={handleChange('betAmount')}
+                onBlur={handleBlur('betAmount')}
                 endAdornment={
                   <InputAdornment position="end">ETH</InputAdornment>
                 }
@@ -312,20 +329,48 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 </FormHelperText>
               }
             </FormControl>
-
-            
           </div>
-          <div className="spacing">
-            <FormControl>
-            {/* <p>Minimum accept value is {minimumBet} ETH</p> */}
+           */}
+
+          <div> 
+            <TextField
+              placeholder="Bet Amount"
+              label="Bet Amount"
+              value={values.betAmount}
+              onChange={handleChange('betAmount')}
+              onBlur={handleBlur('betAmount')}
+              margin={'normal'}
+              className="spacing"
+              error={touched.betAmount && Boolean(errors.betAmount)}
+              helperText={touched.betAmount && errors.betAmount}
+              InputProps={{ endAdornment: <InputAdornment position="end">ETH</InputAdornment> }}
+            />
+          </div>
+          <div> 
+            <TextField
+              placeholder="Accept Value"
+              label="Accept Value"
+              value={values.acceptAmount}
+              onChange={handleChange('acceptAmount')}
+              onBlur={handleBlur('acceptAmount')}
+              margin={'normal'}
+              className="spacing"
+              error={touched.acceptAmount && Boolean(errors.acceptAmount)}
+              helperText={touched.acceptAmount && errors.acceptAmount}
+              InputProps={{ endAdornment: <InputAdornment position="end">ETH</InputAdornment> }}
+            />
+          </div>
+          {/* <div className="spacing">
+            <FormControl id="acceptAmount">
             <FormHelperText id="outlined-weight-helper-text">
                 Accept Value
               </FormHelperText>
               <OutlinedInput
-                id="outlined-adornment-weight"
+                id="acceptAmount"
                 placeholder="0.001"
                 value={values.acceptAmount}
                 onChange={handleChange('acceptAmount')}
+                onBlur={handleBlur('acceptAmount')}
                 endAdornment={
                   <InputAdornment position="end">ETH</InputAdornment>
                 }
@@ -341,11 +386,12 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 </FormHelperText>
               }            
               </FormControl>
-          </div>
+          </div> */}
+
           <div className="spacing"> 
             <TextField
               placeholder="Number of Articles"
-              label="Number of Articles (optional)"
+              label="Number of Articles"
               value={values.numArticles}
               onChange={handleChange('numArticles')}
               onBlur={handleBlur('numArticles')}
@@ -387,6 +433,8 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               onChange={handleChange('currKeyword')}
               onBlur={handleBlur('currKeyword')}
               className="spacing"
+              error={touched.currKeyword && Boolean(errors.apiKeywords)}
+              helperText={touched.currKeyword && errors.apiKeywords}
             />
           </div>
           <div>
@@ -407,8 +455,8 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
           </div>
           <br />
           {values.apiKeywords && values.apiKeywords.length > 0 ? (
-            <div>
-              <h4>Keywords:</h4>
+            <div className="margin-bottom">
+              {/* <h4>Keywords:</h4> */}
               <Stack direction="row" spacing={1} justifyContent="center">
                 {values.apiKeywords.map((keyword, index) => (
                   <Chip
@@ -418,7 +466,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                     onDelete={() => {
                       setFieldValue(
                         'apiKeywords',
-                        values.apiKeywords.filter((e: string) => e !== keyword),
+                        values.apiKeywords.filter((e: string) => e !== keyword), //if theres a duplicate word this will delete them both
                       )
                     }}
                   />
@@ -426,40 +474,58 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               </Stack>
             </div>
           ) : (
-            <h4>Keywords will appear here once you add them.</h4>
+            null
+            // <h4 className="margin">Keywords will appear here once you add them.</h4>
           )}
-          <div>
-            <FormControl style={{ display: 'flex' }}>
-              <FormLabel component="legend">Sources</FormLabel>
-              <FormGroup>
-                <Grid
-                  container
-                  // spacing={{ xs: 2 }}
-                  columns={{ xs: 4, sm: 8 }}
-                >
-                  {options.map((opt, index) => (
-                    <Grid
-                      item
-                      xs={6}
-                      sm={4}
-                      md={4}
-                      key={index}
-                      textAlign="left"
-                    >
-                      <Field
-                        type="checkbox"
-                        component={CheckboxWithLabel}
-                        name="sources"
-                        key={opt.value}
-                        value={opt.value}
-                        Label={{ label: opt.label }}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              </FormGroup>
-            </FormControl>
+          <div className="margin-top">
+          <FormControl>
+            <FormLabel>Would you like to pick the sources?</FormLabel>
+            <RadioGroup
+              aria-labelledby="demo-controlled-radio-buttons-group"
+              name="controlled-radio-buttons-group"
+              value={values.chooseSources}
+              onChange={handleChange('chooseSources')}
+            >
+              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+              <FormControlLabel value="no" control={<Radio />} label="No" />
+            </RadioGroup>
+          </FormControl>
           </div>
+          {values.chooseSources && values.chooseSources === "yes" ? 
+                  <div>
+                  <FormControl style={{ display: 'flex' }}>
+                    <FormLabel component="legend">Sources</FormLabel>
+                    <FormGroup>
+                      <Grid
+                        container
+                        // spacing={{ xs: 2 }}
+                        columns={{ xs: 4, sm: 8 }}
+                      >
+                        {options.map((opt, index) => (
+                          <Grid
+                            item
+                            xs={6}
+                            sm={4}
+                            md={4}
+                            key={index}
+                            textAlign="left"
+                          >
+                            <Field
+                              type="checkbox"
+                              component={CheckboxWithLabel}
+                              name="sources"
+                              key={opt.value}
+                              value={opt.value}
+                              Label={{ label: opt.label }}
+                            />
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </FormGroup>
+                  </FormControl>
+                </div> : null  
+        }
+
           <br />
           <Button type="submit" variant="outlined">
             Create
