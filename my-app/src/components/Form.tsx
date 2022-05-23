@@ -136,6 +136,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
       label: 'USA Today',
       value: 'usa-today',
     },
+
     {
       label: 'Vice News',
       value: 'vice-news',

@@ -29,7 +29,7 @@ function CreateBet() {
       '&searchin=title&language=en&pagesize=1&apiKey=340014d50e764937b75f19426bdd5265'
 
     // what if user enters something with a space?
-    let keywordStr = 'q='
+    let keywordStr = ''
     apiKeywords.forEach((keyword, index) => {
       if (index !== apiKeywords.length - 1) {
         keywordStr = keywordStr + '+' + keyword + ','
@@ -38,6 +38,8 @@ function CreateBet() {
       }
     })
     keywordStr = encodeURIComponent(keywordStr)
+    let tmp = 'q='
+    keywordStr = tmp.concat(keywordStr)
     console.log(keywordStr)
 
     // if sources is empty, this shouldn't cause issues (it will query all sources)
@@ -83,6 +85,7 @@ function CreateBet() {
     endDate: number,
     acceptDate: number,
     betAmount: string,
+    title: string,
   ) => {
     console.log('Calling createBet function')
     const userAddress = await user!.get('ethAddress')
@@ -94,6 +97,7 @@ function CreateBet() {
         countArts,
         endDate,
         acceptDate,
+        title,
       )
       .send({
         from: userAddress,
@@ -132,12 +136,18 @@ function CreateBet() {
             unixExpirationDate,
             unixAcceptDate,
             betAmountStr,
+            title,
           )
         }}
       />
-      {/* <Button onClick={createBet} variant="outlined">
+      <Button
+        onClick={() =>
+          buildApiURL(['hello', 'goodbye'], ['source1', 'source2'])
+        }
+        variant="outlined"
+      >
         Create
-      </Button> */}
+      </Button>
       {isAuthenticated ? (
         <h1>{user!.get('ethAddress')}</h1>
       ) : (
