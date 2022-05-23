@@ -92,6 +92,14 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable{
         interval = _interval;
     }
 
+    function getActiveBets() public view returns (uint256[] memory) {
+        return activeBets;
+    }
+
+    function getAcceptedBets() public view returns (uint256[] memory) {
+        return acceptedBets;
+    }
+
     // 2) Bet logic
     function createBet(
         string memory _apiURL,

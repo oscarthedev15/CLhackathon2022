@@ -28,8 +28,7 @@ function CreateBet() {
     let endingStr =
       '&searchin=title&language=en&pagesize=1&apiKey=340014d50e764937b75f19426bdd5265'
 
-    // may need to encode the value for q => API docs say it must be URL encoded
-    // method exists to do this, just not sure if necessary
+    // what if user enters something with a space?
     let keywordStr = 'q='
     apiKeywords.forEach((keyword, index) => {
       if (index !== apiKeywords.length - 1) {
@@ -38,8 +37,10 @@ function CreateBet() {
         keywordStr = keywordStr + '+' + keyword
       }
     })
+    keywordStr = encodeURIComponent(keywordStr)
     // console.log(keywordStr)
 
+    // if sources is empty, this shouldn't cause issues (it will query all sources)
     let sourceStr = '&sources='
     sources.forEach((source, index) => {
       if (index !== sources.length - 1) {
