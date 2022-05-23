@@ -38,7 +38,7 @@ function CreateBet() {
       }
     })
     keywordStr = encodeURIComponent(keywordStr)
-    // console.log(keywordStr)
+    console.log(keywordStr)
 
     // if sources is empty, this shouldn't cause issues (it will query all sources)
     let sourceStr = '&sources='
