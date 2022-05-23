@@ -3,9 +3,9 @@ pragma solidity ^0.8.7;
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
-import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
-import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+import "./KeeperRegistryInterface.sol";
 
 contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     using Chainlink for Chainlink.Request;
@@ -49,17 +49,14 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     mapping(bytes32 => uint256) private requestToBet;
 
     //Keepers Attributes
-    KeeperRegistry public keeperRegistry;
+    KeeperRegistryInterface public keeperRegistry;
     uint256 public interval;
     uint256 public lastTimeStamp;
     uint256 public keeperJobId;
 
     //Eth -> Link Swap Attributes
-    ISwapRouter public swapRouter;
+    IUniswapV2Router02 public swapRouter;
     address public weth;
-    uint24 public constant poolFee = 3000;
-
-    //5. Functions  for converting ETH to LINK
 
     //Get the Chainlink Balance
     function getLinkBalance() public view returns (uint256) {
@@ -71,44 +68,21 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         weth = _weth;
     }
 
-    /// @notice swapExactInputSingle swaps a fixed amount of WETH for a maximum possible amount of LINK
-    /// using the DAI/WETH9 0.3% pool by calling `exactInputSingle` in the swap router.
-    /// @dev The calling address must approve this contract to spend at least `amountIn` worth of its DAI for this function to succeed.
-    /// @param amountIn The exact amount of WETH that will be swapped for LINK.
-    /// @return amountOut The amount of LINK received.
-    function swapExactInputSingle(uint256 amountIn)
-        public
-        returns (uint256 amountOut)
-    {
-        // msg.sender must approve this contract
-
-        // Transfer the specified amount of  to this contract.
-
-        // Approve the router to spend ETH.
-        TransferHelper.safeApprove(weth, address(swapRouter), amountIn);
-
-        // Naively set amountOutMinimum to 0. In production, use an oracle or other data source to choose a safer value for amountOutMinimum.
-        // We also set the sqrtPriceLimitx96 to be 0 to ensure we swap our exact input amount.
-        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
-            .ExactInputSingleParams({
-                tokenIn: weth,
-                tokenOut: chainlinkTokenAddress(),
-                fee: poolFee,
-                recipient: address(this),
-                deadline: block.timestamp,
-                amountIn: amountIn,
-                amountOutMinimum: 0,
-                sqrtPriceLimitX96: 0
-            });
-
-        // The call to `exactInputSingle` executes the swap.
-        amountOut = swapRouter.exactInputSingle(params);
+    function setSwapRouter(address _router) public onlyOwner{
+        swapRouter = IUniswapV2Router02(_router);
     }
 
-    //convert Eth from this contract to Chainlink
-    function convertEthToLink(uint256 _eth) private returns (uint256) {
-        uint256 amountOut = swapExactInputSingle(_eth);
-        return amountOut;
+    //convert Eth(in wei) from this contract to Chainlink
+    function convertEthToLink(uint256 _eth) public returns (uint256) {
+        uint deadline = block.timestamp + 100;
+        address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = chainlinkTokenAddress();
+
+        // Send all balance
+        uint256 amount = _eth;
+        uint[] memory amounts = swapRouter.swapExactETHForTokens{value: amount}(0, path, address(this), deadline);
+        return amounts[1];
     }
 
     //##################################################################################
@@ -134,7 +108,12 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         }
         oracle = _oracle;
         jobId = _jobId;
-        fee = _fee;
+        serviceFee = _fee;
+
+        swapRouter = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+        weth = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
+        keeperRegistry = KeeperRegistryInterface(0x4Cb093f226983713164A62138C3F718A5b595F73);
+        keeperJobId = 3106;
     }
 
     function setDevWallet(address payable _devWallet) external onlyOwner {
@@ -163,30 +142,26 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     }
 
     //Service Fee setters and getters for the bet service fee
-    function setLinkServiceFee(uint256 _eth) external onlyOwner {
+    function setServiceFee(uint256 _eth) external onlyOwner {
         serviceFee = _eth;
     }
 
-    function setUpkeepCost(uint256 cost) public onlyOwner{
-        serviceFee = cost;
-    }
-
-    function getUpkeepCost() external view returns (uint256) {
+    function getServiceFee() external view returns (uint256) {
         return serviceFee;
     }
 
     function setKeeperRegistry(address _add) public onlyOwner {
-        keeperRegistry = KeeperRegistry(_add);
+        keeperRegistry = KeeperRegistryInterface(_add);
     }
 
     function setKeeperJob(uint256 jobId) public onlyOwner {
         keeperJobId = jobId;
     }
 
-    //Funds keeper taking in a uint256 for amount of ETH to be converted
-    function fundKeeper(uint256 _ethamount) public payable {
-        uint256 amount = convertEthToLink(_ethamount);
-        keeperRegistry.addFunds(keeperJobId, uint96(amount));
+    //Funds keeper taking in a uint256 for amount of ETH (in wei) to be converted
+    function fundKeeper(uint256 _ethamount) public {
+        uint256 amount= convertEthToLink(_ethamount);
+        // keeperRegistry.addFunds(keeperJobId, uint96(_ethamount)); 
     }
 
     // 2) Bet logic
@@ -198,7 +173,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         uint256 _acceptdate,
         string memory _title // uint256 _duration, // string memory _endDate
     ) public payable {
-        require(msg.value >= (minimumBet), "minimum bet not satisfied");
+        require(msg.value >= (minimumBet + serviceFee), "minimum bet not satisfied");
 
         require(
             _acceptValue >= (minimumBet),
@@ -235,7 +210,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         globalId = globalId + 1;
         activeBets.push(newBet.id);
         allBets[newBet.id] = newBet;
-        // fundKeeper(serviceFee);
+        convertEthToLink(serviceFee);
     }
 
     function acceptBet(uint256 _betId, string memory _apiURL) public payable {
@@ -245,7 +220,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         require(bet.closed == false, "bet has been closed");
 
         //should charge maintenence fee too
-        require((bet.acceptValue) == msg.value, "accepter money not correct");
+        require((bet.acceptValue + serviceFee) == msg.value, "accepter money not correct");
 
         require(
             block.timestamp <= bet.timeProps.acceptByDate,
@@ -256,14 +231,14 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         bet.timeProps.startDate = block.timestamp;
         bet.accepted = true;
         bet.apiURL = _apiURL;
-        bet.amount += msg.value;
+        bet.amount += (msg.value - serviceFee);
         bet.acceptor = payable(msg.sender);
         removeBetFromArray(activeBets, bet.id);
         allBets[bet.id] = bet;
         acceptedBets.push(bet.id);
 
         //fund the keeper registy
-        fundKeeper(serviceFee);
+        //convertEthToLink(serviceFee);
     }
 
     function removeBetFromArray(uint256[] storage _arr, uint256 _id) internal {
@@ -335,7 +310,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     }
 
     //    4) Keeper component
-    //    4) Keeper component
     function checkUpkeep(bytes calldata checkData)
         external
         view
@@ -385,8 +359,4 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
             }
         }
     }
-}
-
-interface KeeperRegistry{
-    function addFunds(uint256 id, uint96 amount) external;
 }
