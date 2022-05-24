@@ -45,7 +45,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
 
     //Oracle Attributes
     address private oracle;
-    bytes32 private jobId;
+    bytes32 private oracleJobId;
     uint256 private fee;
     mapping(bytes32 => uint256) private requestToBet;
 
@@ -55,6 +55,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     uint256 public interval;
     uint256 public lastTimeStamp;
     uint256 public keeperJobId;
+    uint256 public upkeepcount = 0;
 
     //Eth -> Link Swap Attributes
     IUniswapV2Router02 public swapRouter;
@@ -70,20 +71,22 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         weth = _weth;
     }
 
-    function setSwapRouter(address _router) public onlyOwner{
+    function setSwapRouter(address _router) public onlyOwner {
         swapRouter = IUniswapV2Router02(_router);
     }
 
     //convert Eth(in wei) from this contract to Chainlink
     function convertEthToLink(uint256 _eth) public returns (uint256) {
-        uint deadline = block.timestamp + 100;
+        uint256 deadline = block.timestamp + 100;
         address[] memory path = new address[](2);
         path[0] = address(weth);
         path[1] = chainlinkTokenAddress();
 
         // Send all balance
         uint256 amount = _eth;
-        uint[] memory amounts = swapRouter.swapExactETHForTokens{value: amount}(0, path, address(this), deadline);
+        uint256[] memory amounts = swapRouter.swapExactETHForTokens{
+            value: amount
+        }(0, path, address(this), deadline);
         return amounts[1];
     }
 
@@ -96,7 +99,8 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         address _link,
         address _oracle,
         bytes32 _jobId,
-        uint256 _fee
+        uint256 _oraclefee,
+        uint256 _servicefee
     ) {
         //owner = msg.sender;
         minimumBet = _minimumBet;
@@ -109,13 +113,18 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
             setChainlinkToken(_link);
         }
         oracle = _oracle;
-        jobId = _jobId;
-        serviceFee = _fee;
+        oracleJobId = _jobId;
+        fee = _oraclefee;
+        serviceFee = _servicefee;
 
-        swapRouter = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+        swapRouter = IUniswapV2Router02(
+            0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
+        );
         weth = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
         keeperRegistryAddress = 0x4Cb093f226983713164A62138C3F718A5b595F73;
-        keeperRegistry = KeeperRegistryInterface(0x4Cb093f226983713164A62138C3F718A5b595F73);
+        keeperRegistry = KeeperRegistryInterface(
+            0x4Cb093f226983713164A62138C3F718A5b595F73
+        );
         keeperJobId = 3106;
     }
 
@@ -127,8 +136,8 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         minimumBet = _minimumBet;
     }
 
-    function setJobId(bytes32 _jobId) external onlyOwner {
-        jobId = _jobId;
+    function setOracleJobId(bytes32 _jobId) external onlyOwner {
+        oracleJobId = _jobId;
     }
 
     function setOracle(address _oracle) external onlyOwner {
@@ -140,7 +149,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         interval = _interval;
     }
 
-    function getEthBalance() public view returns(uint256){
+    function getEthBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
@@ -163,10 +172,13 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     }
 
     //Funds keeper taking in a uint256 for amount of ETH (in wei) to be converted
-    function fundKeeper(uint256 _ethamount) external {
-        uint256 amount= convertEthToLink(_ethamount);
-        IERC20(chainlinkTokenAddress()).approve(keeperRegistryAddress, uint96(amount));
-        keeperRegistry.addFunds(keeperJobId, uint96(amount)); 
+    function fundKeeper(uint256 _ethamount) public {
+        uint256 amount = convertEthToLink(_ethamount);
+        IERC20(chainlinkTokenAddress()).approve(
+            keeperRegistryAddress,
+            uint96(amount)
+        );
+        keeperRegistry.addFunds(keeperJobId, uint96(amount));
     }
 
     // 2) Bet logic
@@ -178,7 +190,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         uint256 _acceptdate,
         string memory _title // uint256 _duration, // string memory _endDate
     ) public payable {
-        require(msg.value >= (minimumBet + serviceFee), "minimum bet not satisfied");
+        require(
+            msg.value >= (minimumBet + serviceFee),
+            "minimum bet not satisfied"
+        );
 
         require(
             _acceptValue >= (minimumBet),
@@ -203,7 +218,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
             creator: payable(msg.sender),
             acceptor: payable(address(0)),
             apiURL: _apiURL,
-            amount: msg.value,
+            amount: msg.value - serviceFee,
             acceptValue: _acceptValue,
             accepted: false,
             active: true,
@@ -225,7 +240,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         require(bet.closed == false, "bet has been closed");
 
         //should charge maintenence fee too
-        require((bet.acceptValue + serviceFee) == msg.value, "accepter money not correct");
+        require(
+            (bet.acceptValue + serviceFee) == msg.value,
+            "accepter money not correct"
+        );
 
         require(
             block.timestamp <= bet.timeProps.acceptByDate,
@@ -242,7 +260,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         allBets[bet.id] = bet;
         acceptedBets.push(bet.id);
 
-        //fund the keeper registy
+        //fund the contract
         convertEthToLink(serviceFee);
     }
 
@@ -301,7 +319,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         returns (bytes32 requestId)
     {
         Chainlink.Request memory request = buildChainlinkRequest(
-            jobId,
+            oracleJobId,
             address(this),
             this.fulfill.selector
         );
@@ -325,7 +343,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         performData = checkData;
     }
 
-
     function performUpkeep(bytes calldata performData) external override {
         //Use this interval for the checkAcceptedBets (which will run the API)
         // if ((block.timestamp - lastTimeStamp) > interval) {
@@ -337,6 +354,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
             (block.timestamp - lastTimeStamp) > interval,
             "Time interval not met"
         );
+        upkeepcount += 1;
         lastTimeStamp = block.timestamp;
         checkActiveBets();
         checkAcceptedBets();
@@ -361,8 +379,12 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
                 _currBet.timeProps.acceptByDate <= block.timestamp
             ) {
                 _currBet.active = false;
+                _currBet.closed = true;
+                allBets[_currBet.id] = _currBet;
                 removeBetFromArray(activeBets, _currBet.id);
+                _currBet.creator.transfer(_currBet.amount);
             }
         }
     }
 }
+
