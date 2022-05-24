@@ -70,9 +70,8 @@ function CreateBet() {
     // should we change this? should we have it be 23:59:59.99 of the
     // date from user so it makes it inclusive?
     // need to communicate to user how we are handling this on the form either way
-    date.setHours(0, 0, 0, 0)
+    date.setHours(23, 59, 59, 99)
 
-    let timestampInMs = date.getTime()
     let unixTimestamp = Math.floor(date.getTime() / 1000)
     // console.log(unixTimestamp)
     return unixTimestamp
@@ -140,14 +139,6 @@ function CreateBet() {
           )
         }}
       />
-      <Button
-        onClick={() =>
-          buildApiURL(['hello', 'goodbye'], ['source1', 'source2'])
-        }
-        variant="outlined"
-      >
-        Create
-      </Button>
       {isAuthenticated ? (
         <h1>{user!.get('ethAddress')}</h1>
       ) : (

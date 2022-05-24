@@ -9,18 +9,15 @@ export interface Bet {
   id: number
   title: string
   apiURL: string
-  amount: number
-  acceptValue: number
+  amount: string
+  acceptValue: string
   countArts: number
+  createdDate: string
+  acceptDeadline: string
+  outcomeDeadline: string
+  creator: string
+  acceptor: string
 }
-
-// const Item = styled(Paper)(({ theme }) => ({
-//   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-//   ...theme.typography.body2,
-//   padding: theme.spacing(1),
-//   textAlign: 'center',
-//   color: theme.palette.text.secondary,
-// }))
 
 function BetMarketplace() {
   const [openBets, setOpenBets] = useState<Bet[]>([])
@@ -41,16 +38,22 @@ function BetMarketplace() {
 
     let tB: Bet[] = []
     for (let index = 0; index < openIDs.length; index++) {
-      console.log('Bet ID', index)
-      let t = await betgame.methods.allBets(index).call()
+      console.log('Bet ID', openIDs[index])
+      let t = await betgame.methods.allBets(openIDs[index]).call()
       console.log(t)
+      // console.log(parseInt(t[11][1]))
       let tmpBet: Bet = {
-        id: t[0],
+        id: parseInt(t[0]),
         title: t[1],
         apiURL: t[4],
         amount: t[5],
         acceptValue: t[6],
-        countArts: t[10],
+        countArts: parseInt(t[10]),
+        createdDate: t[11][0],
+        acceptDeadline: t[11][1],
+        outcomeDeadline: t[11][3],
+        creator: t[2],
+        acceptor: t[3],
       }
       tB.push(tmpBet)
     }
