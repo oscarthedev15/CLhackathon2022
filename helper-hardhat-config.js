@@ -25,6 +25,7 @@ const networkConfig = {
     fee: "100000000000000000",
     fundAmount: "100000000000000000", // 0.1
     keepersUpdateInterval: "30",
+    weth: '0xd0A1E359811322d97991E03f863a0C30C2cF029C'
   },
   4: {
     name: "rinkeby",

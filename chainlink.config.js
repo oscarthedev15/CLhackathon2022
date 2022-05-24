@@ -15,6 +15,8 @@ const config = {
     fee: '0.1 * 10**18',
     jobId: 'd5270d1c311941d0b08bead21fea7747',
     oracle: '0xc57b33452b4f7bb189bb5afae9cc4aba1f7a4fd8',
+    weth: '0xd0A1E359811322d97991E03f863a0C30C2cF029C',
+
   },
 };
 
