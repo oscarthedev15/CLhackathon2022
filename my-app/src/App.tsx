@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import { Route, Routes } from 'react-router'
-import logo from './logo.svg'
-import './App.css'
-import { useMoralis } from 'react-moralis'
-import ResponsiveAppBar from './components/Nav'
-import Home from './components/Home'
-import CreateBet from './components/CreateBet'
-import BetMarketplace from './components/BetMarketplace'
-import YourStats from './components/YourStats'
-import betgame from './betgame'
-import web3 from './web3'
+import { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router';
+import './App.css';
+import { useMoralis } from 'react-moralis';
+import ResponsiveAppBar from './components/Nav';
+import Home from './components/Home';
+import CreateBet from './components/CreateBet';
+import BetMarketplace from './components/BetMarketplace';
+import YourStats from './components/YourStats';
+import betgame from './betgame';
+import web3 from './web3';
 
 function App() {
   const {
@@ -21,8 +20,8 @@ function App() {
     logout,
   } = useMoralis()
 
-  const [balance, setBalance] = React.useState('')
-  const [allBets, setAllBets] = React.useState(new Map())
+  const [balance, setBalance] = useState('');
+  const [allBets, setAllBets] = useState(new Map());
 
   useEffect(() => {
     if (isAuthenticated) {
