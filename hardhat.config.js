@@ -26,7 +26,7 @@ const POLYGON_MAINNET_RPC_URL =
   process.env.POLYGON_MAINNET_RPC_URL ||
   'https://polygon-mainnet.alchemyapi.io/v2/your-api-key';
 const PRIVATE_KEY =
-  '395dfbedf72f26307b0c07464b760857971fa56a7d4f658f1f24484a434a58c6';
+  '14371ed2141d9358bebb0a5696850688c75e1614af443344ed1b7aafc502f4c1';
 // optional
 const MNEMONIC = process.env.MNEMONIC || 'Your mnemonic';
 const FORKING_BLOCK_NUMBER = process.env.FORKING_BLOCK_NUMBER;

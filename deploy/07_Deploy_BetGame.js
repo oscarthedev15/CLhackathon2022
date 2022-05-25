@@ -27,12 +27,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     oracle = networkConfig[chainId]['oracle'];
   }
   const jobId = ethers.utils.toUtf8Bytes(networkConfig[chainId]['jobId']);
-  const fee = networkConfig[chainId]['fee'];
-
+  const oracleFee = networkConfig[chainId]['fee'];
+  const minimumBet = 1000000000000000;
+  const serviceFee = 1000000000000000;
+  const interval = 120;
+  const weth = networkConfig[chainId]['weth'];
   const waitBlockConfirmations = developmentChains.includes(network.name)
     ? 1
     : VERIFICATION_BLOCK_CONFIRMATIONS
-  const args = [1000000000000000, 1, linkTokenAddress, oracle, jobId, fee]
+  const args = [minimumBet, interval, linkTokenAddress, oracle, jobId, oracleFee, serviceFee, weth]
   const betGame = await deploy("BetGame", {
     from: deployer,
     args: args,
