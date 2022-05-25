@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
@@ -201,13 +202,11 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         );
 
         require(
-            _acceptValue >= (minimumBet),
-            "minimum bet not satisfied for accept value"
+            _acceptValue >= (minimumBet)
         );
 
         require(
-            (_acceptdate <= _endDate),
-            "accept date must be before end date"
+            (_acceptdate <= _endDate)
         );
 
         TimeProps memory _timeProps = TimeProps({
@@ -280,9 +279,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
 
     function checkBet(uint256 _id) public keepable {
         Bet memory bet = allBets[_id];
-        require((msg.sender == bet.creator || 
-            msg.sender == bet.acceptor || 
-            msg.sender == keeperRegistryAddress), "unauthorized user checking bet");
         requestVolumeData(bet.apiURL, _id);
     }
 
