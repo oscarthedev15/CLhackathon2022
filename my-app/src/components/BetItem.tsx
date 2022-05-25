@@ -105,9 +105,7 @@ function BetItem({ bet }: { bet: Bet }) {
   const checkBet = async (id: number) => {
     const userAddress = await user!.get('ethAddress')
 
-    await betgame.methods.checkBet(id).send({
-      from: userAddress,
-    })
+    await betgame.methods.checkBet(id).call()
   }
 
   return (
