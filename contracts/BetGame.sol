@@ -159,24 +159,31 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         serviceFee = _eth;
     }
 
-
     function setKeeperRegistry(address _add) public onlyOwner {
         keeperRegistryAddress = _add;
         keeperRegistry = KeeperRegistryInterface(_add);
     }
 
-    function setKeeperJob(uint256 jobId) public onlyOwner {
-        keeperJobId = jobId;
+    function setKeeperJob(uint256 _keeperJobId) public onlyOwner {
+        keeperJobId = _keeperJobId;
     }
 
     //Funds keeper taking in a uint256 for amount of ETH (in wei) to be converted
-    function fundKeeper(uint256 _ethamount) public keepable {     
+     function fundKeeper(uint256 _ethamount) public keepable {     
         uint256 amount = convertEthToLink(_ethamount);
         IERC20(chainlinkTokenAddress()).approve(
             keeperRegistryAddress,
             uint96(amount)
         );
         keeperRegistry.addFunds(keeperJobId, uint96(amount));
+    }
+     
+    function getActiveBets() public view returns (uint256[] memory) {
+        return activeBets;
+    }
+
+    function getAcceptedBets() public view returns (uint256[] memory) {
+        return acceptedBets;
     }
 
     // 2) Bet logic
@@ -326,7 +333,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         // Set the URL to perform the GET request on
         request.add("get", _apiURL);
         request.add("path", "totalResults"); // Chainlink nodes 1.0.0 and later support this format
-        requestId = sendChainlinkRequestTo(oracle, request, fee);
+        requestId = sendChainlinkRequestTo(oracle, request, oracleFee);
         requestToBet[requestId] = _id;
         return requestId;
     }
@@ -341,6 +348,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         upkeepNeeded = ((block.timestamp - lastTimeStamp) > interval);
         performData = checkData;
     }
+
 
     function performUpkeep(bytes calldata performData) external override {
         require(
@@ -380,5 +388,3 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         }
     }
 }
-
-
