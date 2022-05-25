@@ -251,6 +251,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         // would take % for dev wallet
         bet.timeProps.startDate = block.timestamp;
         bet.accepted = true;
+        bet.active = false;
         bet.apiURL = _apiURL;
         bet.amount += (msg.value - serviceFee);
         bet.acceptor = payable(msg.sender);
