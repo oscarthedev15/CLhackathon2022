@@ -46,7 +46,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     //Oracle Attributes
     address private oracle;
     bytes32 private oracleJobId;
-    uint256 private fee;
+    uint256 private oracleFee;
     mapping(bytes32 => uint256) private requestToBet;
 
     //Keepers Attributes
@@ -114,7 +114,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         }
         oracle = _oracle;
         oracleJobId = _oracleJobId;
-        fee = _oraclefee;
+        oracleFee = _oraclefee;
         serviceFee = _servicefee;
 
         swapRouter = IUniswapV2Router02(
@@ -143,7 +143,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
 
     function setOracle(address _oracle) external onlyOwner {
         oracle = _oracle;
-        fee = 0.1 * 10**18;
+        oracleFee = 0.1 * 10**18;
     }
 
     function setInterval(uint256 _interval) external onlyOwner {
@@ -199,7 +199,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         );
 
         require(
-            (_acceptdate < _endDate),
+            (_acceptdate <= _endDate),
             "accept date must be before end date"
         );
 
@@ -282,7 +282,7 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
 
     function recieveResult(uint256 _id, uint256 _value) internal {
         Bet memory bet = allBets[_id];
-        if (_value > bet.countArts) {
+        if (_value >= bet.countArts) {
             bet.closed = true;
             bet.active = false;
             bet.creator.transfer(bet.amount);
