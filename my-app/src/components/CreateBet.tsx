@@ -66,10 +66,6 @@ function CreateBet() {
   }
 
   const convertToUnix = (date: Date) => {
-    // setting time to 00:00:00.00, meaning midnight of that date.
-    // should we change this? should we have it be 23:59:59.99 of the
-    // date from user so it makes it inclusive?
-    // need to communicate to user how we are handling this on the form either way
     date.setHours(23, 59, 59, 99)
 
     let unixTimestamp = Math.floor(date.getTime() / 1000)

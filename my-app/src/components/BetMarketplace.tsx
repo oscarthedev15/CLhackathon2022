@@ -34,7 +34,7 @@ function BetMarketplace() {
 
   const getBets = async () => {
     console.log('Getting all bets')
-    let openIDs = await betgame.methods.getActiveBets().call()
+    let openIDs = await betgame.methods.getAcceptedBets().call()
 
     let tB: Bet[] = []
     for (let index = 0; index < openIDs.length; index++) {
@@ -57,8 +57,8 @@ function BetMarketplace() {
       }
       tB.push(tmpBet)
     }
-    setOpenBets(tB)
-    console.log(openBets)
+    setAcceptedBets(tB)
+    console.log(acceptedBets)
 
     // console.log('Getting all accepted bets')
     // let acceptedIDs = await betgame.methods.getAcceptedBets().call()
@@ -69,7 +69,7 @@ function BetMarketplace() {
     <div>
       <h1>Bet Marketplace</h1>
       <Stack>
-        {openBets.map((bet, index) => (
+        {acceptedBets.map((bet, index) => (
           <BetItem key={index} bet={bet}></BetItem>
         ))}
       </Stack>

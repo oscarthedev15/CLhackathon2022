@@ -102,6 +102,14 @@ function BetItem({ bet }: { bet: Bet }) {
     })
   }
 
+  const checkBet = async (id: number) => {
+    const userAddress = await user!.get('ethAddress')
+
+    await betgame.methods.checkBet(id).send({
+      from: userAddress,
+    })
+  }
+
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -140,7 +148,9 @@ function BetItem({ bet }: { bet: Bet }) {
         <Button onClick={() => acceptBet(bet.id, bet.apiURL)} size="small">
           Accept Bet
         </Button>
-        <Button size="small">Check Bet</Button>
+        <Button onClick={() => checkBet(bet.id)} size="small">
+          Check Bet
+        </Button>
       </CardActions>
     </Card>
   )
