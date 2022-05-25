@@ -243,13 +243,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         require(bet.active == true, "bet not active");
         require(bet.accepted == false, "bet already accepted");
         require(bet.closed == false, "bet has been closed");
-
-        //should charge maintenence fee too
         require(
             (bet.acceptValue + serviceFee) == msg.value,
             "accepter money not correct"
         );
-
         require(
             block.timestamp <= bet.timeProps.acceptByDate,
             "bet is no longer open for accepting"
@@ -282,8 +279,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     }
 
     function checkBet(uint256 _id) public keepable {
-        // setPublicChainlinkToken();
         Bet memory bet = allBets[_id];
+        require((msg.sender == bet.creator || 
+            msg.sender == bet.acceptor || 
+            msg.sender == keeperRegistryAddress), "unauthorized user checking bet");
         requestVolumeData(bet.apiURL, _id);
     }
 
@@ -312,14 +311,10 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
     {
         uint256 temp_volume = _volume / 100;
         uint256 betId = requestToBet[_requestId];
-        // Bet memory bet = allBets[betId];
-        // bet.acceptValue = _volume;
-        // allBets[betId] = bet;
         recieveResult(betId, temp_volume);
     }
 
     //  3) ORACLE LOGIC
-
     function requestVolumeData(string memory _apiURL, uint256 _id)
         public
         returns (bytes32 requestId)
@@ -348,7 +343,6 @@ contract BetGame is ChainlinkClient, KeeperCompatibleInterface, Ownable {
         upkeepNeeded = ((block.timestamp - lastTimeStamp) > interval);
         performData = checkData;
     }
-
 
     function performUpkeep(bytes calldata performData) external override {
         require(
