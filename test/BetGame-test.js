@@ -1,6 +1,6 @@
 const { assert, expect } = require("chai")
 const { network, deployments, ethers } = require("hardhat")
-const { developmentChains } = require("../../helper-hardhat-config")
+const { developmentChains } = require("../helper-hardhat-config")
 const { numToBytes32 } = require("@chainlink/test-helpers/dist/src/helpers")
 const { assertServiceAgreementEmpty } = require("@chainlink/test-helpers/dist/src/contracts/coordinator")
 
@@ -30,8 +30,9 @@ let betGame, linkToken, accounts
         const _countArts = 25
         const _endDate = now + 5000
         const _acceptDate = now + 3000
+        const _title = "title";
         try {
-          await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
+          await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, _title, {
             value: ethers.utils.parseEther("0.0001"),
             from: accounts[0].address
         })
@@ -48,7 +49,8 @@ let betGame, linkToken, accounts
         const _countArts = 25;
         const _endDate = now + 5000;
         const _acceptDate = now + 3000;
-        await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
+        const _title = "title";
+        await betGame.createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, _title, {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[0].address
         });
@@ -61,7 +63,7 @@ let betGame, linkToken, accounts
       })
 
       it("Should successfully accept a bet", async () => {
-        await betGame.connect(accounts[1]).acceptBet(0, {
+        await betGame.connect(accounts[1]).acceptBet(0, "bbc.com", {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[1].address
         })
@@ -120,7 +122,8 @@ let betGame, linkToken, accounts
         const _countArts = 24;
         const _endDate = now + 5000;
         const _acceptDate = now + 3000;
-        await betGame.connect(accounts[2]).createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
+        const _title = "title";
+        await betGame.connect(accounts[2]).createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, _title, {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[2].address
         });
@@ -134,7 +137,7 @@ let betGame, linkToken, accounts
       })
 
       it("Should successfully accept second bet", async () => {
-        await betGame.connect(accounts[3]).acceptBet(1, {
+        await betGame.connect(accounts[3]).acceptBet(1, "bbc.com", {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[3].address
         })
@@ -174,19 +177,21 @@ let betGame, linkToken, accounts
         const _apiURL = "https://newsapi.org/v2/everything?q=+rocky,+arrest&searchin=title&language=en&pagesize=1&apiKey=340014d50e764937b75f19426bdd5265";
         const _acceptValue = ethers.utils.parseEther("0.01");
         const _countArts = 24;
-        const _endDate = now+21;
-        const _acceptDate = now+20;
-        await betGame.connect(accounts[2]).createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, {
+        const _endDate = now+30;
+        const _acceptDate = now+27;
+        const _title = "title";
+        await betGame.connect(accounts[2]).createBet(_apiURL, _acceptValue, _countArts, _endDate, _acceptDate, _title, {
             value: ethers.utils.parseEther("0.01"),
             from: accounts[2].address
         });
         const betId = await betGame.activeBets(0);
         assert.equal(betId, 2);
-        await betGame.connect(accounts[4]).acceptBet(2, {
+        await betGame.connect(accounts[4]).acceptBet(2, "bbc.com", {
           value: ethers.utils.parseEther("0.01"),
           from: accounts[4].address
         })  
         const preBalance = await accounts[4].getBalance();
+        console.log(preBalance);
         const transaction = await betGame.connect(accounts[2]).checkBet(2, {
           from: accounts[2].address
         });
@@ -195,12 +200,12 @@ let betGame, linkToken, accounts
         const callbackValue = 2200 //acceptor wins bet 
         await mockOracle.fulfillOracleRequest(requestId, numToBytes32(callbackValue))
         const postBalance = await accounts[4].getBalance();
+        console.log(postBalance);
         const mybet = await betGame.allBets(2);
-        console.log(mybet)
+        assert.equal(mybet["closed"], true)
         const difference = postBalance - preBalance;
         console.log(difference)
         assert(difference > ethers.utils.parseEther("0.018")); //allows for some gas lossage
-        assert.equal(mybet["closed"], true); //bet is closed due to timeout
         assert.equal(mybet["accepted"], true);
       })
 

@@ -28,9 +28,8 @@ function CreateBet() {
     let endingStr =
       '&searchin=title&language=en&pagesize=1&apiKey=340014d50e764937b75f19426bdd5265'
 
-    // may need to encode the value for q => API docs say it must be URL encoded
-    // method exists to do this, just not sure if necessary
-    let keywordStr = 'q='
+    // what if user enters something with a space?
+    let keywordStr = ''
     apiKeywords.forEach((keyword, index) => {
       if (index !== apiKeywords.length - 1) {
         keywordStr = keywordStr + '+' + keyword + ','
@@ -38,8 +37,12 @@ function CreateBet() {
         keywordStr = keywordStr + '+' + keyword
       }
     })
-    // console.log(keywordStr)
+    keywordStr = encodeURIComponent(keywordStr)
+    let tmp = 'q='
+    keywordStr = tmp.concat(keywordStr)
+    console.log(keywordStr)
 
+    // if sources is empty, this shouldn't cause issues (it will query all sources)
     let sourceStr = '&sources='
     sources.forEach((source, index) => {
       if (index !== sources.length - 1) {
@@ -63,13 +66,8 @@ function CreateBet() {
   }
 
   const convertToUnix = (date: Date) => {
-    // setting time to 00:00:00.00, meaning midnight of that date.
-    // should we change this? should we have it be 23:59:59.99 of the
-    // date from user so it makes it inclusive?
-    // need to communicate to user how we are handling this on the form either way
-    date.setHours(0, 0, 0, 0)
+    date.setHours(23, 59, 59, 99)
 
-    let timestampInMs = date.getTime()
     let unixTimestamp = Math.floor(date.getTime() / 1000)
     // console.log(unixTimestamp)
     return unixTimestamp
@@ -82,6 +80,7 @@ function CreateBet() {
     endDate: number,
     acceptDate: number,
     betAmount: string,
+    title: string,
   ) => {
     console.log('Calling createBet function')
     const userAddress = await user!.get('ethAddress')
@@ -93,6 +92,7 @@ function CreateBet() {
         countArts,
         endDate,
         acceptDate,
+        title,
       )
       .send({
         from: userAddress,
@@ -131,12 +131,10 @@ function CreateBet() {
             unixExpirationDate,
             unixAcceptDate,
             betAmountStr,
+            title,
           )
         }}
       />
-      {/* <Button onClick={createBet} variant="outlined">
-        Create
-      </Button> */}
       {isAuthenticated ? (
         <h1>{user!.get('ethAddress')}</h1>
       ) : (

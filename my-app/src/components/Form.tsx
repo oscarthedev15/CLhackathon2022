@@ -27,7 +27,8 @@ interface Props {
 }
 
 export const MyForm: React.FC<Props> = ({ onSubmit }) => {
-  const [minimumBet, setMinimumBet] = useState(0)
+  const [minimumBet, setMinimumBet] = React.useState(0)
+  const [serviceFee, setServiceFee] = React.useState(0)
 
   const options = [
     {
@@ -131,6 +132,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
       label: 'USA Today',
       value: 'usa-today',
     },
+
     {
       label: 'Vice News',
       value: 'vice-news',
@@ -151,10 +153,14 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
   }, [minimumBet])
 
   const setContractProps = async () => {
-    console.log('Setting contract properties')
+    console.log('Setting minBet and serviceFee properties')
     let minBet = await betgame.methods.minimumBet().call()
     minBet = web3.utils.fromWei(minBet)
     setMinimumBet(minBet)
+
+    let servFee = await betgame.methods.serviceFee().call()
+    servFee = web3.utils.fromWei(servFee)
+    setServiceFee(servFee)
   }
 
   const addKeyword = (v: string[], k: string) => {
@@ -527,6 +533,11 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
         }
 
           <br />
+          <h3>
+            In addition to the bet amount of {values.betAmount} ETH you
+            specified, an additional service fee of {serviceFee} ETH will be
+            added to the transaction total.
+          </h3>
           <Button type="submit" variant="outlined">
             Create
           </Button>
