@@ -38,7 +38,7 @@ const ResponsiveAppBar = () => {
       alert("This application requires Metamask.  Please install to your browser");
     } 
     let chainId = await web3.eth.net.getId();
-    if (chainId != 42) {
+    if (chainId !== 42) {
       alert("Please switch to the Kovan network");
     } 
     else {
@@ -69,7 +69,7 @@ const ResponsiveAppBar = () => {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <img src = "https://i.imgur.com/uMoBVbS.png" style={{height: "5%", width: "3%"}} />
+          <img src = "https://i.imgur.com/uMoBVbS.png" alt="logo" style={{height: "5%", width: "3%"}} />
           <Typography
             variant="h6"
             noWrap
