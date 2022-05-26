@@ -219,14 +219,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
           return true;
       }
     ),  
-
-    // apiKeywords: Yup.array()
-    //   .min(1, 'You must specify at least 1 keyword.'),
-    // currKeyword: Yup.string()
-    //   .min(1)
   });
-
-
 
   return (
     <Card sx={{ width: "90%", margin: 10, border: "1px solid purple"}}>
@@ -250,7 +243,6 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
             addKeyword(values.apiKeywords, values.currKeyword)
           }
           onSubmit(values);
-          //resetForm(); //Will reset form - use this after metamask success
         }}
       >
         {({ values, handleChange, handleBlur, setFieldValue, errors, touched, submitForm }) => (
@@ -301,8 +293,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                     touched.acceptDeadline as string && errors.acceptDeadline as string
                   } 
                   /> )}
-                  //errorText={touched.acceptDeadline && Boolean(errors.acceptDeadline)}
-                  //helperText={touched.acceptDeadline && errors.acceptDeadline}
+                
                 />
               </div>
               <div className="spacing">
@@ -329,36 +320,6 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 />
               </div>
             </LocalizationProvider>
-  {/* 
-            <div className="spacing">
-              <FormControl id="betAmount">
-              <p>Minimum bet amount is {minimumBet} ETH</p>
-              <FormHelperText id="outlined-weight-helper-text">
-                  Bet Amount
-              </FormHelperText>
-                <OutlinedInput
-                  id="betAmount"
-                  // placeholder="0.001"
-                  value={values.betAmount}
-                  onChange={handleChange('betAmount')}
-                  onBlur={handleBlur('betAmount')}
-                  endAdornment={
-                    <InputAdornment position="end">ETH</InputAdornment>
-                  }
-                  aria-describedby="outlined-weight-helper-text"
-                  // inputProps={{
-                  //   'aria-label': 'weight',
-                  // }}
-                  error={touched.betAmount && Boolean(errors.betAmount)}
-                />
-                            {
-                  <FormHelperText error>
-                    {errors.betAmount}
-                  </FormHelperText>
-                }
-              </FormControl>
-            </div>
-            */}
 
             <div> 
               <TextField
@@ -388,33 +349,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 InputProps={{ endAdornment: <InputAdornment position="end">ETH</InputAdornment> }}
               />
             </div>
-            {/* <div className="spacing">
-              <FormControl id="acceptAmount">
-              <FormHelperText id="outlined-weight-helper-text">
-                  Accept Value
-                </FormHelperText>
-                <OutlinedInput
-                  id="acceptAmount"
-                  placeholder="0.001"
-                  value={values.acceptAmount}
-                  onChange={handleChange('acceptAmount')}
-                  onBlur={handleBlur('acceptAmount')}
-                  endAdornment={
-                    <InputAdornment position="end">ETH</InputAdornment>
-                  }
-                  aria-describedby="outlined-weight-helper-text"
-                  // inputProps={{
-                  //   'aria-label': 'weight',
-                  // }}
-                  error={touched.acceptAmount && Boolean(errors.acceptAmount)}
-                />
-                {
-                  <FormHelperText error>
-                    {errors.acceptAmount}
-                  </FormHelperText>
-                }            
-                </FormControl>
-            </div> */}
+   
             <div style={{marginTop: "20px"}}> 
               <TextField
                 placeholder="Number of Articles"
@@ -428,30 +363,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 helperText={touched.numArticles && errors.numArticles}
               />
             </div>
-            {/* <div className="spacing">
-              <FormControl>
-              <FormHelperText id="outlined-weight-helper-text">
-                  Number of Articles
-                </FormHelperText>
-                <OutlinedInput
-                  id="outlined-adornment-weight"
-                  // placeholder="1"
-                  value={values.numArticles}
-                  onChange={handleChange('numArticles')}
-                  // endAdornment={
-                  //   <InputAdornment position="end">ETH</InputAdornment>
-                  // }
-                  aria-describedby="outlined-weight-helper-text"
-                  // inputProps={{
-                  //   'aria-label': 'weight',
-                  // }}
-                />
-              </FormControl>
-              <p>
-                Change this value only if you specified a number of articles as a
-                condition of the bet.
-              </p>
-            </div> */}
+        
             <div className="margin-top">
               <TextField
                 placeholder='i.e. "Pop Book"'
@@ -473,10 +385,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               >
                 Add
               </Button>
-              {/* <p>
-                Enter the keywords that will be used to check news headlines,
-                hitting enter after each entry. Maximum number of keywords is 8.
-              </p> */}
+            
             </div>
             <br />
             {values.apiKeywords && values.apiKeywords.length > 0 ? (
@@ -500,7 +409,6 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               </div>
             ) : (
               null
-              // <h4 className="margin">Keywords will appear here once you add them.</h4>
             )}
             <div className="margin-top">
             <FormControl>
