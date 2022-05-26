@@ -13,8 +13,17 @@ code {
 }
 
 .spacing {
-  margin: 20px auto 20px auto;
-  width: 70%;
+  margin: 25px 0 25px 0;
+  width: 30%;
+}
+
+.amount-spacing{
+  margin: 20px 0 20px 0;
+  width: 15%;
+}
+
+.calendar-input {
+  width: 50%
 }
 
 .margin-top {

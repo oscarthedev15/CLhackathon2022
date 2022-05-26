@@ -106,7 +106,7 @@ function CreateBet() {
   }
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div>
       <MyForm
         onSubmit={({
           title,
@@ -129,7 +129,6 @@ function CreateBet() {
           const betAmountStr = betAmount.toString()
           let betAmountWei = web3.utils.toWei(betAmountStr, 'ether')
           console.log('Bet:', betAmountStr)
-
           createBet(
             apiURL,
             acceptAmountStr,
