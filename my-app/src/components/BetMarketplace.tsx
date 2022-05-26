@@ -61,6 +61,7 @@ function BetMarketplace() {
   const [acceptedBets, setAcceptedBets] = useState<Bet[]>([])
   const [value, setValue] = React.useState(0)
 
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
@@ -72,6 +73,7 @@ function BetMarketplace() {
     }
     // Execute the created function directly
     anyNameFunction()
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const getBets = async () => {

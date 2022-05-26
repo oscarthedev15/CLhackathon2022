@@ -20,6 +20,7 @@ function BetItem({ bet }: { bet: Bet }) {
   const [serviceFee, setServiceFee] = useState('')
   const [chargeAmount, setChargeAmount] = useState('')
 
+
   const { authenticate, isAuthenticated, user } = useMoralis()
 
   useEffect(() => {
@@ -30,6 +31,7 @@ function BetItem({ bet }: { bet: Bet }) {
     }
     // Execute the created function directly
     anyNameFunction()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const setContractProp = async () => {
