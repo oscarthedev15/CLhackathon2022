@@ -7,11 +7,7 @@ import CreateBet from './components/CreateBet';
 import BetMarketplace from './components/BetMarketplace';
 import Chat from './components/Chat';
 
-
 function App() {
-  
-
-
   return (
     <div>
       <ResponsiveAppBar />
@@ -21,7 +17,6 @@ function App() {
           <Route path="/CLHackathon2022/BetMarketplace" element={<BetMarketplace />} />
           <Route path="/CLHackathon2022/Chat" element={<Chat />} />
         </Routes>
-      
     </div>
   )
 }

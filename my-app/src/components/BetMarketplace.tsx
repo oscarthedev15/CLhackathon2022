@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -6,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import React, { useEffect, useState } from 'react'
 import betgame from '../betgame'
 import BetItem from './BetItem'
+import Box from '@mui/material/Box'
 
 export interface Bet {
   id: number
@@ -15,10 +15,12 @@ export interface Bet {
   acceptValue: string
   countArts: number
   createdDate: string
+  startDate: string
   acceptDeadline: string
   outcomeDeadline: string
   creator: string
   acceptor: string
+  accepted: boolean
 }
 
 interface TabPanelProps {
@@ -39,7 +41,7 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ paddingTop: 3 }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -89,10 +91,12 @@ function BetMarketplace() {
         acceptValue: t[6],
         countArts: parseInt(t[10]),
         createdDate: t[11][0],
+        startDate: t[11][2],
         acceptDeadline: t[11][1],
         outcomeDeadline: t[11][3],
         creator: t[2],
         acceptor: t[3],
+        accepted: t[7],
       }
       oB.push(tmpBet)
     }
@@ -115,10 +119,12 @@ function BetMarketplace() {
         acceptValue: t[6],
         countArts: parseInt(t[10]),
         createdDate: t[11][0],
+        startDate: t[11][2],
         acceptDeadline: t[11][1],
         outcomeDeadline: t[11][3],
         creator: t[2],
         acceptor: t[3],
+        accepted: t[7],
       }
       aB.push(tmpBet)
     }
@@ -127,16 +133,17 @@ function BetMarketplace() {
   }
 
   return (
-    <div>
+    <div style={{ margin: '5%' }}>
       <h1>Bet Marketplace</h1>
       <Box sx={{ width: '100%' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box>
           <Tabs
+            sx={{}}
             value={value}
             onChange={handleChange}
             aria-label="basic tabs example"
           >
-            <Tab label="Live Bets" {...a11yProps(0)} />
+            <Tab sx={{ paddingRight: 3 }} label="Open Bets" {...a11yProps(0)} />
             <Tab label="Accepted Bets" {...a11yProps(1)} />
           </Tabs>
         </Box>
@@ -155,9 +162,8 @@ function BetMarketplace() {
           </Stack>
         </TabPanel>
       </Box>
-
-      <pre>{JSON.stringify(openBets, null, 2)}</pre>
-      <pre>{JSON.stringify(acceptedBets, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(openBets, null, 2)}</pre>
+      <pre>{JSON.stringify(acceptedBets, null, 2)}</pre> */}
     </div>
   )
 }
