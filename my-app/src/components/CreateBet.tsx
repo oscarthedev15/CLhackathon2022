@@ -1,25 +1,13 @@
-import Button from '@mui/material/Button'
-import { useState } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
 
 function CreateBet() {
-  // const [name, setName] = React.useState('Composed TextField');
-  const [title, setTitle] = useState('Hey there')
   const {
-    authenticate,
     isAuthenticated,
-    isAuthenticating,
     user,
-    account,
-    logout,
   } = useMoralis()
-
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     setName(event.target.value);
-  //   };
 
   const buildApiURL = (apiKeywords: string[], sources: string[]) => {
     let beginningStr = 'https://newsapi.org/v2/everything?'

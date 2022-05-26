@@ -1,11 +1,11 @@
-import { FormHelperText, Typography, Stack, TextField, InputAdornment, 
-  FormGroup, Chip, Button, FormControl, FormLabel, Grid, OutlinedInput, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { Typography, Stack, TextField, InputAdornment, 
+  FormGroup, Chip, Button, FormControl, FormLabel, Grid, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { Field, Form, Formik } from 'formik'
 import { CheckboxWithLabel } from 'formik-material-ui'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import betgame from '../betgame'
 import web3 from '../web3'
 import * as Yup from 'yup';
@@ -171,12 +171,6 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
     k = ''
     console.log(v)
     console.log(k)
-  }
-
-  const deleteKeyword = (v: string[], k: string) => {
-    console.log('Deleting keyword', k)
-    v = v.filter((e) => e !== k)
-    console.log(v)
   }
 
   const today = new Date();

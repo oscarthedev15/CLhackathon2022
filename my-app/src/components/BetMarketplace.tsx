@@ -1,13 +1,11 @@
-import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import Typography from '@mui/material/Typography'
 import React, { useEffect, useState } from 'react'
 import betgame from '../betgame'
 import BetItem from './BetItem'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
 
 export interface Bet {
   id: number
@@ -72,7 +70,7 @@ function BetMarketplace() {
     }
     // Execute the created function directly
     anyNameFunction()
-  }, [])
+  })
 
   const getBets = async () => {
     console.log('Getting active bets')
