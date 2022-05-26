@@ -63,9 +63,11 @@ function BetItem({ bet }: { bet: Bet }) {
     console.log(sourceStr)
     sourceStr = sourceStr.slice(8)
     console.log(sourceStr)
-    let finalSources = sourceStr.split(',')
-    console.log(finalSources)
-    setSources(finalSources)
+    if (sourceStr.length > 0) {
+      let finalSources = sourceStr.split(',')
+      console.log(finalSources)
+      setSources(finalSources)
+    }
   }
 
   const convertToDate = (unix: string) => {
@@ -139,9 +141,24 @@ function BetItem({ bet }: { bet: Bet }) {
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             Keywords: {keywords.join(', ')}
           </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Sources: {sources.join(', ')}
-          </Typography>
+          {sources.length == 0 ? (
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              All sources
+            </Typography>
+          ) : (
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              Sources: {sources.join(', ')}
+            </Typography>
+          )}
+
           <Typography sx={{ fontSize: 14 }} color="text.secondary">
             Bet specifies at least {bet.countArts} articles as condition of bet
           </Typography>
