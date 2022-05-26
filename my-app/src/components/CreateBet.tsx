@@ -2,6 +2,7 @@ import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
+import { useState } from 'react'
 
 function CreateBet() {
   const [serviceFee, setServiceFee] = useState('')
