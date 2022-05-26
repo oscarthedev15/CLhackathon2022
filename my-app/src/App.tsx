@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 //import { Route, Routes } from 'react-router';
-import {BrowserRouter as Router,Routes,Route} from 'react-router-dom'
+import {HashRouter as Router,Routes,Route} from 'react-router-dom'
 
 import './App.css';
 import { useMoralis } from 'react-moralis';
