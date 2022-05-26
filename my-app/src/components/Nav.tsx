@@ -14,7 +14,6 @@ import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import { Link } from 'react-router-dom'
 import { useMoralis } from 'react-moralis';
-import { isatty } from 'tty'
 
 const pages = ['Bet Marketplace', 'Create Bet', 'Chat']
 let pagesMap = new Map();
@@ -27,9 +26,7 @@ const ResponsiveAppBar = () => {
   const {
     authenticate,
     isAuthenticated,
-    isAuthenticating,
     user,
-    account,
     logout,
   } = useMoralis()
 
@@ -48,9 +45,7 @@ const ResponsiveAppBar = () => {
 
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null,
-  )
+  
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget)
@@ -70,7 +65,7 @@ const ResponsiveAppBar = () => {
             variant="h6"
             noWrap
             component="a"
-            href="/CLhackathon2022"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -152,7 +147,7 @@ const ResponsiveAppBar = () => {
             variant="h5"
             noWrap
             component="a"
-            href=""
+            href="/"
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -227,18 +222,18 @@ const ResponsiveAppBar = () => {
             { isAuthenticated ? (
               <Tooltip title="Sign Out">
               <IconButton onClick={logout} sx={{ p: 0 }} >
-              <a style={{ textDecoration: 'none', color: 'white' , fontFamily: 'roboto', fontWeight: 500, fontSize: 14, letterSpacing: 0.457, padding: 10 }}>
+              <p style={{ textDecoration: 'none', color: 'white' , fontFamily: 'roboto', fontWeight: 500, fontSize: 14, letterSpacing: 0.457, padding: 10 }}>
                 {user!.get('ethAddress').substring(0, 5).concat("...").concat(user!.get('ethAddress').substring(38, 43))}
-              </a>
+              </p>
                 <Avatar alt="Remy Sharp" src="https://i.imgur.com/EoSDNhZ.png" />
               </IconButton>
             </Tooltip>
             ) : (
               <Tooltip title="Sign in with Metamask">
               <IconButton onClick={login} sx={{ p: 0 }} >
-              <a style={{ textDecoration: 'none', color: 'white' , fontFamily: 'roboto', fontWeight: 500, fontSize: 14, letterSpacing: 0.457, padding: 10 }}>
+              <p style={{ textDecoration: 'none', color: 'white' , fontFamily: 'roboto', fontWeight: 500, fontSize: 14, letterSpacing: 0.457, padding: 10 }}>
                 LOGIN
-              </a>
+              </p>
                 <Avatar alt="Remy Sharp" src="https://i.imgur.com/EoSDNhZ.png" />
               </IconButton>
             </Tooltip>

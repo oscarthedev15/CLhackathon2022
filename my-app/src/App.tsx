@@ -1,15 +1,12 @@
-import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
 
 import './App.css';
-import { useMoralis } from 'react-moralis';
 import ResponsiveAppBar from './components/Nav';
 import Home from './components/Home';
 import CreateBet from './components/CreateBet';
 import BetMarketplace from './components/BetMarketplace';
 import Chat from './components/Chat';
-import betgame from './betgame';
-import web3 from './web3';
+
 
 function App() {
   

@@ -1,6 +1,3 @@
-import React, { useEffect } from 'react'
-import { useMoralis } from 'react-moralis'
-import ResponsiveAppBar from './Nav'
 
 function Chat() {
   return (

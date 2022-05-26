@@ -17,10 +17,7 @@ function BetItem({ bet }: { bet: Bet }) {
   const {
     authenticate,
     isAuthenticated,
-    isAuthenticating,
     user,
-    account,
-    logout,
   } = useMoralis()
 
   useEffect(() => {
@@ -31,7 +28,7 @@ function BetItem({ bet }: { bet: Bet }) {
     }
     // Execute the created function directly
     anyNameFunction()
-  }, [])
+  })
 
   const setContractProp = async () => {
     console.log('Setting serviceFee property')
@@ -121,7 +118,6 @@ function BetItem({ bet }: { bet: Bet }) {
   }
 
   const checkBet = async (id: number) => {
-    const userAddress = await user!.get('ethAddress')
     await betgame.methods.checkBet(id).call()
   }
 
