@@ -1,26 +1,28 @@
-import Button from '@mui/material/Button'
-import { useState } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
+import { useState, useEffect } from 'react'
 
 function CreateBet() {
-  // const [name, setName] = React.useState('Composed TextField');
-  const [title, setTitle] = useState('Hey there')
-  const {
-    authenticate,
-    isAuthenticated,
-    isAuthenticating,
-    user,
-    account,
-    logout,
-  } = useMoralis()
+  const [serviceFee, setServiceFee] = useState('')
 
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     setName(event.target.value);
-  //   };
+  const { isAuthenticated, user } = useMoralis()
 
+  useEffect(() => {
+    async function anyNameFunction() {
+      await setContractProp()
+    }
+    // Execute the created function directly
+    anyNameFunction()
+  }, [])
+
+  const setContractProp = async () => {
+    console.log('Setting serviceFee property')
+
+    let servFee = await betgame.methods.serviceFee().call()
+    setServiceFee(servFee)
+  }
   const buildApiURL = (apiKeywords: string[], sources: string[]) => {
     let beginningStr = 'https://newsapi.org/v2/everything?'
 
@@ -84,6 +86,9 @@ function CreateBet() {
   ) => {
     console.log('Calling createBet function')
     const userAddress = await user!.get('ethAddress')
+    let chargeAmount = parseInt(betAmount) + parseInt(serviceFee)
+    console.log('Charge amount: ', chargeAmount.toString())
+    console.log(chargeAmount === 2000000000000000)
 
     await betgame.methods
       .createBet(
@@ -96,7 +101,7 @@ function CreateBet() {
       )
       .send({
         from: userAddress,
-        value: web3.utils.toWei(betAmount, 'ether'),
+        value: chargeAmount,
       })
   }
 
@@ -122,6 +127,7 @@ function CreateBet() {
           const acceptAmountStr = acceptAmount.toString()
           console.log('Accept:', acceptAmountStr)
           const betAmountStr = betAmount.toString()
+          let betAmountWei = web3.utils.toWei(betAmountStr, 'ether')
           console.log('Bet:', betAmountStr)
           createBet(
             apiURL,
@@ -129,7 +135,7 @@ function CreateBet() {
             numArticles,
             unixExpirationDate,
             unixAcceptDate,
-            betAmountStr,
+            betAmountWei,
             title,
           )
         }}
