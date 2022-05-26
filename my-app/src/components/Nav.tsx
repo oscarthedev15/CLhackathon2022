@@ -14,6 +14,8 @@ import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import { Link } from 'react-router-dom'
 import { useMoralis } from 'react-moralis'
+import detectEthereumProvider from '@metamask/detect-provider'
+import web3 from '../web3'
 
 const pages = ['Bet Marketplace', 'Create Bet', 'Chat']
 let pagesMap = new Map()
@@ -25,15 +27,26 @@ const ResponsiveAppBar = () => {
   const { authenticate, isAuthenticated, user, logout } = useMoralis()
 
   const login = async () => {
-    if (!isAuthenticated) {
-      await authenticate({ signingMessage: 'Log in using Moralis' })
-        .then(function (user) {
-          console.log('logged in user:', user)
-          console.log(user!.get('ethAddress'))
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+    const provider = await detectEthereumProvider()
+    if (!provider) {
+      alert(
+        'This application requires Metamask.  Please install to your browser',
+      )
+    }
+    let chainId = await web3.eth.net.getId()
+    if (chainId !== 42) {
+      alert('Please switch to the Kovan network')
+    } else {
+      if (!isAuthenticated) {
+        await authenticate({ signingMessage: 'Please Log In' })
+          .then(function (user) {
+            console.log('logged in user:', user)
+            console.log(user!.get('ethAddress'))
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+      }
     }
   }
 
@@ -51,7 +64,11 @@ const ResponsiveAppBar = () => {
     <AppBar position="static">
       <Container style={{ backgroundColor: 'primary.main' }} maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          <img
+            src="https://i.imgur.com/uMoBVbS.png"
+            alt="logo"
+            style={{ height: '5%', width: '3%' }}
+          />
           <Typography
             variant="h6"
             noWrap
@@ -145,7 +162,7 @@ const ResponsiveAppBar = () => {
               textDecoration: 'none',
             }}
           >
-            Home
+            TeaLink
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             <Button
@@ -241,7 +258,7 @@ const ResponsiveAppBar = () => {
                       padding: 10,
                     }}
                   >
-                    LOGIN
+                    LOG IN
                   </p>
                   <Avatar
                     alt="Remy Sharp"
