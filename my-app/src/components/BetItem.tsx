@@ -30,7 +30,7 @@ function BetItem({ bet }: { bet: Bet }) {
     }
     // Execute the created function directly
     anyNameFunction()
-  })
+  }, [])
 
   const setContractProp = async () => {
     console.log('Setting contract properties')

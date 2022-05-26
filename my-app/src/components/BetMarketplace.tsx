@@ -72,7 +72,7 @@ function BetMarketplace() {
     }
     // Execute the created function directly
     anyNameFunction()
-  })
+  }, [])
 
   const getBets = async () => {
     console.log('Getting active bets')
