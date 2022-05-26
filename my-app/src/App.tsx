@@ -6,7 +6,7 @@ import ResponsiveAppBar from './components/Nav';
 import Home from './components/Home';
 import CreateBet from './components/CreateBet';
 import BetMarketplace from './components/BetMarketplace';
-import YourStats from './components/YourStats';
+import Chat from './components/Chat';
 import betgame from './betgame';
 import web3 from './web3';
 
@@ -52,8 +52,6 @@ function App() {
     const address = await betgame.options.address
     setBalance(address)
 
-    // const allBets = await betgame.methods.allBets().call();
-    // setAllBets(allBets);
   }
 
   return (
@@ -63,22 +61,9 @@ function App() {
         <Route path="/CLHackathon2022" element={<Home />} />
         <Route path="/CLHackathon2022/CreateBet" element={<CreateBet />} />
         <Route path="/CLHackathon2022/BetMarketplace" element={<BetMarketplace />} />
+        <Route path="/CLHackathon2022/Chat" element={<Chat />} />
       </Routes>
-      <h1>Moralis Hello World!</h1>
-      <button onClick={login} disabled={isAuthenticated}>
-        Moralis Metamask Login
-      </button>
-      <button onClick={logOut} disabled={isAuthenticating || !isAuthenticated}>
-        Logout
-      </button>
-      <button onClick={checkContract}>Click to test contract connection</button>
-      {isAuthenticated ? (
-        <h1>{user!.get('ethAddress')}</h1>
-      ) : (
-        <h1>User is not authenticated!</h1>
-      )}
-      <h1>{balance}</h1>
-      <h1>{allBets}</h1>
+      
     </div>
   )
 }

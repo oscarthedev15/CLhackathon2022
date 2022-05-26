@@ -16,10 +16,11 @@ import { Link } from 'react-router-dom'
 import { useMoralis } from 'react-moralis';
 import { isatty } from 'tty'
 
-const pages = ['Bet Marketplace', 'Create Bet']
+const pages = ['Bet Marketplace', 'Create Bet', 'Chat']
 let pagesMap = new Map();
 pagesMap.set(pages[0], 'BetMarketPlace');
 pagesMap.set(pages[1], 'CreateBet');
+pagesMap.set(pages[2], 'Chat');
 
 const ResponsiveAppBar = () => {
 
@@ -59,12 +60,6 @@ const ResponsiveAppBar = () => {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null)
   }
-
-  const concatAddress = () => {
-    return user!.get('ethAddress').substring(0, 5).concat("...")
-
-  }
-
 
   return (
     <AppBar position="static">
@@ -212,8 +207,20 @@ const ResponsiveAppBar = () => {
               </Button>
               </Tooltip>
               )}
-              
-            {/* ))} */}
+
+              <Button
+                key={pages[2]}
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                <Link
+                  style={{ textDecoration: 'none', color: 'white' }}
+                  to={`/CLHackathon2022/${pagesMap.get(pages[2])}`}
+                >
+                  {pages[2]}
+                </Link>
+              </Button>
+          
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -237,6 +244,7 @@ const ResponsiveAppBar = () => {
             </Tooltip>
             )
             }
+    
           </Box>
 
           
