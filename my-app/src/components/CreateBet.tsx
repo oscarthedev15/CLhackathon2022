@@ -1,23 +1,13 @@
-import Button from '@mui/material/Button'
-import { useState, useEffect } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
+import { useState, useEffect } from 'react'
 
 function CreateBet() {
-  // const [name, setName] = React.useState('Composed TextField');
-  const [title, setTitle] = useState('Hey there')
   const [serviceFee, setServiceFee] = useState('')
 
-  const {
-    authenticate,
-    isAuthenticated,
-    isAuthenticating,
-    user,
-    account,
-    logout,
-  } = useMoralis()
+  const { isAuthenticated, user } = useMoralis()
 
   useEffect(() => {
     async function anyNameFunction() {

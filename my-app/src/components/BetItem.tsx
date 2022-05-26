@@ -20,14 +20,7 @@ function BetItem({ bet }: { bet: Bet }) {
   const [serviceFee, setServiceFee] = useState('')
   const [chargeAmount, setChargeAmount] = useState('')
 
-  const {
-    authenticate,
-    isAuthenticated,
-    isAuthenticating,
-    user,
-    account,
-    logout,
-  } = useMoralis()
+  const { authenticate, isAuthenticated, user } = useMoralis()
 
   useEffect(() => {
     parseURLString(bet.apiURL)
@@ -37,7 +30,7 @@ function BetItem({ bet }: { bet: Bet }) {
     }
     // Execute the created function directly
     anyNameFunction()
-  }, [])
+  })
 
   const setContractProp = async () => {
     console.log('Setting contract properties')
@@ -106,30 +99,45 @@ function BetItem({ bet }: { bet: Bet }) {
     return days
   }
 
+  const login = async () => {
+    if (!isAuthenticated) {
+      await authenticate({ signingMessage: 'Log in using Moralis' })
+        .then(function (user) {
+          console.log('logged in user:', user)
+          console.log(user!.get('ethAddress'))
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    }
+  }
+
   const acceptBet = async (id: number, apiURL: string) => {
-    let fromDate = new Date(Date.now())
-    let fromDateStr = fromDate.toISOString()
-    console.log(fromDateStr)
-    let beginningStr = '&from='
-    let finalFromStr = beginningStr.concat(fromDateStr)
-    const newApiURL = apiURL.concat(finalFromStr)
-    console.log(newApiURL)
+    if (isAuthenticated) {
+      let fromDate = new Date(Date.now())
+      let fromDateStr = fromDate.toISOString()
+      console.log(fromDateStr)
+      let beginningStr = '&from='
+      let finalFromStr = beginningStr.concat(fromDateStr)
+      const newApiURL = apiURL.concat(finalFromStr)
+      console.log(newApiURL)
 
-    console.log('Calling acceptBet function')
-    const userAddress = await user!.get('ethAddress')
+      console.log('Calling acceptBet function')
+      const userAddress = await user!.get('ethAddress')
 
-    let cA = parseInt(bet.acceptValue) + parseInt(serviceFee)
-    console.log(cA)
-    console.log(typeof serviceFee)
-    await betgame.methods.acceptBet(id, newApiURL).send({
-      from: userAddress,
-      value: cA,
-    })
+      let cA = parseInt(bet.acceptValue) + parseInt(serviceFee)
+      console.log(cA)
+      console.log(typeof serviceFee)
+      await betgame.methods.acceptBet(id, newApiURL).send({
+        from: userAddress,
+        value: cA,
+      })
+    } else {
+      login()
+    }
   }
 
   const checkBet = async (id: number) => {
-    const userAddress = await user!.get('ethAddress')
-
     await betgame.methods.checkBet(id).call()
   }
 
