@@ -61,9 +61,8 @@ function App() {
       <ResponsiveAppBar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/Create%20a%20Bet" element={<CreateBet />} />
-        <Route path="/Bet%20Marketplace" element={<BetMarketplace />} />
-        <Route path="/Your%20Stats" element={<YourStats />} />
+        <Route path="/CreateBet" element={<CreateBet />} />
+        <Route path="/BetMarketplace" element={<BetMarketplace />} />
       </Routes>
       <h1>Moralis Hello World!</h1>
       <button onClick={login} disabled={isAuthenticated}>

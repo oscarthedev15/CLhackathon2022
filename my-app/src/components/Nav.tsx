@@ -13,11 +13,39 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import { Link } from 'react-router-dom'
+import { useMoralis } from 'react-moralis';
+import { isatty } from 'tty'
 
-const pages = ['Bet Marketplace', 'Create a Bet', 'Your Stats']
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
+const pages = ['Bet Marketplace', 'Create Bet']
+let pagesMap = new Map();
+pagesMap.set(pages[0], 'BetMarketPlace');
+pagesMap.set(pages[1], 'CreateBet');
 
 const ResponsiveAppBar = () => {
+
+  const {
+    authenticate,
+    isAuthenticated,
+    isAuthenticating,
+    user,
+    account,
+    logout,
+  } = useMoralis()
+
+  const login = async () => {
+    if (!isAuthenticated) {
+      await authenticate({ signingMessage: 'Log in using Moralis' })
+        .then(function (user) {
+          console.log('logged in user:', user)
+          console.log(user!.get('ethAddress'))
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    }
+  }
+
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
@@ -27,17 +55,16 @@ const ResponsiveAppBar = () => {
     setAnchorElNav(event.currentTarget)
   }
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
-  }
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null)
   }
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null)
+  const concatAddress = () => {
+    return user!.get('ethAddress').substring(0, 5).concat("...")
+
   }
+
 
   return (
     <AppBar position="static">
@@ -59,7 +86,7 @@ const ResponsiveAppBar = () => {
               textDecoration: 'none',
             }}
           >
-            HOME
+            TeaLink
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -91,18 +118,38 @@ const ResponsiveAppBar = () => {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+             
+                <MenuItem key={pages[0]} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">
                     <Link
                       style={{ textDecoration: 'none', color: 'black' }}
-                      to={`/${page}`}
+                      to={`/${pagesMap.get(pages[0])}`}
                     >
-                      {page}
+                      {pages[0]}
                     </Link>
                   </Typography>
                 </MenuItem>
-              ))}
+
+                {isAuthenticated ? (
+                  <MenuItem key={pages[1]} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">
+                    <Link
+                      style={{ textDecoration: 'none', color: 'black' }}
+                      to={`/${pagesMap.get(pages[1])}`}
+                    >
+                      {pages[1]}
+                    </Link>
+                  </Typography>
+                </MenuItem>
+                ) : (
+                  <MenuItem key={pages[1]} onClick={login}>
+                  <Typography textAlign="center">
+                      {pages[1]}
+                  </Typography>
+                </MenuItem>
+                )}
+                
+          
             </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -125,54 +172,74 @@ const ResponsiveAppBar = () => {
             Home
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
+            {/* {pages.map((page) => ( */}
               <Button
-                key={page}
+                key={pages[0]}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 <Link
                   style={{ textDecoration: 'none', color: 'white' }}
-                  to={`/${page}`}
+                  to={`/${pagesMap.get(pages[0])}`}
                 >
-                  {page}
+                  {pages[0]}
                 </Link>
               </Button>
-            ))}
+              {isAuthenticated ? (
+                <Button
+                key={pages[1]}
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                <Link
+                  style={{ textDecoration: 'none', color: 'white' }}
+                  to={`/${pagesMap.get(pages[1])}`}
+                >
+                  {pages[1]}
+                </Link>
+              </Button>
+              ) : (
+                <Button
+                key={pages[1]}
+                onClick={login}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                  {pages[1]}
+              </Button>
+              )}
+              
+            {/* ))} */}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+            { isAuthenticated ? (
+              <Tooltip title="Sign Out">
+              <IconButton onClick={logout} sx={{ p: 0 }} >
+              <a style={{ textDecoration: 'none', color: 'white' , fontFamily: 'roboto', fontWeight: 500, fontSize: 14, letterSpacing: 0.457, padding: 10 }}>
+                {user!.get('ethAddress').substring(0, 5).concat("...").concat(user!.get('ethAddress').substring(38, 43))}
+              </a>
+                <Avatar alt="Remy Sharp" src="https://i.imgur.com/EoSDNhZ.png" />
               </IconButton>
             </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+            ) : (
+              <Tooltip title="Sign in with Metamask">
+              <IconButton onClick={login} sx={{ p: 0 }} >
+              <a style={{ textDecoration: 'none', color: 'white' , fontFamily: 'roboto', fontWeight: 500, fontSize: 14, letterSpacing: 0.457, padding: 10 }}>
+                LOGIN
+              </a>
+                <Avatar alt="Remy Sharp" src="https://i.imgur.com/EoSDNhZ.png" />
+              </IconButton>
+            </Tooltip>
+            )
+            }
           </Box>
+
+          
         </Toolbar>
       </Container>
     </AppBar>
   )
 }
+
 export default ResponsiveAppBar
+
