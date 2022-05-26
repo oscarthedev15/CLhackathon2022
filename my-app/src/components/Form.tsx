@@ -1,5 +1,20 @@
-import { FormHelperText, Typography, Stack, TextField, InputAdornment, 
-  FormGroup, Chip, Button, FormControl, FormLabel, Grid, OutlinedInput, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import {
+  FormHelperText,
+  Typography,
+  Stack,
+  TextField,
+  InputAdornment,
+  FormGroup,
+  Chip,
+  Button,
+  FormControl,
+  FormLabel,
+  Grid,
+  OutlinedInput,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -8,7 +23,7 @@ import { CheckboxWithLabel } from 'formik-material-ui'
 import React, { useEffect, useState } from 'react'
 import betgame from '../betgame'
 import web3 from '../web3'
-import * as Yup from 'yup';
+import * as Yup from 'yup'
 
 interface FormValues {
   title: string
@@ -179,21 +194,27 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
     console.log(v)
   }
 
-  const today = new Date();
+  const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   const FormErrorsSchema = Yup.object().shape({
     title: Yup.string()
       .min(2, 'Minimum 2 characters required.')
-      .max(50, 'Maximum 50 characters allowed.')
+      .max(80, 'Maximum 80 characters allowed.')
       .required('Required.'),
     acceptDeadline: Yup.date()
       .min(today, 'Date cannot be in the past.')
-      .max(Yup.ref('outcomeDeadline'), 'Accept by date cannot be after bet expiration date.')
+      .max(
+        Yup.ref('outcomeDeadline'),
+        'Accept by date cannot be after bet expiration date.',
+      )
       .required('Required.')
       .typeError('You must specify a date.'),
     outcomeDeadline: Yup.date()
-      .min(Yup.ref('acceptDeadline'), 'Bet expiration date cannot be before accept by date.')
+      .min(
+        Yup.ref('acceptDeadline'),
+        'Bet expiration date cannot be before accept by date.',
+      )
       .required('Required.')
       .typeError('You must specify a date.'),
     betAmount: Yup.number()
@@ -209,11 +230,8 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
       .integer('You can only specify integers.')
       .min(1, 'You cannot specify less than 1 article.')
       .required('Required.'),
-    apiKeywords: Yup.array()
-      .min(1, 'You must specify at least 1 keyword.')
-  });
-
-
+    apiKeywords: Yup.array().min(1, 'You must specify at least 1 keyword.'),
+  })
 
   return (
     <Formik
@@ -226,31 +244,38 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
         numArticles: 1,
         currKeyword: '',
         apiKeywords: [],
-        chooseSources: "no",
+        chooseSources: 'no',
         sources: [],
       }}
       validationSchema={FormErrorsSchema}
       onSubmit={(values) => {
-        if(values.chooseSources === 'no') {
-          const allSources = options.map(option => option.value);
-          values.sources = allSources as any;
+        if (values.chooseSources === 'no') {
+          const allSources = options.map((option) => option.value)
+          values.sources = allSources as any
         }
         onSubmit(values)
       }}
     >
-      {({ values, handleChange, handleBlur, setFieldValue, errors, touched }) => (
+      {({
+        values,
+        handleChange,
+        handleBlur,
+        setFieldValue,
+        errors,
+        touched,
+      }) => (
         <Form>
           <div>
-            <Typography variant="h2" m={2}> 
+            <Typography variant="h2" m={2}>
               Create a Bet
             </Typography>
           </div>
-          <div> 
+          <div>
             <TextField
               placeholder="Bet Title"
               label="Title"
               multiline
-              maxRows={4}
+              maxRows={6}
               value={values.title}
               onChange={handleChange('title')}
               onBlur={handleBlur('title')}
@@ -269,18 +294,20 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 onChange={(value) => {
                   setFieldValue('acceptDeadline', value)
                 }}
-                renderInput={(params) => ( 
-                <TextField 
-                {...params}
-                onChange={handleChange('acceptDeadline')}
-                onBlur={handleBlur('acceptDeadline')}
-                error={
-                  touched.acceptDeadline && Boolean(errors.acceptDeadline)
-                }
-                helperText={
-                  touched.acceptDeadline as string && errors.acceptDeadline as string
-                } 
-                /> )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    onChange={handleChange('acceptDeadline')}
+                    onBlur={handleBlur('acceptDeadline')}
+                    error={
+                      touched.acceptDeadline && Boolean(errors.acceptDeadline)
+                    }
+                    helperText={
+                      (touched.acceptDeadline as string) &&
+                      (errors.acceptDeadline as string)
+                    }
+                  />
+                )}
                 //errorText={touched.acceptDeadline && Boolean(errors.acceptDeadline)}
                 //helperText={touched.acceptDeadline && errors.acceptDeadline}
               />
@@ -293,21 +320,25 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 onChange={(value) => {
                   setFieldValue('outcomeDeadline', value)
                 }}
-                renderInput={(params) => <TextField {...params}
-                onChange={handleChange('outcomeDeadline')}
-                onBlur={handleBlur('outcomeDeadline')}
-                error={
-                  touched.outcomeDeadline && Boolean(errors.outcomeDeadline)
-                }
-                helperText={
-                  touched.outcomeDeadline as string && errors.outcomeDeadline as string
-                } 
-                //helperText={touched.outcomeDeadline && errors.outcomeDeadline}
-                />}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    onChange={handleChange('outcomeDeadline')}
+                    onBlur={handleBlur('outcomeDeadline')}
+                    error={
+                      touched.outcomeDeadline && Boolean(errors.outcomeDeadline)
+                    }
+                    helperText={
+                      (touched.outcomeDeadline as string) &&
+                      (errors.outcomeDeadline as string)
+                    }
+                    //helperText={touched.outcomeDeadline && errors.outcomeDeadline}
+                  />
+                )}
               />
             </div>
           </LocalizationProvider>
-{/* 
+          {/* 
           <div className="spacing">
             <FormControl id="betAmount">
             <p>Minimum bet amount is {minimumBet} ETH</p>
@@ -338,7 +369,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
           </div>
            */}
 
-          <div> 
+          <div>
             <TextField
               placeholder="Bet Amount"
               label="Bet Amount"
@@ -349,10 +380,14 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               className="spacing"
               error={touched.betAmount && Boolean(errors.betAmount)}
               helperText={touched.betAmount && errors.betAmount}
-              InputProps={{ endAdornment: <InputAdornment position="end">ETH</InputAdornment> }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">ETH</InputAdornment>
+                ),
+              }}
             />
           </div>
-          <div> 
+          <div>
             <TextField
               placeholder="Accept Value"
               label="Accept Value"
@@ -363,7 +398,11 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               className="spacing"
               error={touched.acceptAmount && Boolean(errors.acceptAmount)}
               helperText={touched.acceptAmount && errors.acceptAmount}
-              InputProps={{ endAdornment: <InputAdornment position="end">ETH</InputAdornment> }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">ETH</InputAdornment>
+                ),
+              }}
             />
           </div>
           {/* <div className="spacing">
@@ -394,7 +433,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               </FormControl>
           </div> */}
 
-          <div className="spacing"> 
+          <div className="spacing">
             <TextField
               placeholder="Number of Articles"
               label="Number of Articles"
@@ -402,7 +441,6 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               onChange={handleChange('numArticles')}
               onBlur={handleBlur('numArticles')}
               margin={'normal'}
-              
               error={touched.numArticles && Boolean(errors.numArticles)}
               helperText={touched.numArticles && errors.numArticles}
             />
@@ -444,13 +482,13 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
             />
           </div>
           <div>
-          <Button
+            <Button
               onClick={() => {
                 addKeyword(values.apiKeywords, values.currKeyword)
                 setFieldValue('currKeyword', '')
               }}
               variant="outlined"
-              style={{marginTop: "10px"}}
+              style={{ marginTop: '10px' }}
             >
               Add
             </Button>
@@ -460,77 +498,79 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
             </p> */}
           </div>
           <br />
-          {values.apiKeywords && values.apiKeywords.length > 0 ? (
-            <div className="margin-bottom">
-              {/* <h4>Keywords:</h4> */}
-              <Stack direction="row" spacing={1} justifyContent="center">
-                {values.apiKeywords.map((keyword, index) => (
-                  <Chip
-                    key={index}
-                    label={keyword}
-                    variant="outlined"
-                    onDelete={() => {
-                      setFieldValue(
-                        'apiKeywords',
-                        values.apiKeywords.filter((e: string) => e !== keyword), //if theres a duplicate word this will delete them both
-                      )
-                    }}
-                  />
-                ))}
-              </Stack>
-            </div>
-          ) : (
-            null
+          {
+            values.apiKeywords && values.apiKeywords.length > 0 ? (
+              <div className="margin-bottom">
+                {/* <h4>Keywords:</h4> */}
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  {values.apiKeywords.map((keyword, index) => (
+                    <Chip
+                      key={index}
+                      label={keyword}
+                      variant="outlined"
+                      onDelete={() => {
+                        setFieldValue(
+                          'apiKeywords',
+                          values.apiKeywords.filter(
+                            (e: string) => e !== keyword,
+                          ), //if theres a duplicate word this will delete them both
+                        )
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </div>
+            ) : null
             // <h4 className="margin">Keywords will appear here once you add them.</h4>
-          )}
+          }
           <div className="margin-top">
-          <FormControl>
-            <FormLabel>Would you like to pick the sources?</FormLabel>
-            <RadioGroup
-              aria-labelledby="demo-controlled-radio-buttons-group"
-              name="controlled-radio-buttons-group"
-              value={values.chooseSources}
-              onChange={handleChange('chooseSources')}
-            >
-              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-              <FormControlLabel value="no" control={<Radio />} label="No" />
-            </RadioGroup>
-          </FormControl>
+            <FormControl>
+              <FormLabel>Would you like to pick the sources?</FormLabel>
+              <RadioGroup
+                aria-labelledby="demo-controlled-radio-buttons-group"
+                name="controlled-radio-buttons-group"
+                value={values.chooseSources}
+                onChange={handleChange('chooseSources')}
+              >
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No" />
+              </RadioGroup>
+            </FormControl>
           </div>
-          {values.chooseSources && values.chooseSources === "yes" ? 
-                  <div>
-                  <FormControl style={{ display: 'flex' }}>
-                    <FormLabel component="legend">Sources</FormLabel>
-                    <FormGroup>
+          {values.chooseSources && values.chooseSources === 'yes' ? (
+            <div>
+              <FormControl style={{ display: 'flex' }}>
+                <FormLabel component="legend">Sources</FormLabel>
+                <FormGroup>
+                  <Grid
+                    container
+                    // spacing={{ xs: 2 }}
+                    columns={{ xs: 4, sm: 8 }}
+                  >
+                    {options.map((opt, index) => (
                       <Grid
-                        container
-                        // spacing={{ xs: 2 }}
-                        columns={{ xs: 4, sm: 8 }}
+                        item
+                        xs={6}
+                        sm={4}
+                        md={4}
+                        key={index}
+                        textAlign="left"
                       >
-                        {options.map((opt, index) => (
-                          <Grid
-                            item
-                            xs={6}
-                            sm={4}
-                            md={4}
-                            key={index}
-                            textAlign="left"
-                          >
-                            <Field
-                              type="checkbox"
-                              component={CheckboxWithLabel}
-                              name="sources"
-                              key={opt.value}
-                              value={opt.value}
-                              Label={{ label: opt.label }}
-                            />
-                          </Grid>
-                        ))}
+                        <Field
+                          type="checkbox"
+                          component={CheckboxWithLabel}
+                          name="sources"
+                          key={opt.value}
+                          value={opt.value}
+                          Label={{ label: opt.label }}
+                        />
                       </Grid>
-                    </FormGroup>
-                  </FormControl>
-                </div> : null  
-        }
+                    ))}
+                  </Grid>
+                </FormGroup>
+              </FormControl>
+            </div>
+          ) : null}
 
           <br />
           <h3>

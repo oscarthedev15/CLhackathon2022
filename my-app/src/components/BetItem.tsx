@@ -1,3 +1,4 @@
+import { CardHeader, Stack, Container } from '@mui/material'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
@@ -109,46 +110,88 @@ function BetItem({ bet }: { bet: Bet }) {
   }
 
   return (
-    <Card sx={{ minWidth: 275 }}>
-      <CardContent>
-        <Typography variant="h5" component="div">
-          {bet.title}
-        </Typography>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Keywords: {keywords.join(', ')}
-        </Typography>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Sources: {sources.join(', ')}
-        </Typography>
+    <Card sx={{ minWidth: 275, marginBottom: 5 }}>
+      <Stack
+        direction="row"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignContent: 'space-between',
+        }}
+      >
+        <CardHeader style={{ width: '70%' }} title={bet.title} />
+        <CardContent style={{ width: '30%' }}>
+          <Typography
+            align="right"
+            sx={{ fontSize: 14, mb: 0 }}
+            color="text.secondary"
+            gutterBottom
+          >
+            Created {convertToDate(bet.createdDate)}
+          </Typography>
+        </CardContent>
+      </Stack>
+      <CardContent sx={{ paddingTop: 0 }}>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          Bet specifies {bet.countArts} articles as condition of bet
+          Bet Conditions
         </Typography>
+        <Container>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Keywords: {keywords.join(', ')}
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Sources: {sources.join(', ')}
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary">
+            Bet specifies at least {bet.countArts} articles as condition of bet
+          </Typography>
+        </Container>
+      </CardContent>
+      <CardContent style={{ paddingTop: 0 }}>
+        {bet.accepted ? (
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Bet was accepted on {convertToDate(bet.startDate)}
+          </Typography>
+        ) : (
+          <Typography sx={{ mb: 1.5 }} color="text.secondary">
+            This bet can be accepted until 11:59pm on{' '}
+            {convertToDate(bet.acceptDeadline)}
+          </Typography>
+        )}
+
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          This bet can be accepted until {convertToDate(bet.acceptDeadline)} by
-          11:59pm
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          This bet's outcome will be determined by{' '}
-          {convertToDate(bet.outcomeDeadline)} at 11:59pm
+          This bet's outcome will be determined by 11:59pm on{' '}
+          {convertToDate(bet.outcomeDeadline)}
         </Typography>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
           Creator wagered {web3.utils.fromWei(bet.amount)} ETH
         </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          Amount needed to accept is {web3.utils.fromWei(bet.acceptValue)} ETH
-        </Typography>
+
+        {bet.accepted ? (
+          <Typography sx={{ mb: 1.5 }} color="text.secondary">
+            Acceptor wagered {web3.utils.fromWei(bet.acceptValue)} ETH
+          </Typography>
+        ) : (
+          <Typography sx={{ mb: 1.5 }} color="text.secondary">
+            Acceptor must wager {web3.utils.fromWei(bet.acceptValue)} ETH
+          </Typography>
+        )}
+
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
           You will also be charged a service fee of{' '}
-          {web3.utils.fromWei(serviceFee.toString())} when accepting the bet
+          {web3.utils.fromWei(serviceFee.toString())} ETH when accepting the bet
         </Typography>
       </CardContent>
       <CardActions>
-        <Button onClick={() => acceptBet(bet.id, bet.apiURL)} size="small">
-          Accept Bet
-        </Button>
-        <Button onClick={() => checkBet(bet.id)} size="small">
-          Check Bet
-        </Button>
+        {bet.accepted ? (
+          <Button onClick={() => checkBet(bet.id)} size="small">
+            Check Bet
+          </Button>
+        ) : (
+          <Button onClick={() => acceptBet(bet.id, bet.apiURL)} size="small">
+            Accept Bet
+          </Button>
+        )}
       </CardActions>
     </Card>
   )

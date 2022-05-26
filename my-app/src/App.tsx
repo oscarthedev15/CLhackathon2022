@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router';
-import './App.css';
-import { useMoralis } from 'react-moralis';
-import ResponsiveAppBar from './components/Nav';
-import Home from './components/Home';
-import CreateBet from './components/CreateBet';
-import BetMarketplace from './components/BetMarketplace';
-import YourStats from './components/YourStats';
-import betgame from './betgame';
-import web3 from './web3';
+import { useEffect, useState } from 'react'
+import { Route, Routes } from 'react-router'
+import './App.css'
+import { useMoralis } from 'react-moralis'
+import ResponsiveAppBar from './components/Nav'
+import Home from './components/Home'
+import CreateBet from './components/CreateBet'
+import BetMarketplace from './components/BetMarketplace'
+import YourStats from './components/YourStats'
+import betgame from './betgame'
+import web3 from './web3'
 
 function App() {
   const {
@@ -20,8 +20,8 @@ function App() {
     logout,
   } = useMoralis()
 
-  const [balance, setBalance] = useState('');
-  const [allBets, setAllBets] = useState(new Map());
+  const [balance, setBalance] = useState('')
+  const [allBets, setAllBets] = useState(new Map())
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -65,21 +65,18 @@ function App() {
         <Route path="/Bet%20Marketplace" element={<BetMarketplace />} />
         <Route path="/Your%20Stats" element={<YourStats />} />
       </Routes>
-      <h1>Moralis Hello World!</h1>
+      {/* <h1>Moralis Hello World!</h1>
       <button onClick={login} disabled={isAuthenticated}>
         Moralis Metamask Login
       </button>
       <button onClick={logOut} disabled={isAuthenticating || !isAuthenticated}>
         Logout
       </button>
-      <button onClick={checkContract}>Click to test contract connection</button>
       {isAuthenticated ? (
         <h1>{user!.get('ethAddress')}</h1>
       ) : (
         <h1>User is not authenticated!</h1>
-      )}
-      <h1>{balance}</h1>
-      <h1>{allBets}</h1>
+      )} */}
     </div>
   )
 }
