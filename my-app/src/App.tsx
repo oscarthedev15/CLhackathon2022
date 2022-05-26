@@ -13,9 +13,9 @@ function App() {
       <ResponsiveAppBar />
         <Routes>
           <Route path="/"  element={<Home />} />
-          <Route path="/CLHackathon2022/CreateBet" element={<CreateBet />} />
-          <Route path="/CLHackathon2022/BetMarketplace" element={<BetMarketplace />} />
-          <Route path="/CLHackathon2022/Chat" element={<Chat />} />
+          <Route path="/CreateBet" element={<CreateBet />} />
+          <Route path="/BetMarketplace" element={<BetMarketplace />} />
+          <Route path="/Chat" element={<Chat />} />
         </Routes>
     </div>
   )

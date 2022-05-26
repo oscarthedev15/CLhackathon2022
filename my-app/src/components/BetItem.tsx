@@ -183,7 +183,7 @@ function BetItem({ bet }: { bet: Bet }) {
             >
               Keywords: {keywords.join(', ')}
             </Typography>
-            {sources.length == 0 ? (
+            {sources.length === 0 ? (
               <Typography
                 sx={{ fontSize: 14 }}
                 color="text.secondary"

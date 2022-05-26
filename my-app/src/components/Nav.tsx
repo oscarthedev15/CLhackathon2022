@@ -113,7 +113,7 @@ const ResponsiveAppBar = () => {
                   <Typography textAlign="center">
                     <Link
                       style={{ textDecoration: 'none', color: 'black' }}
-                      to={`/CLhackathon2022/${pagesMap.get(pages[0])}`}
+                      to={`/${pagesMap.get(pages[0])}`}
                     >
                       {pages[0]}
                     </Link>
@@ -125,7 +125,7 @@ const ResponsiveAppBar = () => {
                   <Typography textAlign="center">
                     <Link
                       style={{ textDecoration: 'none', color: 'black' }}
-                      to={`/CLhackathon2022/${pagesMap.get(pages[1])}`}
+                      to={`/${pagesMap.get(pages[1])}`}
                     >
                       {pages[1]}
                     </Link>
@@ -170,7 +170,7 @@ const ResponsiveAppBar = () => {
               >
                 <Link
                   style={{ textDecoration: 'none', color: 'white' }}
-                  to={`/CLhackathon2022/${pagesMap.get(pages[0])}`}
+                  to={`/${pagesMap.get(pages[0])}`}
                 >
                   {pages[0]}
                 </Link>
@@ -185,7 +185,7 @@ const ResponsiveAppBar = () => {
               >
                 <Link
                   style={{ textDecoration: 'none', color: 'white' }}
-                  to={`/CLhackathon2022/${pagesMap.get(pages[1])}`}
+                  to={`/${pagesMap.get(pages[1])}`}
                 >
                   {pages[1]}
                 </Link>
@@ -210,7 +210,7 @@ const ResponsiveAppBar = () => {
               >
                 <Link
                   style={{ textDecoration: 'none', color: 'white' }}
-                  to={`/CLhackathon2022/${pagesMap.get(pages[2])}`}
+                  to={`/${pagesMap.get(pages[2])}`}
                 >
                   {pages[2]}
                 </Link>
