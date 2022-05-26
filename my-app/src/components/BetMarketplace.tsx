@@ -134,7 +134,7 @@ function BetMarketplace() {
   }
 
   return (
-    <div style={{ margin: '3%' }}>
+    <div style={{ margin: '5%' }}>
       <h1>Bet Marketplace</h1>
       <Box sx={{ width: '100%' }}>
         <Box>
