@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router';
+//import { Route, Routes } from 'react-router';
+import {BrowserRouter as Router,Routes,Route} from 'react-router-dom'
+
 import './App.css';
 import { useMoralis } from 'react-moralis';
 import ResponsiveAppBar from './components/Nav';
@@ -57,12 +59,14 @@ function App() {
   return (
     <div>
       <ResponsiveAppBar />
-      <Routes>
-        <Route path="/CLHackathon2022" element={<Home />} />
-        <Route path="/CLHackathon2022/CreateBet" element={<CreateBet />} />
-        <Route path="/CLHackathon2022/BetMarketplace" element={<BetMarketplace />} />
-        <Route path="/CLHackathon2022/Chat" element={<Chat />} />
-      </Routes>
+      <Router>
+        <Routes>
+          <Route path="/CLHackathon2022"  element={<Home />} />
+          <Route path="/CLHackathon2022/CreateBet" element={<CreateBet />} />
+          <Route path="/CLHackathon2022/BetMarketplace" element={<BetMarketplace />} />
+          <Route path="/CLHackathon2022/Chat" element={<Chat />} />
+        </Routes>
+      </Router>
       
     </div>
   )
