@@ -1,5 +1,4 @@
 import {
-  FormHelperText,
   Typography,
   Stack,
   TextField,
@@ -10,7 +9,6 @@ import {
   FormControl,
   FormLabel,
   Grid,
-  OutlinedInput,
   RadioGroup,
   FormControlLabel,
   Radio,
@@ -20,7 +18,7 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { Field, Form, Formik } from 'formik'
 import { CheckboxWithLabel } from 'formik-material-ui'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import betgame from '../betgame'
 import web3 from '../web3'
 import * as Yup from 'yup'
@@ -188,13 +186,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
     console.log(k)
   }
 
-  const deleteKeyword = (v: string[], k: string) => {
-    console.log('Deleting keyword', k)
-    v = v.filter((e) => e !== k)
-    console.log(v)
-  }
-
-  const today = new Date()
+  const today = new Date();
   today.setHours(0, 0, 0, 0)
 
   const FormErrorsSchema = Yup.object().shape({
