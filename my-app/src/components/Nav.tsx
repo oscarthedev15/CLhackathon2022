@@ -123,7 +123,7 @@ const ResponsiveAppBar = () => {
                   <Typography textAlign="center">
                     <Link
                       style={{ textDecoration: 'none', color: 'black' }}
-                      to={`/${pagesMap.get(pages[0])}`}
+                      to={`/CLHackathon2022/${pagesMap.get(pages[0])}`}
                     >
                       {pages[0]}
                     </Link>
@@ -135,7 +135,7 @@ const ResponsiveAppBar = () => {
                   <Typography textAlign="center">
                     <Link
                       style={{ textDecoration: 'none', color: 'black' }}
-                      to={`/${pagesMap.get(pages[1])}`}
+                      to={`/CLHackathon2022/${pagesMap.get(pages[1])}`}
                     >
                       {pages[1]}
                     </Link>
@@ -180,7 +180,7 @@ const ResponsiveAppBar = () => {
               >
                 <Link
                   style={{ textDecoration: 'none', color: 'white' }}
-                  to={`/${pagesMap.get(pages[0])}`}
+                  to={`/CLHackathon2022/${pagesMap.get(pages[0])}`}
                 >
                   {pages[0]}
                 </Link>
@@ -195,7 +195,7 @@ const ResponsiveAppBar = () => {
               >
                 <Link
                   style={{ textDecoration: 'none', color: 'white' }}
-                  to={`/${pagesMap.get(pages[1])}`}
+                  to={`/CLHackathon2022/${pagesMap.get(pages[1])}`}
                 >
                   {pages[1]}
                 </Link>
