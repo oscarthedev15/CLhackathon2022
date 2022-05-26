@@ -70,7 +70,7 @@ const ResponsiveAppBar = () => {
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href="/CLhackathon2022"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
