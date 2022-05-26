@@ -101,7 +101,7 @@ function CreateBet() {
   }
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div>
       <MyForm
         onSubmit={({
           title,
@@ -123,7 +123,6 @@ function CreateBet() {
           console.log('Accept:', acceptAmountStr)
           const betAmountStr = betAmount.toString()
           console.log('Bet:', betAmountStr)
-
           createBet(
             apiURL,
             acceptAmountStr,

@@ -1,5 +1,5 @@
 import { FormHelperText, Typography, Stack, TextField, InputAdornment, 
-  FormGroup, Chip, Button, FormControl, FormLabel, Grid, OutlinedInput, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+  FormGroup, Chip, Button, FormControl, FormLabel, Grid, OutlinedInput, RadioGroup, FormControlLabel, Radio, Card, CardContent, Box } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -209,341 +209,365 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
       .integer('You can only specify integers.')
       .min(1, 'You cannot specify less than 1 article.')
       .required('Required.'),
-    apiKeywords: Yup.array()
-      .min(1, 'You must specify at least 1 keyword.')
+    apiKeywords: Yup.array().test('has-keyword', 'You must specify at least 1 keyword.',
+      function(value) {
+        // console.log(value?.length === 0);
+        // console.log(this.parent.currKeyword);
+        if((value?.length === 0 && this.parent.currKeyword === undefined))
+          return false;
+        else
+          return true;
+      }
+    ),  
+
+    // apiKeywords: Yup.array()
+    //   .min(1, 'You must specify at least 1 keyword.'),
+    // currKeyword: Yup.string()
+    //   .min(1)
   });
 
 
 
   return (
-    <Formik
-      initialValues={{
-        title: '',
-        acceptDeadline: new Date(Date.now()),
-        outcomeDeadline: new Date(Date.now()),
-        acceptAmount: 0.0, //should these be initialized to minBet?
-        betAmount: 0.0, //should these be initialized to minBet?
-        numArticles: 1,
-        currKeyword: '',
-        apiKeywords: [],
-        chooseSources: "no",
-        sources: [],
-      }}
-      validationSchema={FormErrorsSchema}
-      onSubmit={(values) => {
-        if(values.chooseSources === 'no') {
-          const allSources = options.map(option => option.value);
-          values.sources = allSources as any;
-        }
-        onSubmit(values)
-      }}
-    >
-      {({ values, handleChange, handleBlur, setFieldValue, errors, touched }) => (
-        <Form>
-          <div>
-            <Typography variant="h2" m={2}> 
-              Create a Bet
-            </Typography>
-          </div>
-          <div> 
-            <TextField
-              placeholder="Bet Title"
-              label="Title"
-              multiline
-              maxRows={4}
-              value={values.title}
-              onChange={handleChange('title')}
-              onBlur={handleBlur('title')}
-              margin={'normal'}
-              className="spacing"
-              error={touched.title && Boolean(errors.title)}
-              helperText={touched.title && errors.title}
-            />
-          </div>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <div className="spacing">
-              <DesktopDatePicker
-                label="Accept by date"
-                inputFormat="MM/dd/yyyy"
-                value={values.acceptDeadline}
-                onChange={(value) => {
-                  setFieldValue('acceptDeadline', value)
-                }}
-                renderInput={(params) => ( 
-                <TextField 
-                {...params}
-                onChange={handleChange('acceptDeadline')}
-                onBlur={handleBlur('acceptDeadline')}
-                error={
-                  touched.acceptDeadline && Boolean(errors.acceptDeadline)
-                }
-                helperText={
-                  touched.acceptDeadline as string && errors.acceptDeadline as string
-                } 
-                /> )}
-                //errorText={touched.acceptDeadline && Boolean(errors.acceptDeadline)}
-                //helperText={touched.acceptDeadline && errors.acceptDeadline}
+    <Card sx={{ width: "90%", margin: 10, border: "1px solid purple"}}>
+              <CardContent>
+        <Formik
+        initialValues={{
+          title: '',
+          acceptDeadline: new Date(Date.now()),
+          outcomeDeadline: new Date(Date.now()),
+          acceptAmount: 0.0, //should these be initialized to minBet?
+          betAmount: 0.0, //should these be initialized to minBet?
+          numArticles: 1,
+          currKeyword: '',
+          apiKeywords: [],
+          chooseSources: "no",
+          sources: [],
+        }}
+        validationSchema={FormErrorsSchema}
+        onSubmit={ (values, {resetForm}) => {
+          if(values.apiKeywords.length === 0) {
+            addKeyword(values.apiKeywords, values.currKeyword)
+          }
+          onSubmit(values);
+          //resetForm(); //Will reset form - use this after metamask success
+        }}
+      >
+        {({ values, handleChange, handleBlur, setFieldValue, errors, touched, submitForm }) => (
+          <Form>
+            <div>
+              <Typography variant="h2"> 
+                Create a Bet
+              </Typography>
+              <Typography component="div">
+                <Box sx={{ fontStyle: 'italic', m: 1 }}>All fields are required.</Box>
+              </Typography>
+            </div>
+            <div> 
+              <TextField
+                placeholder="Bet Title"
+                label="Title"
+                multiline
+                maxRows={4}
+                value={values.title}
+                onChange={handleChange('title')}
+                onBlur={handleBlur('title')}
+                //margin={'normal'}
+                className="spacing"
+                error={touched.title && Boolean(errors.title)}
+                helperText={touched.title && errors.title}
               />
             </div>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <div className="spacing">
+                <DesktopDatePicker
+                  label="Accept by date"
+                  minDate={new Date()}
+                  inputFormat="MM/dd/yyyy"
+                  value={values.acceptDeadline}
+                  onChange={(value) => {
+                    setFieldValue('acceptDeadline', value)
+                  }}
+                  renderInput={(params) => ( 
+                  <TextField 
+                  {...params}
+                  className="calendar-input"
+                  onChange={handleChange('acceptDeadline')}
+                  onBlur={handleBlur('acceptDeadline')}
+                  error={
+                    touched.acceptDeadline && Boolean(errors.acceptDeadline)
+                  }
+                  helperText={
+                    touched.acceptDeadline as string && errors.acceptDeadline as string
+                  } 
+                  /> )}
+                  //errorText={touched.acceptDeadline && Boolean(errors.acceptDeadline)}
+                  //helperText={touched.acceptDeadline && errors.acceptDeadline}
+                />
+              </div>
+              <div className="spacing">
+                <DesktopDatePicker
+                  label="Bet expiration date"
+                  inputFormat="MM/dd/yyyy"
+                  value={values.outcomeDeadline}
+                  minDate={new Date()}
+                  onChange={(value) => {
+                    setFieldValue('outcomeDeadline', value)
+                  }}
+                  renderInput={(params) => <TextField {...params}
+                  onChange={handleChange('outcomeDeadline')}
+                  onBlur={handleBlur('outcomeDeadline')}
+                  className="calendar-input"
+                  error={
+                    touched.outcomeDeadline && Boolean(errors.outcomeDeadline)
+                  }
+                  helperText={
+                    touched.outcomeDeadline as string && errors.outcomeDeadline as string
+                  } 
+                  //helperText={touched.outcomeDeadline && errors.outcomeDeadline}
+                  />}
+                />
+              </div>
+            </LocalizationProvider>
+  {/* 
             <div className="spacing">
-              <DesktopDatePicker
-                label="Bet expiration date"
-                inputFormat="MM/dd/yyyy"
-                value={values.outcomeDeadline}
-                onChange={(value) => {
-                  setFieldValue('outcomeDeadline', value)
-                }}
-                renderInput={(params) => <TextField {...params}
-                onChange={handleChange('outcomeDeadline')}
-                onBlur={handleBlur('outcomeDeadline')}
-                error={
-                  touched.outcomeDeadline && Boolean(errors.outcomeDeadline)
+              <FormControl id="betAmount">
+              <p>Minimum bet amount is {minimumBet} ETH</p>
+              <FormHelperText id="outlined-weight-helper-text">
+                  Bet Amount
+              </FormHelperText>
+                <OutlinedInput
+                  id="betAmount"
+                  // placeholder="0.001"
+                  value={values.betAmount}
+                  onChange={handleChange('betAmount')}
+                  onBlur={handleBlur('betAmount')}
+                  endAdornment={
+                    <InputAdornment position="end">ETH</InputAdornment>
+                  }
+                  aria-describedby="outlined-weight-helper-text"
+                  // inputProps={{
+                  //   'aria-label': 'weight',
+                  // }}
+                  error={touched.betAmount && Boolean(errors.betAmount)}
+                />
+                            {
+                  <FormHelperText error>
+                    {errors.betAmount}
+                  </FormHelperText>
                 }
-                helperText={
-                  touched.outcomeDeadline as string && errors.outcomeDeadline as string
-                } 
-                //helperText={touched.outcomeDeadline && errors.outcomeDeadline}
-                />}
-              />
+              </FormControl>
             </div>
-          </LocalizationProvider>
-{/* 
-          <div className="spacing">
-            <FormControl id="betAmount">
-            <p>Minimum bet amount is {minimumBet} ETH</p>
-            <FormHelperText id="outlined-weight-helper-text">
-                Bet Amount
-            </FormHelperText>
-              <OutlinedInput
-                id="betAmount"
-                // placeholder="0.001"
+            */}
+
+            <div> 
+              <TextField
+                placeholder="Bet Amount"
+                label="Bet Amount"
                 value={values.betAmount}
                 onChange={handleChange('betAmount')}
                 onBlur={handleBlur('betAmount')}
-                endAdornment={
-                  <InputAdornment position="end">ETH</InputAdornment>
-                }
-                aria-describedby="outlined-weight-helper-text"
-                // inputProps={{
-                //   'aria-label': 'weight',
-                // }}
+                //margin={'normal'}
+                className="amount-spacing"
                 error={touched.betAmount && Boolean(errors.betAmount)}
+                helperText={touched.betAmount && errors.betAmount}
+                InputProps={{ endAdornment: <InputAdornment position="end">ETH</InputAdornment> }}
               />
-                          {
-                <FormHelperText error>
-                  {errors.betAmount}
-                </FormHelperText>
-              }
-            </FormControl>
-          </div>
-           */}
-
-          <div> 
-            <TextField
-              placeholder="Bet Amount"
-              label="Bet Amount"
-              value={values.betAmount}
-              onChange={handleChange('betAmount')}
-              onBlur={handleBlur('betAmount')}
-              margin={'normal'}
-              className="spacing"
-              error={touched.betAmount && Boolean(errors.betAmount)}
-              helperText={touched.betAmount && errors.betAmount}
-              InputProps={{ endAdornment: <InputAdornment position="end">ETH</InputAdornment> }}
-            />
-          </div>
-          <div> 
-            <TextField
-              placeholder="Accept Value"
-              label="Accept Value"
-              value={values.acceptAmount}
-              onChange={handleChange('acceptAmount')}
-              onBlur={handleBlur('acceptAmount')}
-              margin={'normal'}
-              className="spacing"
-              error={touched.acceptAmount && Boolean(errors.acceptAmount)}
-              helperText={touched.acceptAmount && errors.acceptAmount}
-              InputProps={{ endAdornment: <InputAdornment position="end">ETH</InputAdornment> }}
-            />
-          </div>
-          {/* <div className="spacing">
-            <FormControl id="acceptAmount">
-            <FormHelperText id="outlined-weight-helper-text">
-                Accept Value
-              </FormHelperText>
-              <OutlinedInput
-                id="acceptAmount"
-                placeholder="0.001"
+            </div>
+            <div style={{marginTop: "20px"}}> 
+              <TextField
+                placeholder="Accept Value"
+                label="Accept Value"
                 value={values.acceptAmount}
                 onChange={handleChange('acceptAmount')}
                 onBlur={handleBlur('acceptAmount')}
-                endAdornment={
-                  <InputAdornment position="end">ETH</InputAdornment>
-                }
-                aria-describedby="outlined-weight-helper-text"
-                // inputProps={{
-                //   'aria-label': 'weight',
-                // }}
+                //margin={'normal'}
+                className="amount-spacing"
                 error={touched.acceptAmount && Boolean(errors.acceptAmount)}
+                helperText={touched.acceptAmount && errors.acceptAmount}
+                InputProps={{ endAdornment: <InputAdornment position="end">ETH</InputAdornment> }}
               />
-              {
-                <FormHelperText error>
-                  {errors.acceptAmount}
+            </div>
+            {/* <div className="spacing">
+              <FormControl id="acceptAmount">
+              <FormHelperText id="outlined-weight-helper-text">
+                  Accept Value
                 </FormHelperText>
-              }            
-              </FormControl>
-          </div> */}
+                <OutlinedInput
+                  id="acceptAmount"
+                  placeholder="0.001"
+                  value={values.acceptAmount}
+                  onChange={handleChange('acceptAmount')}
+                  onBlur={handleBlur('acceptAmount')}
+                  endAdornment={
+                    <InputAdornment position="end">ETH</InputAdornment>
+                  }
+                  aria-describedby="outlined-weight-helper-text"
+                  // inputProps={{
+                  //   'aria-label': 'weight',
+                  // }}
+                  error={touched.acceptAmount && Boolean(errors.acceptAmount)}
+                />
+                {
+                  <FormHelperText error>
+                    {errors.acceptAmount}
+                  </FormHelperText>
+                }            
+                </FormControl>
+            </div> */}
 
-          <div className="spacing"> 
-            <TextField
-              placeholder="Number of Articles"
-              label="Number of Articles"
-              value={values.numArticles}
-              onChange={handleChange('numArticles')}
-              onBlur={handleBlur('numArticles')}
-              margin={'normal'}
-              
-              error={touched.numArticles && Boolean(errors.numArticles)}
-              helperText={touched.numArticles && errors.numArticles}
-            />
-          </div>
-          {/* <div className="spacing">
-            <FormControl>
-            <FormHelperText id="outlined-weight-helper-text">
-                Number of Articles
-              </FormHelperText>
-              <OutlinedInput
-                id="outlined-adornment-weight"
-                // placeholder="1"
+            <div style={{marginTop: "20px"}}> 
+              <TextField
+                placeholder="Number of Articles"
+                label="Number of Articles"
                 value={values.numArticles}
                 onChange={handleChange('numArticles')}
-                // endAdornment={
-                //   <InputAdornment position="end">ETH</InputAdornment>
-                // }
-                aria-describedby="outlined-weight-helper-text"
-                // inputProps={{
-                //   'aria-label': 'weight',
-                // }}
+                onBlur={handleBlur('numArticles')}
+                //margin={'normal'}
+                className="amount-spacing"
+                error={touched.numArticles && Boolean(errors.numArticles)}
+                helperText={touched.numArticles && errors.numArticles}
               />
-            </FormControl>
-            <p>
-              Change this value only if you specified a number of articles as a
-              condition of the bet.
-            </p>
-          </div> */}
-          <div>
-            <TextField
-              placeholder='i.e. "Pop Book"'
-              label="Keywords"
-              value={values.currKeyword}
-              onChange={handleChange('currKeyword')}
-              onBlur={handleBlur('currKeyword')}
-              className="spacing"
-              error={touched.currKeyword && Boolean(errors.apiKeywords)}
-              helperText={touched.currKeyword && errors.apiKeywords}
-            />
-          </div>
-          <div>
-          <Button
-              onClick={() => {
-                addKeyword(values.apiKeywords, values.currKeyword)
-                setFieldValue('currKeyword', '')
-              }}
-              variant="outlined"
-              style={{marginTop: "10px"}}
-            >
-              Add
-            </Button>
-            {/* <p>
-              Enter the keywords that will be used to check news headlines,
-              hitting enter after each entry. Maximum number of keywords is 8.
-            </p> */}
-          </div>
-          <br />
-          {values.apiKeywords && values.apiKeywords.length > 0 ? (
-            <div className="margin-bottom">
-              {/* <h4>Keywords:</h4> */}
-              <Stack direction="row" spacing={1} justifyContent="center">
-                {values.apiKeywords.map((keyword, index) => (
-                  <Chip
-                    key={index}
-                    label={keyword}
-                    variant="outlined"
-                    onDelete={() => {
-                      setFieldValue(
-                        'apiKeywords',
-                        values.apiKeywords.filter((e: string) => e !== keyword), //if theres a duplicate word this will delete them both
-                      )
-                    }}
-                  />
-                ))}
-              </Stack>
             </div>
-          ) : (
-            null
-            // <h4 className="margin">Keywords will appear here once you add them.</h4>
-          )}
-          <div className="margin-top">
-          <FormControl>
-            <FormLabel>Would you like to pick the sources?</FormLabel>
-            <RadioGroup
-              aria-labelledby="demo-controlled-radio-buttons-group"
-              name="controlled-radio-buttons-group"
-              value={values.chooseSources}
-              onChange={handleChange('chooseSources')}
-            >
-              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-              <FormControlLabel value="no" control={<Radio />} label="No" />
-            </RadioGroup>
-          </FormControl>
-          </div>
-          {values.chooseSources && values.chooseSources === "yes" ? 
-                  <div>
-                  <FormControl style={{ display: 'flex' }}>
-                    <FormLabel component="legend">Sources</FormLabel>
-                    <FormGroup>
-                      <Grid
-                        container
-                        // spacing={{ xs: 2 }}
-                        columns={{ xs: 4, sm: 8 }}
-                      >
-                        {options.map((opt, index) => (
-                          <Grid
-                            item
-                            xs={6}
-                            sm={4}
-                            md={4}
-                            key={index}
-                            textAlign="left"
-                          >
-                            <Field
-                              type="checkbox"
-                              component={CheckboxWithLabel}
-                              name="sources"
-                              key={opt.value}
-                              value={opt.value}
-                              Label={{ label: opt.label }}
-                            />
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </FormGroup>
-                  </FormControl>
-                </div> : null  
-        }
+            {/* <div className="spacing">
+              <FormControl>
+              <FormHelperText id="outlined-weight-helper-text">
+                  Number of Articles
+                </FormHelperText>
+                <OutlinedInput
+                  id="outlined-adornment-weight"
+                  // placeholder="1"
+                  value={values.numArticles}
+                  onChange={handleChange('numArticles')}
+                  // endAdornment={
+                  //   <InputAdornment position="end">ETH</InputAdornment>
+                  // }
+                  aria-describedby="outlined-weight-helper-text"
+                  // inputProps={{
+                  //   'aria-label': 'weight',
+                  // }}
+                />
+              </FormControl>
+              <p>
+                Change this value only if you specified a number of articles as a
+                condition of the bet.
+              </p>
+            </div> */}
+            <div className="margin-top">
+              <TextField
+                placeholder='i.e. "Pop Book"'
+                label="Keywords"
+                value={values.currKeyword}
+                onChange={handleChange('currKeyword')}
+                onBlur={handleBlur('currKeyword')}
+                className="amount-spacing"
+                error={touched.currKeyword && Boolean(errors.apiKeywords)}
+                helperText={touched.currKeyword && errors.apiKeywords}
+              />
+            <Button
+                onClick={() => {
+                  addKeyword(values.apiKeywords, values.currKeyword)
+                  setFieldValue('currKeyword', '')
+                }}
+                variant="outlined"
+                style={{marginTop: "10px", marginLeft: "10px"}}
+              >
+                Add
+              </Button>
+              {/* <p>
+                Enter the keywords that will be used to check news headlines,
+                hitting enter after each entry. Maximum number of keywords is 8.
+              </p> */}
+            </div>
+            <br />
+            {values.apiKeywords && values.apiKeywords.length > 0 ? (
+              <div className="margin-bottom">
+                {/* <h4>Keywords:</h4> */}
+                <Stack direction="row" spacing={1}>
+                  {values.apiKeywords.map((keyword, index) => (
+                    <Chip
+                      key={index}
+                      label={keyword}
+                      variant="outlined"
+                      onDelete={() => {
+                        setFieldValue(
+                          'apiKeywords',
+                          values.apiKeywords.filter((e: string) => e !== keyword), //if theres a duplicate word this will delete them both
+                        )
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </div>
+            ) : (
+              null
+              // <h4 className="margin">Keywords will appear here once you add them.</h4>
+            )}
+            <div className="margin-top">
+            <FormControl>
+              <FormLabel sx={{color: 'text.primary'}}>Would you like to pick the sources?</FormLabel>
+              <RadioGroup
+                aria-labelledby="demo-controlled-radio-buttons-group"
+                name="controlled-radio-buttons-group"
+                value={values.chooseSources}
+                onChange={handleChange('chooseSources')}
+              >
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No" />
+              </RadioGroup>
+            </FormControl>
+            </div>
+            {values.chooseSources && values.chooseSources === "yes" ? 
+                    <div>
+                    <FormControl style={{ display: 'flex' }}>
+                      <FormLabel component="legend">Sources</FormLabel>
+                      <FormGroup>
+                        <Grid
+                          container
+                          // spacing={{ xs: 2 }}
+                          columns={{ xs: 4, sm: 8 }}
+                        >
+                          {options.map((opt, index) => (
+                            <Grid
+                              item
+                              xs={6}
+                              sm={4}
+                              md={4}
+                              key={index}
+                              textAlign="left"
+                            >
+                              <Field
+                                type="checkbox"
+                                component={CheckboxWithLabel}
+                                name="sources"
+                                key={opt.value}
+                                value={opt.value}
+                                Label={{ label: opt.label }}
+                              />
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </FormGroup>
+                    </FormControl>
+                  </div> : null  
+          }
 
-          <br />
-          <h3>
-            In addition to the bet amount of {values.betAmount} ETH you
-            specified, an additional service fee of {serviceFee} ETH will be
-            added to the transaction total.
-          </h3>
-          <Button type="submit" variant="outlined">
-            Create
-          </Button>
-          <pre>{JSON.stringify(values, null, 2)}</pre>
-        </Form>
-      )}
-    </Formik>
+            <br />
+            <i>
+              Note: A service fee of {serviceFee} ETH will be
+              added to the transaction total.
+            </i>
+            <br />
+            <br />
+            <Button type="button" variant="outlined" onClick={submitForm}>
+              Create
+            </Button>
+            {/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
+          </Form>
+        )}
+      </Formik>
+        </CardContent>
+    </Card>
+
   )
 }
