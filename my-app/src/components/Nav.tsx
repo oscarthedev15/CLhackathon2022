@@ -172,7 +172,7 @@ const ResponsiveAppBar = () => {
             Home
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {/* {pages.map((page) => ( */}
+          
               <Button
                 key={pages[0]}
                 onClick={handleCloseNavMenu}
@@ -185,7 +185,9 @@ const ResponsiveAppBar = () => {
                   {pages[0]}
                 </Link>
               </Button>
+           
               {isAuthenticated ? (
+                
                 <Button
                 key={pages[1]}
                 onClick={handleCloseNavMenu}
@@ -198,7 +200,9 @@ const ResponsiveAppBar = () => {
                   {pages[1]}
                 </Link>
               </Button>
+            
               ) : (
+                <Tooltip title="Sign In">
                 <Button
                 key={pages[1]}
                 onClick={login}
@@ -206,6 +210,7 @@ const ResponsiveAppBar = () => {
               >
                   {pages[1]}
               </Button>
+              </Tooltip>
               )}
               
             {/* ))} */}
