@@ -1,14 +1,14 @@
-import { FormHelperText, Typography, Stack, TextField, InputAdornment, 
-  FormGroup, Chip, Button, FormControl, FormLabel, Grid, OutlinedInput, RadioGroup, FormControlLabel, Radio, Card, CardContent, Box } from '@mui/material';
+import { Typography, Stack, TextField, InputAdornment, 
+  FormGroup, Chip, Button, FormControl, FormLabel, Grid, RadioGroup, FormControlLabel, Radio, Card, CardContent, Box } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { Field, Form, Formik } from 'formik'
 import { CheckboxWithLabel } from 'formik-material-ui'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import betgame from '../betgame'
 import web3 from '../web3'
-import * as Yup from 'yup';
+import * as Yup from 'yup'
 
 interface FormValues {
   title: string
@@ -173,27 +173,27 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
     console.log(k)
   }
 
-  const deleteKeyword = (v: string[], k: string) => {
-    console.log('Deleting keyword', k)
-    v = v.filter((e) => e !== k)
-    console.log(v)
-  }
-
   const today = new Date();
   today.setHours(0, 0, 0, 0)
 
   const FormErrorsSchema = Yup.object().shape({
     title: Yup.string()
       .min(2, 'Minimum 2 characters required.')
-      .max(50, 'Maximum 50 characters allowed.')
+      .max(80, 'Maximum 80 characters allowed.')
       .required('Required.'),
     acceptDeadline: Yup.date()
       .min(today, 'Date cannot be in the past.')
-      .max(Yup.ref('outcomeDeadline'), 'Accept by date cannot be after bet expiration date.')
+      .max(
+        Yup.ref('outcomeDeadline'),
+        'Accept by date cannot be after bet expiration date.',
+      )
       .required('Required.')
       .typeError('You must specify a date.'),
     outcomeDeadline: Yup.date()
-      .min(Yup.ref('acceptDeadline'), 'Bet expiration date cannot be before accept by date.')
+      .min(
+        Yup.ref('acceptDeadline'),
+        'Bet expiration date cannot be before accept by date.',
+      )
       .required('Required.')
       .typeError('You must specify a date.'),
     betAmount: Yup.number()
@@ -415,7 +415,6 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 }            
                 </FormControl>
             </div> */}
-
             <div style={{marginTop: "20px"}}> 
               <TextField
                 placeholder="Number of Articles"
