@@ -1,10 +1,11 @@
 import {Button, Alert, AlertTitle} from '@mui/material'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
 import { useNavigate } from 'react-router-dom';
+
 
 function CreateBet() {
   // const [name, setName] = React.useState('Composed TextField');
@@ -24,12 +25,8 @@ function CreateBet() {
   // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //     setName(event.target.value);
   //   };
-import { useState, useEffect } from 'react'
 
-function CreateBet() {
   const [serviceFee, setServiceFee] = useState('')
-
-  const { isAuthenticated, user } = useMoralis()
 
   useEffect(() => {
     async function anyNameFunction() {
@@ -133,8 +130,8 @@ function CreateBet() {
         setSubmitError(true);
       });
       //   value: chargeAmount,
-      // })
-  }
+       }
+  
 
   return (
     <div>
@@ -184,6 +181,6 @@ function CreateBet() {
       )}
     </div>
   )
-}
-
+      }
+    
 export default CreateBet
