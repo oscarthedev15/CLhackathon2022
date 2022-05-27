@@ -5,7 +5,7 @@ import ResponsiveAppBar from './components/Nav';
 import Home from './components/Home';
 import CreateBet from './components/CreateBet';
 import BetMarketplace from './components/BetMarketplace';
-import Chat from './components/Chat';
+import Chat from './components/Chat.js';
 
 function App() {
   return (

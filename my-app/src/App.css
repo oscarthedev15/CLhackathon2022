@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+.Chat {
+  margin-top: 3%;
+  height: 650px;
+  margin-right: 50px;
+  margin-left: 50px;
+  
+}
