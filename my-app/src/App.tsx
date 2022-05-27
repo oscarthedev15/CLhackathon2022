@@ -13,20 +13,13 @@ function App() {
   return (
     <div>
       <ThemeProvider theme={theme}>
-        <div
-          style={{
-            background: 'linear-gradient(#f2f2f2, #D8CEE6)',
-            minHeight: '800px',
-          }}
-        >
-          <ResponsiveAppBar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/CreateBet" element={<CreateBet />} />
-            <Route path="/BetMarketplace" element={<BetMarketplace />} />
-            <Route path="/Chat" element={<Chat />} />
-          </Routes>
-        </div>
+        <ResponsiveAppBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/CreateBet" element={<CreateBet />} />
+          <Route path="/BetMarketplace" element={<BetMarketplace />} />
+          <Route path="/Chat" element={<Chat />} />
+        </Routes>
       </ThemeProvider>
     </div>
   )
