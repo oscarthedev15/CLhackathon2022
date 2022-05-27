@@ -120,7 +120,7 @@ function CreateBet() {
       }).then (function (result: any) {
         setSubmitError(false);
         console.log("result:" + result)
-        navigate('/BetMarketplace');
+        navigate('/BetMarketplace', {state: {success: true}});
       }).catch (function (error: any){
         console.error("error:" + error);
         setSubmitError(true);
@@ -132,7 +132,7 @@ function CreateBet() {
   return (
     <div style={{ margin: '5%' }}>
       {submitError ? 
-      (<Alert severity="error" onClose={() => {}}>
+      (<Alert severity="error" onClose={() => {setSubmitError(false)}}>
       <AlertTitle>Error</AlertTitle>
         Bet creation failed, please try again.
         </Alert>) 
@@ -185,11 +185,11 @@ function CreateBet() {
               )
             }}
           />
-          {isAuthenticated ? (
+          {/* {isAuthenticated ? (
             <h1>{user!.get('ethAddress')}</h1>
           ) : (
             <h1>User is not authenticated!</h1>
-          )}
+          )} */}
         </Card>
       </Box>
     </div>

@@ -1,12 +1,10 @@
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
-import Typography from '@mui/material/Typography'
+
+import { Box, Stack, Tab, Tabs, Typography, Alert, AlertTitle } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import betgame from '../betgame'
 import BetItem from './BetItem'
 import { styled } from '@mui/system'
+import { useLocation } from 'react-router-dom';
 
 export interface Bet {
   id: number
@@ -69,15 +67,18 @@ function BetMarketplace() {
   const [openBets, setOpenBets] = useState<Bet[]>([])
   const [acceptedBets, setAcceptedBets] = useState<Bet[]>([])
   const [value, setValue] = React.useState(0)
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
 
+  let {state}: any = useLocation();
   useEffect(() => {
     // Create a scoped async function in the hook
     async function anyNameFunction() {
       await getBets()
+      setSuccess(state && state.success);
     }
     // Execute the created function directly
     anyNameFunction()
@@ -151,6 +152,12 @@ function BetMarketplace() {
         marginRight: '10%',
       }}
     >
+      { success? 
+      (<Alert severity="success" onClose={() => {setSuccess(false)}}>
+      <AlertTitle>Success</AlertTitle>
+        Bet successfully created!
+        </Alert>) 
+        : null}
       <Typography
         sx={{
           fontFamily: 'Spline Sans Mono',
