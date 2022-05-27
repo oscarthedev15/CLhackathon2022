@@ -28,6 +28,7 @@ const ResponsiveAppBar = () => {
   const [kovan, setKovan] = useState(false);
   const { authenticate, isAuthenticated, user, logout } = useMoralis()
 
+
   useEffect(() => {
     // Create a scoped async function in the hook
     async function anyNameFunction() {
@@ -47,9 +48,10 @@ const ResponsiveAppBar = () => {
   }
 
   const login = async () => {
-    const provider = await detectEthereumProvider();
-    const chainId = await web3.eth.net.getId();
+    const provider = await detectEthereumProvider()
+    const chainId = await web3.eth.net.getId()
     if (!provider) {
+
       alert("This application requires Metamask. Please install to your browser");
     } 
     else if (chainId !== 42){
@@ -81,13 +83,13 @@ const ResponsiveAppBar = () => {
   }
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container style={{ backgroundColor: 'primary.main' }} maxWidth="xl">
         <Toolbar disableGutters>
           <img
             src="https://i.imgur.com/uMoBVbS.png"
             alt="logo"
-            style={{ height: '6%', width: '4%' }}
+            style={{ height: '4.5%', width: '3%', padding: 0, margin: 0 }}
           />
           <Typography
             variant="h6"
@@ -95,7 +97,8 @@ const ResponsiveAppBar = () => {
             component="a"
             href="/"
             sx={{
-              mr: 2,
+              mr: 4,
+              ml: 0,
               display: { xs: 'none', md: 'flex' },
               fontFamily: 'Righteous',
               fontWeight: 300,
@@ -156,11 +159,10 @@ const ResponsiveAppBar = () => {
                   >
                     <Typography
                       textAlign="center"
-                      sx={{ color: 'text.primary' }}>
-                    </Typography>
+                      sx={{ color: 'text.primary' }}
+                    ></Typography>
                   </Link>
                 </MenuItem>
-
               ) : (
                 <MenuItem key={pages[1]} onClick={login}>
                   <Typography textAlign="center" sx={{ color: 'text.primary' }}>
@@ -229,7 +231,6 @@ const ResponsiveAppBar = () => {
                   </Typography>
                 </Link>
               </Button>
-
             ) : (
               
               <Tooltip title="Sign In">
@@ -249,7 +250,6 @@ const ResponsiveAppBar = () => {
                 </Button>
               </Tooltip>
             )}
-
 
             <Button
               key={pages[2]}

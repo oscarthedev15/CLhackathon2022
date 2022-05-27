@@ -1,22 +1,18 @@
-import { Alert, AlertTitle} from '@mui/material'
+import { Alert, AlertTitle } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
 import { Box, Card, Typography } from '@mui/material'
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom'
 
 function CreateBet() {
   // const [name, setName] = React.useState('Composed TextField');
-  const [submitError, setSubmitError] = useState(false);
-  const {
-    isAuthenticated,
-    user,
-  } = useMoralis()
+  const [submitError, setSubmitError] = useState(false)
+  const { isAuthenticated, user } = useMoralis()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //     setName(event.target.value);
@@ -128,7 +124,14 @@ function CreateBet() {
   
 
   return (
-    <div style={{ margin: '5%' }}>
+           <div
+      style={{
+        marginTop: '5%',
+        marginBottom: '5%',
+        marginLeft: '10%',
+        marginRight: '10%',
+      }}
+    >
       {submitError ? 
       (<Alert severity="error" onClose={() => {setSubmitError(false)}}>
       <AlertTitle>Error</AlertTitle>
@@ -138,7 +141,7 @@ function CreateBet() {
       <Typography
         sx={{
           fontFamily: 'Spline Sans Mono',
-          fontSize: 30,
+          fontSize: 45,
           fontWeight: 700,
           fontStyle: 'italic',
         }}
@@ -149,7 +152,6 @@ function CreateBet() {
       </Typography>
       <Box sx={{ width: '100%' }}>
         <Card sx={{ minWidth: 275, mb: 5, p: 2 }} raised>
-          
           <MyForm
             onSubmit={({
               title,
@@ -183,15 +185,10 @@ function CreateBet() {
               )
             }}
           />
-          {/* {isAuthenticated ? (
-            <h1>{user!.get('ethAddress')}</h1>
-          ) : (
-            <h1>User is not authenticated!</h1>
-          )} */}
         </Card>
       </Box>
     </div>
   )
-      }
-    
+}
+
 export default CreateBet

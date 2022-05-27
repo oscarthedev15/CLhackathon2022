@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router'
 
-
 import './App.css'
 import ResponsiveAppBar from './components/Nav'
 import Home from './components/Home'
@@ -9,7 +8,6 @@ import BetMarketplace from './components/BetMarketplace'
 import Chat from './components/Chat.js'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from './theme'
-
 
 function App() {
   return (
