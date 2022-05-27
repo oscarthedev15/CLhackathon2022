@@ -120,11 +120,11 @@ function CreateBet() {
       )
       .send({
         from: userAddress,
-        value: web3.utils.toWei(betAmount, 'ether'),
+        value: chargeAmount,
       }).then (function (result: any) {
         setSubmitError(false);
         console.log("result:" + result)
-        navigate('/Bet%20Marketplace');
+        navigate('/BetMarketplace');
       }).catch (function (error: any){
         console.error("error:" + error);
         setSubmitError(true);
