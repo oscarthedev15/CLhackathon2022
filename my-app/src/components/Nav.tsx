@@ -22,11 +22,10 @@ pagesMap.set(pages[0], 'BetMarketPlace')
 pagesMap.set(pages[1], 'CreateBet')
 pagesMap.set(pages[2], 'Chat')
 
-let kovNetwork = false;
-
 
 const ResponsiveAppBar = () => {
   const { authenticate, isAuthenticated, user, logout } = useMoralis()
+  const [kovNetwork, setKovNetwork] = React.useState(false);
 
  
 
@@ -34,13 +33,13 @@ const ResponsiveAppBar = () => {
     const provider = await detectEthereumProvider();
     const chainId = await web3.eth.net.getId();
     if (!provider) {
-      alert("This application requires Metamask.  Please install to your browser");
+      alert("This application requires Metamask. Please install to your browser");
     } 
     else if (chainId !== 42){
-      alert("Switch to Kovan Network")
+      alert("Please switch to the Kovan Network")
     }
     else {
-      kovNetwork = true;
+      setKovNetwork(true)
       if (!isAuthenticated) {
         await authenticate({ signingMessage: 'Please Log In' })
           .then(function (user) {

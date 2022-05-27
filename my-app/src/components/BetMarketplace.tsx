@@ -152,7 +152,7 @@ function BetMarketplace() {
         marginRight: '10%',
       }}
     >
-      { success? 
+      { success ? 
       (<Alert severity="success" onClose={() => {setSuccess(false)}}>
       <AlertTitle>Success</AlertTitle>
         Bet successfully created!

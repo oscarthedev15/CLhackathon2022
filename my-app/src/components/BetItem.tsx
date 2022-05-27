@@ -7,6 +7,8 @@ import {
   Stack,
   Typography,
   Box,
+  Alert,
+  AlertTitle
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useMoralis } from 'react-moralis'
@@ -24,7 +26,10 @@ function BetItem({ bet }: { bet: Bet }) {
   const [sources, setSources] = useState<string[]>([])
   const [serviceFee, setServiceFee] = useState('')
   const [chargeAmount, setChargeAmount] = useState('')
-
+  const [acceptSuccess, setAcceptSuccess] = useState(false);
+  const [acceptFailure, setAcceptFailure] = useState(false);
+  const [checkSuccess, setCheckSuccess] = useState(false);
+  const [checkFailure, setCheckFailure] = useState(false);
   const { authenticate, isAuthenticated, user } = useMoralis()
 
   useEffect(() => {
@@ -137,7 +142,13 @@ function BetItem({ bet }: { bet: Bet }) {
       await betgame.methods.acceptBet(id, newApiURL).send({
         from: userAddress,
         value: cA,
-      })
+      }).then (function (result: any) {
+        setAcceptSuccess(true);
+        setAcceptFailure(false);
+      }).catch (function (error: any){
+        setAcceptSuccess(false);
+        setAcceptFailure(true);
+      });
     } else {
       login()
     }
@@ -149,6 +160,18 @@ function BetItem({ bet }: { bet: Bet }) {
 
   return (
     <Card sx={{ minWidth: 275, mb: 5, p: 2 }} raised>
+      { acceptSuccess ? 
+      (<Alert severity="success" onClose={() => {setAcceptSuccess(false)}}>
+      <AlertTitle>Success</AlertTitle>
+        Bet successfully accepted!
+        </Alert>) 
+        : null}
+      {acceptFailure ? 
+      (<Alert severity="error" onClose={() => {setAcceptFailure(false)}}>
+      <AlertTitle>Error</AlertTitle>
+        Bet wasn't accepted, please try again.
+        </Alert>) 
+        : null}
       <Stack
         direction="row"
         style={{
