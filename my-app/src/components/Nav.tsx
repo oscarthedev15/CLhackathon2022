@@ -23,6 +23,9 @@ pagesMap.set(pages[0], 'BetMarketPlace');
 pagesMap.set(pages[1], 'CreateBet');
 pagesMap.set(pages[2], 'Chat');
 
+let kovNetwork = false;
+
+
 const ResponsiveAppBar = () => {
 
   const {
@@ -32,16 +35,19 @@ const ResponsiveAppBar = () => {
     logout,
   } = useMoralis()
 
+ 
+
   const login = async () => {
     const provider = await detectEthereumProvider();
+    const chainId = await web3.eth.net.getId();
     if (!provider) {
       alert("This application requires Metamask.  Please install to your browser");
     } 
-    let chainId = await web3.eth.net.getId();
-    if (chainId !== 42) {
-      alert("Please switch to the Kovan network");
-    } 
+    else if (chainId !== 42){
+      alert("Switch to Kovan Network")
+    }
     else {
+      kovNetwork = true;
       if (!isAuthenticated) {
         await authenticate({ signingMessage: 'Please Log In' })
           .then(function (user) {
@@ -129,7 +135,7 @@ const ResponsiveAppBar = () => {
                   </Typography>
                 </MenuItem>
 
-                {isAuthenticated ? (
+                {isAuthenticated && kovNetwork ? (
                   <MenuItem key={pages[1]} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">
                     <Link
@@ -185,7 +191,7 @@ const ResponsiveAppBar = () => {
                 </Link>
               </Button>
            
-              {isAuthenticated ? (
+              {isAuthenticated && kovNetwork ? (
                 
                 <Button
                 key={pages[1]}
@@ -201,15 +207,17 @@ const ResponsiveAppBar = () => {
               </Button>
             
               ) : (
-                <Tooltip title="Sign In">
-                <Button
-                key={pages[1]}
-                onClick={login}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                  {pages[1]}
-              </Button>
+              
+              <Tooltip title="Sign In">
+                  <Button
+                  key={pages[1]}
+                  onClick={login}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                    {pages[1]}
+                </Button>
               </Tooltip>
+                
               )}
 
               <Button
@@ -241,7 +249,7 @@ const ResponsiveAppBar = () => {
               <Tooltip title="Sign in with Metamask">
               <IconButton onClick={login} sx={{ p: 0 }} >
               <p style={{ textDecoration: 'none', color: 'white' , fontFamily: 'roboto', fontWeight: 500, fontSize: 14, letterSpacing: 0.457, padding: 10 }}>
-                LOG IN
+                SIGN IN
               </p>
                 <Avatar alt="Remy Sharp" src="https://i.imgur.com/EoSDNhZ.png" />
               </IconButton>
