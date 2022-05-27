@@ -158,7 +158,13 @@ function BetItem({ bet }: { bet: Bet }) {
     const userAddress = await user!.get('ethAddress');
     await betgame.methods.checkBet(id).send({
       from: userAddress
-    })
+    }).then (function (result: any) {
+      setCheckSuccess(true);
+      setCheckFailure(false);
+    }).catch (function (error: any){
+      setCheckSuccess(false);
+      setCheckFailure(true);
+    });
   }
 
   return (
@@ -173,6 +179,18 @@ function BetItem({ bet }: { bet: Bet }) {
       (<Alert severity="error" onClose={() => {setAcceptFailure(false)}}>
       <AlertTitle>Error</AlertTitle>
         Bet wasn't accepted, please try again.
+        </Alert>) 
+        : null}
+      { checkSuccess ? 
+      (<Alert severity="success" onClose={() => {setCheckSuccess(false)}}>
+      <AlertTitle>Success</AlertTitle>
+        Checking bet results, please wait a few moments.
+        </Alert>) 
+        : null}
+      {checkFailure ? 
+      (<Alert severity="error" onClose={() => {setCheckFailure(false)}}>
+      <AlertTitle>Error</AlertTitle>
+        Bet results weren't checked, please try again.
         </Alert>) 
         : null}
       <Stack
