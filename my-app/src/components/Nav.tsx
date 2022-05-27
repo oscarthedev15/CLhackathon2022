@@ -140,10 +140,11 @@ const ResponsiveAppBar = () => {
                   >
                     <Typography
                       textAlign="center"
-                      sx={{ color: 'text.primary' }}
+                      sx={{ color: 'text.primary' }}>
                     </Typography>
                   </Link>
                 </MenuItem>
+
               ) : (
                 <MenuItem key={pages[1]} onClick={login}>
                   <Typography textAlign="center" sx={{ color: 'text.primary' }}>

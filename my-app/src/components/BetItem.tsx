@@ -3,13 +3,11 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardHeader,
   Container,
   Stack,
   Typography,
   Box,
 } from '@mui/material'
-import { makeStyles } from '@mui/material/styles'
 import { useEffect, useState } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'

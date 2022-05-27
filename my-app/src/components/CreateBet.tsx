@@ -1,26 +1,19 @@
-import {Button, Alert, AlertTitle} from '@mui/material'
+import { Alert, AlertTitle} from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
-
-import { useState, useEffect } from 'react'
 import { Box, Card, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
 
 
 function CreateBet() {
   // const [name, setName] = React.useState('Composed TextField');
-  const [title, setTitle] = useState('Hey there');
   const [submitError, setSubmitError] = useState(false);
   const {
-    authenticate,
     isAuthenticated,
-    isAuthenticating,
     user,
-    account,
-    logout,
   } = useMoralis()
 
   const navigate = useNavigate();
