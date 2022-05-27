@@ -23,8 +23,6 @@ pagesMap.set(pages[0], 'BetMarketPlace')
 pagesMap.set(pages[1], 'CreateBet')
 pagesMap.set(pages[2], 'Chat')
 
-let kovNetwork = false;
-
 
 const ResponsiveAppBar = () => {
   const [kovan, setKovan] = useState(false);
