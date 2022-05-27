@@ -1,13 +1,15 @@
-import Button from '@mui/material/Button'
+import {Button, Alert, AlertTitle} from '@mui/material'
 import { useState } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
+import { useNavigate } from 'react-router-dom';
 
 function CreateBet() {
   // const [name, setName] = React.useState('Composed TextField');
-  const [title, setTitle] = useState('Hey there')
+  const [title, setTitle] = useState('Hey there');
+  const [submitError, setSubmitError] = useState(false);
   const {
     authenticate,
     isAuthenticated,
@@ -16,6 +18,8 @@ function CreateBet() {
     account,
     logout,
   } = useMoralis()
+
+  const navigate = useNavigate();
 
   // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //     setName(event.target.value);
@@ -97,11 +101,24 @@ function CreateBet() {
       .send({
         from: userAddress,
         value: web3.utils.toWei(betAmount, 'ether'),
-      })
+      }).then (function (result: any) {
+        setSubmitError(false);
+        console.log("result:" + result)
+        navigate('/Bet%20Marketplace');
+      }).catch (function (error: any){
+        console.error("error:" + error);
+        setSubmitError(true);
+      });
   }
 
   return (
     <div>
+      {submitError ? 
+      (<Alert severity="error" onClose={() => {}}>
+      <AlertTitle>Error</AlertTitle>
+        Bet creation failed, please try again.
+        </Alert>) 
+        : null}
       <MyForm
         onSubmit={({
           title,
