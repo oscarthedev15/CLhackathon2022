@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# TeaLink Front-End code
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -33,14 +33,5 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### TeaLink
+TeaLink is a Dapp written in mostly Typescript and provides users a way to interact with the BetGame.sol contract.  Here users are able to create bets, accept bets and check bets all from within the UI.  We use Metmask and Moralis for signing users in and require them to be on the Kovan network for full functionality.  If a user does not have metamask installed, the bet marketplace is avaible to view but not to interact with.  Our Chat page is built using Roomlio which provides users with a way to communicate with eachother to boost community and comradery.  

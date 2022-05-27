@@ -113,21 +113,18 @@ function CreateBet() {
       .send({
         from: userAddress,
         value: chargeAmount,
-      })
-      .then(function (result: any) {
-        setSubmitError(false)
-        console.log('result:' + result)
-        navigate('/BetMarketplace')
-      })
-      .catch(function (error: any) {
-        console.error('error:' + error)
-        setSubmitError(true)
-      })
-    //   value: chargeAmount,
-  }
+      }).then (function (result: any) {
+        setSubmitError(false);
+        navigate('/BetMarketplace', {state: {createSuccess: true}});
+      }).catch (function (error: any){
+        setSubmitError(true);
+      });
+      //   value: chargeAmount,
+       }
+  
 
   return (
-    <div
+           <div
       style={{
         marginTop: '5%',
         marginBottom: '5%',
@@ -135,12 +132,12 @@ function CreateBet() {
         marginRight: '10%',
       }}
     >
-      {submitError ? (
-        <Alert severity="error" onClose={() => {}}>
-          <AlertTitle>Error</AlertTitle>
-          Bet creation failed, please try again.
-        </Alert>
-      ) : null}
+      {submitError ? 
+      (<Alert severity="error" onClose={() => {setSubmitError(false)}}>
+      <AlertTitle>Error</AlertTitle>
+        Bet creation failed, please try again.
+        </Alert>) 
+        : null}
       <Typography
         sx={{
           fontFamily: 'Spline Sans Mono',
