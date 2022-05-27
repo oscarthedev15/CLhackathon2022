@@ -8,6 +8,10 @@ require('./tasks');
 require('@appliedblockchain/chainlink-plugins-fund-link');
 require('dotenv').config();
 
+
+// Read vars from envVariables object
+
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -25,8 +29,7 @@ const KOVAN_RPC_URL =
 const POLYGON_MAINNET_RPC_URL =
   process.env.POLYGON_MAINNET_RPC_URL ||
   'https://polygon-mainnet.alchemyapi.io/v2/your-api-key';
-const PRIVATE_KEY =
-  '395dfbedf72f26307b0c07464b760857971fa56a7d4f658f1f24484a434a58c6';
+const PRIVATE_KEY = process.env.PRIVATE_KEY
 // optional
 const MNEMONIC = process.env.MNEMONIC || 'Your mnemonic';
 const FORKING_BLOCK_NUMBER = process.env.FORKING_BLOCK_NUMBER;
