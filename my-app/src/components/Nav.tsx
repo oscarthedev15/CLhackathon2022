@@ -11,29 +11,22 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
-import AdbIcon from '@mui/icons-material/Adb'
 import { Link } from 'react-router-dom'
-import { useMoralis } from 'react-moralis';
-import detectEthereumProvider from '@metamask/detect-provider';
+import { useMoralis } from 'react-moralis'
+import detectEthereumProvider from '@metamask/detect-provider'
 import web3 from '../web3'
 
 const pages = ['Bet Marketplace', 'Create Bet', 'Chat']
-let pagesMap = new Map();
-pagesMap.set(pages[0], 'BetMarketPlace');
-pagesMap.set(pages[1], 'CreateBet');
-pagesMap.set(pages[2], 'Chat');
+let pagesMap = new Map()
+pagesMap.set(pages[0], 'BetMarketPlace')
+pagesMap.set(pages[1], 'CreateBet')
+pagesMap.set(pages[2], 'Chat')
 
 let kovNetwork = false;
 
 
 const ResponsiveAppBar = () => {
-
-  const {
-    authenticate,
-    isAuthenticated,
-    user,
-    logout,
-  } = useMoralis()
+  const { authenticate, isAuthenticated, user, logout } = useMoralis()
 
  
 
@@ -58,7 +51,7 @@ const ResponsiveAppBar = () => {
             console.log(error)
           })
       }
-  }
+    }
   }
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
@@ -73,9 +66,13 @@ const ResponsiveAppBar = () => {
 
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
+      <Container style={{ backgroundColor: 'primary.main' }} maxWidth="xl">
         <Toolbar disableGutters>
-          <img src = "https://i.imgur.com/uMoBVbS.png" alt="logo" style={{height: "5%", width: "3%"}} />
+          <img
+            src="https://i.imgur.com/uMoBVbS.png"
+            alt="logo"
+            style={{ height: '6%', width: '4%' }}
+          />
           <Typography
             variant="h6"
             noWrap
@@ -84,10 +81,11 @@ const ResponsiveAppBar = () => {
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
+              fontFamily: 'Righteous',
+              fontWeight: 300,
+              fontSize: 30,
+              // letterSpacing: '.3rem',
+              color: 'black',
               textDecoration: 'none',
             }}
           >
@@ -123,41 +121,38 @@ const ResponsiveAppBar = () => {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-             
-                <MenuItem key={pages[0]} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">
-                    <Link
-                      style={{ textDecoration: 'none', color: 'black' }}
-                      to={`/${pagesMap.get(pages[0])}`}
-                    >
-                      {pages[0]}
-                    </Link>
+              <MenuItem key={pages[0]} onClick={handleCloseNavMenu}>
+                <Link
+                  style={{ textDecoration: 'none', color: 'text.primary' }}
+                  to={`/${pagesMap.get(pages[0])}`}
+                >
+                  <Typography textAlign="center" sx={{ color: 'text.primary' }}>
+                    {pages[0]}
                   </Typography>
-                </MenuItem>
+                </Link>
+              </MenuItem>
 
-                {isAuthenticated && kovNetwork ? (
-                  <MenuItem key={pages[1]} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">
-                    <Link
-                      style={{ textDecoration: 'none', color: 'black' }}
-                      to={`/${pagesMap.get(pages[1])}`}
-                    >
-                      {pages[1]}
-                    </Link>
+              {isAuthenticated && kovNetwork ? (
+                <MenuItem key={pages[1]} onClick={handleCloseNavMenu}>
+                  <Link
+                    style={{ textDecoration: 'none', color: 'text.primary' }}
+                    to={`/${pagesMap.get(pages[1])}`}
+                  >
+                    <Typography
+                      textAlign="center"
+                      sx={{ color: 'text.primary' }}
+                    </Typography>
+                  </Link>
+                </MenuItem>
+              ) : (
+                <MenuItem key={pages[1]} onClick={login}>
+                  <Typography textAlign="center" sx={{ color: 'text.primary' }}>
+                    {pages[1]}
                   </Typography>
                 </MenuItem>
-                ) : (
-                  <MenuItem key={pages[1]} onClick={login}>
-                  <Typography textAlign="center">
-                      {pages[1]}
-                  </Typography>
-                </MenuItem>
-                )}
-                
-          
+              )}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
@@ -167,99 +162,159 @@ const ResponsiveAppBar = () => {
               mr: 2,
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
+              fontFamily: 'Righteous',
+              fontWeight: 300,
+              // letterSpacing: '.3rem',
+              color: 'black',
               textDecoration: 'none',
             }}
           >
             TeaLink
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-          
-              <Button
-                key={pages[0]}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+            <Button
+              key={pages[0]}
+              onClick={handleCloseNavMenu}
+              sx={{
+                my: 2,
+                color: 'text.primary',
+                display: 'block',
+                textTransform: 'none',
+              }}
+            >
+              <Link
+                style={{ textDecoration: 'none', color: 'text.primary' }}
+                to={`/${pagesMap.get(pages[0])}`}
               >
-                <Link
-                  style={{ textDecoration: 'none', color: 'white' }}
-                  to={`/${pagesMap.get(pages[0])}`}
-                >
+                <Typography textAlign="center" sx={{ color: 'text.primary' }}>
                   {pages[0]}
-                </Link>
-              </Button>
-           
-              {isAuthenticated && kovNetwork ? (
-                
-                <Button
+                </Typography>
+              </Link>
+            </Button>
+
+            {isAuthenticated && kovNetwork ? (
+              <Button
                 key={pages[1]}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{
+                  my: 2,
+                  color: 'text.primary',
+                  display: 'block',
+                  textTransform: 'none',
+                }}
               >
                 <Link
-                  style={{ textDecoration: 'none', color: 'white' }}
+                  style={{ textDecoration: 'none', color: 'text.primary' }}
                   to={`/${pagesMap.get(pages[1])}`}
                 >
-                  {pages[1]}
+                  <Typography textAlign="center" sx={{ color: 'text.primary' }}>
+                    {pages[1]}
+                  </Typography>
                 </Link>
               </Button>
-            
-              ) : (
-              
+
+            ) : (
               <Tooltip title="Sign In">
-                  <Button
+                <Button
                   key={pages[1]}
                   onClick={login}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  sx={{
+                    my: 2,
+                    color: 'text.primary',
+                    display: 'block',
+                    textTransform: 'none',
+                  }}
                 >
+                  <Typography textAlign="center" sx={{ color: 'text.primary' }}>
                     {pages[1]}
+                  </Typography>
                 </Button>
               </Tooltip>
-                
-              )}
+            )}
 
-              <Button
-                key={pages[2]}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+
+            <Button
+              key={pages[2]}
+              onClick={handleCloseNavMenu}
+              sx={{
+                my: 2,
+                color: 'text.primary',
+                display: 'block',
+                textTransform: 'none',
+              }}
+            >
+              <Link
+                style={{ textDecoration: 'none', color: 'text.primary' }}
+                to={`/${pagesMap.get(pages[2])}`}
               >
-                <Link
-                  style={{ textDecoration: 'none', color: 'white' }}
-                  to={`/${pagesMap.get(pages[2])}`}
+                <Typography
+                  textAlign="center"
+                  sx={{
+                    color: 'text.primary',
+                    fontFamily: 'Poppins',
+                  }}
                 >
                   {pages[2]}
-                </Link>
-              </Button>
-          
+                </Typography>
+              </Link>
+            </Button>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            { isAuthenticated ? (
+            {isAuthenticated ? (
               <Tooltip title="Sign Out">
-              <IconButton onClick={logout} sx={{ p: 0 }} >
-              <p style={{ textDecoration: 'none', color: 'white' , fontFamily: 'roboto', fontWeight: 500, fontSize: 14, letterSpacing: 0.457, padding: 10 }}>
-                {user!.get('ethAddress').substring(0, 5).concat("...").concat(user!.get('ethAddress').substring(38, 43))}
-              </p>
-                <Avatar alt="Remy Sharp" src="https://i.imgur.com/EoSDNhZ.png" />
-              </IconButton>
-            </Tooltip>
+                <IconButton
+                  onClick={logout}
+                  sx={{ p: 0, color: 'text.primary' }}
+                >
+                  <Typography
+                    style={{
+                      textDecoration: 'none',
+                      color: 'text.primary',
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      letterSpacing: 0.457,
+                      padding: 10,
+                    }}
+                  >
+                    {user!
+                      .get('ethAddress')
+                      .substring(0, 5)
+                      .concat('...')
+                      .concat(user!.get('ethAddress').substring(38, 43))}
+                  </Typography>
+                  <Avatar
+                    alt="Remy Sharp"
+                    src="https://i.imgur.com/EoSDNhZ.png"
+                  />
+                </IconButton>
+              </Tooltip>
             ) : (
               <Tooltip title="Sign in with Metamask">
-              <IconButton onClick={login} sx={{ p: 0 }} >
-              <p style={{ textDecoration: 'none', color: 'white' , fontFamily: 'roboto', fontWeight: 500, fontSize: 14, letterSpacing: 0.457, padding: 10 }}>
-                SIGN IN
-              </p>
-                <Avatar alt="Remy Sharp" src="https://i.imgur.com/EoSDNhZ.png" />
-              </IconButton>
-            </Tooltip>
-            )
-            }
-    
+                <IconButton
+                  onClick={login}
+                  sx={{ p: 0, color: 'text.primary' }}
+                >
+                  <Typography
+                    style={{
+                      textDecoration: 'none',
+                      color: 'text',
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      letterSpacing: 0.457,
+                      padding: 10,
+                    }}
+                  >
+                    Sign In
+                  </Typography>
+                  <Avatar
+                    alt="Remy Sharp"
+                    src="https://i.imgur.com/EoSDNhZ.png"
+                  />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
-
-          
         </Toolbar>
       </Container>
     </AppBar>
@@ -267,4 +322,3 @@ const ResponsiveAppBar = () => {
 }
 
 export default ResponsiveAppBar
-
