@@ -64,6 +64,8 @@ npm manifest:
       "@chainlink/test-helpers": "^0.0.7-alpha",
       "@chainlink/token": "^1.1.0",
       "@openzeppelin/contracts": "^4.6.0",
+      "@uniswap/v2-periphery": "^1.1.0-beta.0",
+      "@uniswap/v3-periphery": "^1.4.1",
       "babel-eslint": "^10.1.0",
       "dotenv": "^10.0.0",
       "hardhat-deploy": "^0.11.4",
@@ -1778,6 +1780,11 @@ Lockfile:
     "resolved" "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-4.6.0.tgz"
     "version" "4.6.0"
   
+  "@openzeppelin/contracts@3.4.2-solc-0.7":
+    "integrity" "sha512-W6QmqgkADuFcTLzHL8vVoNBtkwjvQRpYIAom7KiUNoLKghyx3FgH0GBjt8NRvigV1ZmMOBllvE1By1C+bi8WpA=="
+    "resolved" "https://registry.npmjs.org/@openzeppelin/contracts/-/contracts-3.4.2-solc-0.7.tgz"
+    "version" "3.4.2-solc-0.7"
+  
   "@resolver-engine/core@^0.3.3":
     "integrity" "sha512-eB8nEbKDJJBi5p5SrvrvILn4a0h42bKtbCTri3ZxCGt6UvoQyp7HnGOfki944bUjBSHKK3RvgfViHn+kqdXtnQ=="
     "resolved" "https://registry.npmjs.org/@resolver-engine/core/-/core-0.3.3.tgz"
@@ -2342,6 +2349,51 @@ Lockfile:
     "integrity" "sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q=="
     "resolved" "https://registry.npmjs.org/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz"
     "version" "1.1.2"
+  
+  "@uniswap/lib@^4.0.1-alpha":
+    "integrity" "sha512-f6UIliwBbRsgVLxIaBANF6w09tYqc6Y/qXdsrbEmXHyFA7ILiKrIwRFXe1yOg8M3cksgVsO9N7yuL2DdCGQKBA=="
+    "resolved" "https://registry.npmjs.org/@uniswap/lib/-/lib-4.0.1-alpha.tgz"
+    "version" "4.0.1-alpha"
+  
+  "@uniswap/lib@1.1.1":
+    "integrity" "sha512-2yK7sLpKIT91TiS5sewHtOa7YuM8IuBXVl4GZv2jZFys4D2sY7K5vZh6MqD25TPA95Od+0YzCVq6cTF2IKrOmg=="
+    "resolved" "https://registry.npmjs.org/@uniswap/lib/-/lib-1.1.1.tgz"
+    "version" "1.1.1"
+  
+  "@uniswap/v2-core@1.0.0":
+    "integrity" "sha512-BJiXrBGnN8mti7saW49MXwxDBRFiWemGetE58q8zgfnPPzQKq55ADltEILqOt6VFZ22kVeVKbF8gVd8aY3l7pA=="
+    "resolved" "https://registry.npmjs.org/@uniswap/v2-core/-/v2-core-1.0.0.tgz"
+    "version" "1.0.0"
+  
+  "@uniswap/v2-core@1.0.1":
+    "integrity" "sha512-MtybtkUPSyysqLY2U210NBDeCHX+ltHt3oADGdjqoThZaFRDKwM6k1Nb3F0A3hk5hwuQvytFWhrWHOEq6nVJ8Q=="
+    "resolved" "https://registry.npmjs.org/@uniswap/v2-core/-/v2-core-1.0.1.tgz"
+    "version" "1.0.1"
+  
+  "@uniswap/v2-periphery@^1.1.0-beta.0":
+    "integrity" "sha512-6dkwAMKza8nzqYiXEr2D86dgW3TTavUvCR0w2Tu33bAbM8Ah43LKAzH7oKKPRT5VJQaMi1jtkGs1E8JPor1n5g=="
+    "resolved" "https://registry.npmjs.org/@uniswap/v2-periphery/-/v2-periphery-1.1.0-beta.0.tgz"
+    "version" "1.1.0-beta.0"
+    dependencies:
+      "@uniswap/lib" "1.1.1"
+      "@uniswap/v2-core" "1.0.0"
+  
+  "@uniswap/v3-core@1.0.0":
+    "integrity" "sha512-kSC4djMGKMHj7sLMYVnn61k9nu+lHjMIxgg9CDQT+s2QYLoA56GbSK9Oxr+qJXzzygbkrmuY6cwgP6cW2JXPFA=="
+    "resolved" "https://registry.npmjs.org/@uniswap/v3-core/-/v3-core-1.0.0.tgz"
+    "version" "1.0.0"
+  
+  "@uniswap/v3-periphery@^1.4.1":
+    "integrity" "sha512-Ab0ZCKOQrQMKIcpBTezTsEhWfQjItd0TtkCG8mPhoQu+wC67nPaf4hYUhM6wGHeFUmDiYY5MpEQuokB0ENvoTg=="
+    "resolved" "https://registry.npmjs.org/@uniswap/v3-periphery/-/v3-periphery-1.4.1.tgz"
+    "version" "1.4.1"
+    dependencies:
+      "@openzeppelin/contracts" "3.4.2-solc-0.7"
+      "@uniswap/lib" "^4.0.1-alpha"
+      "@uniswap/v2-core" "1.0.1"
+      "@uniswap/v3-core" "1.0.0"
+      "base64-sol" "1.0.1"
+      "hardhat-watcher" "^2.1.1"
   
   "@yarnpkg/lockfile@^1.1.0":
     "integrity" "sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ=="
@@ -3408,6 +3460,11 @@ Lockfile:
     "resolved" "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz"
     "version" "1.5.1"
   
+  "base64-sol@1.0.1":
+    "integrity" "sha512-ld3cCNMeXt4uJXmLZBHFGMvVpK9KsLVEhPpFRXnvSVAqABKbuNZg/+dsq3NuM+wxFLb/UrVkz7m1ciWmkMfTbg=="
+    "resolved" "https://registry.npmjs.org/base64-sol/-/base64-sol-1.0.1.tgz"
+    "version" "1.0.1"
+  
   "bcrypt-pbkdf@^1.0.0":
     "integrity" "sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4="
     "resolved" "https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.2.tgz"
@@ -4098,7 +4155,7 @@ Lockfile:
     optionalDependencies:
       "fsevents" "^1.2.7"
   
-  "chokidar@^3.0.2", "chokidar@^3.4.0", "chokidar@^3.4.1", "chokidar@^3.5.2", "chokidar@3.5.3":
+  "chokidar@^3.0.2", "chokidar@^3.4.0", "chokidar@^3.4.1", "chokidar@^3.5.2", "chokidar@^3.5.3", "chokidar@3.5.3":
     "integrity" "sha512-Dr3sfKRP6oTcjf2JmUmFJfeVMvXBdegxB0iVQ5eb2V10uFJUCAS8OByZdVAyVb8xXNz3GjjTgj9kLWsZTqE6kw=="
     "resolved" "https://registry.npmjs.org/chokidar/-/chokidar-3.5.3.tgz"
     "version" "3.5.3"
@@ -7075,6 +7132,13 @@ Lockfile:
       "array-uniq" "1.0.3"
       "eth-gas-reporter" "^0.2.24"
       "sha1" "^1.1.1"
+  
+  "hardhat-watcher@^2.1.1":
+    "integrity" "sha512-u76a/1pxPyW9DRZ7FZ8HoSQ4AuKOiSDQTR2NyiZlH5f0Ux+qQfahsh9CNusRLhx2s1OWzlkwCVvrdHq5FTGUzw=="
+    "resolved" "https://registry.npmjs.org/hardhat-watcher/-/hardhat-watcher-2.3.0.tgz"
+    "version" "2.3.0"
+    dependencies:
+      "chokidar" "^3.5.3"
   
   "hardhat@^2.0.0", "hardhat@^2.0.2", "hardhat@^2.0.4", "hardhat@^2.6.4", "hardhat@^2.6.8", "hardhat@^2.9.5":
     "integrity" "sha512-UIhjLQmccFOH87ODfFnVatI5vpwycsJ+D5+gmgOQNxUWp4c0ZenkeCE4yDEQ0tQm/zc/vz/mpskULz4aSFsPAg=="

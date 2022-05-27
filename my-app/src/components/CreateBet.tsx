@@ -1,14 +1,35 @@
+import {Button, Alert, AlertTitle} from '@mui/material'
+import { useState, useEffect } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
+
 import { useState, useEffect } from 'react'
 import { Box, Card, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom';
+
 
 function CreateBet() {
-  const [serviceFee, setServiceFee] = useState('')
+  // const [name, setName] = React.useState('Composed TextField');
+  const [title, setTitle] = useState('Hey there');
+  const [submitError, setSubmitError] = useState(false);
+  const {
+    authenticate,
+    isAuthenticated,
+    isAuthenticating,
+    user,
+    account,
+    logout,
+  } = useMoralis()
 
-  const { isAuthenticated, user } = useMoralis()
+  const navigate = useNavigate();
+
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     setName(event.target.value);
+  //   };
+
+  const [serviceFee, setServiceFee] = useState('')
 
   useEffect(() => {
     async function anyNameFunction() {
@@ -103,11 +124,26 @@ function CreateBet() {
       .send({
         from: userAddress,
         value: chargeAmount,
-      })
-  }
+      }).then (function (result: any) {
+        setSubmitError(false);
+        console.log("result:" + result)
+        navigate('/BetMarketplace');
+      }).catch (function (error: any){
+        console.error("error:" + error);
+        setSubmitError(true);
+      });
+      //   value: chargeAmount,
+       }
+  
 
   return (
     <div style={{ margin: '5%' }}>
+      {submitError ? 
+      (<Alert severity="error" onClose={() => {}}>
+      <AlertTitle>Error</AlertTitle>
+        Bet creation failed, please try again.
+        </Alert>) 
+        : null}
       <Typography
         sx={{
           fontFamily: 'Spline Sans Mono',
@@ -122,6 +158,7 @@ function CreateBet() {
       </Typography>
       <Box sx={{ width: '100%' }}>
         <Card sx={{ minWidth: 275, mb: 5, p: 2 }} raised>
+          
           <MyForm
             onSubmit={({
               title,
@@ -164,6 +201,6 @@ function CreateBet() {
       </Box>
     </div>
   )
-}
-
+      }
+    
 export default CreateBet

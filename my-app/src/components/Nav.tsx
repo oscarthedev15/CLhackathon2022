@@ -22,20 +22,25 @@ pagesMap.set(pages[0], 'BetMarketPlace')
 pagesMap.set(pages[1], 'CreateBet')
 pagesMap.set(pages[2], 'Chat')
 
+let kovNetwork = false;
+
+
 const ResponsiveAppBar = () => {
   const { authenticate, isAuthenticated, user, logout } = useMoralis()
 
+ 
+
   const login = async () => {
-    const provider = await detectEthereumProvider()
+    const provider = await detectEthereumProvider();
+    const chainId = await web3.eth.net.getId();
     if (!provider) {
-      alert(
-        'This application requires Metamask.  Please install to your browser',
-      )
+      alert("This application requires Metamask.  Please install to your browser");
+    } 
+    else if (chainId !== 42){
+      alert("Switch to Kovan Network")
     }
-    let chainId = await web3.eth.net.getId()
-    if (chainId !== 42) {
-      alert('Please switch to the Kovan network')
-    } else {
+    else {
+      kovNetwork = true;
       if (!isAuthenticated) {
         await authenticate({ signingMessage: 'Please Log In' })
           .then(function (user) {
@@ -127,7 +132,7 @@ const ResponsiveAppBar = () => {
                 </Link>
               </MenuItem>
 
-              {isAuthenticated ? (
+              {isAuthenticated && kovNetwork ? (
                 <MenuItem key={pages[1]} onClick={handleCloseNavMenu}>
                   <Link
                     style={{ textDecoration: 'none', color: 'text.primary' }}
@@ -136,8 +141,6 @@ const ResponsiveAppBar = () => {
                     <Typography
                       textAlign="center"
                       sx={{ color: 'text.primary' }}
-                    >
-                      {pages[1]}
                     </Typography>
                   </Link>
                 </MenuItem>
@@ -189,7 +192,7 @@ const ResponsiveAppBar = () => {
               </Link>
             </Button>
 
-            {isAuthenticated ? (
+            {isAuthenticated && kovNetwork ? (
               <Button
                 key={pages[1]}
                 onClick={handleCloseNavMenu}
@@ -209,6 +212,7 @@ const ResponsiveAppBar = () => {
                   </Typography>
                 </Link>
               </Button>
+
             ) : (
               <Tooltip title="Sign In">
                 <Button
@@ -227,6 +231,7 @@ const ResponsiveAppBar = () => {
                 </Button>
               </Tooltip>
             )}
+
 
             <Button
               key={pages[2]}
@@ -300,7 +305,7 @@ const ResponsiveAppBar = () => {
                       padding: 10,
                     }}
                   >
-                    Log In
+                    Sign In
                   </Typography>
                   <Avatar
                     alt="Remy Sharp"
