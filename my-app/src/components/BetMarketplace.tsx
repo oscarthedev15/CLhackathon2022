@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -5,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import React, { useEffect, useState } from 'react'
 import betgame from '../betgame'
 import BetItem from './BetItem'
-import Box from '@mui/material/Box'
+import { styled } from '@mui/system'
 
 export interface Bet {
   id: number
@@ -56,11 +57,18 @@ function a11yProps(index: number) {
   }
 }
 
+const MyThemeTabs = styled(Tabs)(({ theme }) => ({
+  fontWeight: 500,
+  color: theme.palette.primary.dark,
+  '& .MuiTabs-indicator': {
+    backgroundColor: theme.palette.primary.dark,
+  },
+}))
+
 function BetMarketplace() {
   const [openBets, setOpenBets] = useState<Bet[]>([])
   const [acceptedBets, setAcceptedBets] = useState<Bet[]>([])
   const [value, setValue] = React.useState(0)
-
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
@@ -73,7 +81,7 @@ function BetMarketplace() {
     }
     // Execute the created function directly
     anyNameFunction()
-// eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const getBets = async () => {
@@ -135,19 +143,46 @@ function BetMarketplace() {
   }
 
   return (
-    <div style={{ margin: '5%' }}>
-      <h1>Bet Marketplace</h1>
+    <div
+      style={{
+        marginTop: '5%',
+        marginBottom: '5%',
+        marginLeft: '10%',
+        marginRight: '10%',
+      }}
+    >
+      <Typography
+        sx={{
+          fontFamily: 'Spline Sans Mono',
+          fontSize: 30,
+          fontWeight: 700,
+          fontStyle: 'italic',
+        }}
+        gutterBottom
+        color="secondary.main"
+      >
+        Bet Marketplace
+      </Typography>
       <Box sx={{ width: '100%' }}>
         <Box>
-          <Tabs
-            sx={{}}
+          <MyThemeTabs
             value={value}
             onChange={handleChange}
-            aria-label="basic tabs example"
+            aria-label="basic MyThemeTabs example"
+            textColor="inherit"
+            // sx={{ fontFamily: 'Spline Sans Mono' }}
           >
-            <Tab sx={{ paddingRight: 3 }} label="Open Bets" {...a11yProps(0)} />
-            <Tab label="Accepted Bets" {...a11yProps(1)} />
-          </Tabs>
+            <Tab
+              sx={{ paddingRight: 3, fontFamily: 'Spline Sans Mono' }}
+              label="Open Bets"
+              {...a11yProps(0)}
+            />
+            <Tab
+              sx={{ fontFamily: 'Spline Sans Mono' }}
+              label="Accepted Bets"
+              {...a11yProps(1)}
+            />
+          </MyThemeTabs>
         </Box>
         <TabPanel value={value} index={0}>
           <Stack>
@@ -164,8 +199,6 @@ function BetMarketplace() {
           </Stack>
         </TabPanel>
       </Box>
-      {/* <pre>{JSON.stringify(openBets, null, 2)}</pre>
-      <pre>{JSON.stringify(acceptedBets, null, 2)}</pre> */}
     </div>
   )
 }

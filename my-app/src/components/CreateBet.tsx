@@ -3,6 +3,7 @@ import betgame from '../betgame'
 import web3 from '../web3'
 import { MyForm } from './Form'
 import { useState, useEffect } from 'react'
+import { Box, Card, Typography } from '@mui/material'
 
 function CreateBet() {
   const [serviceFee, setServiceFee] = useState('')
@@ -106,45 +107,61 @@ function CreateBet() {
   }
 
   return (
-    <div>
-      <MyForm
-        onSubmit={({
-          title,
-          acceptDeadline,
-          outcomeDeadline,
-          acceptAmount,
-          betAmount,
-          numArticles,
-          apiKeywords,
-          sources,
-        }) => {
-          const apiURL = buildApiURL(apiKeywords, sources)
-          console.log(apiURL)
-          const unixAcceptDate = convertToUnix(acceptDeadline)
-          console.log(unixAcceptDate)
-          const unixExpirationDate = convertToUnix(outcomeDeadline)
-          console.log(unixExpirationDate)
-          const acceptAmountStr = acceptAmount.toString()
-          console.log('Accept:', acceptAmountStr)
-          const betAmountStr = betAmount.toString()
-          let betAmountWei = web3.utils.toWei(betAmountStr, 'ether')
-          console.log('Bet:', betAmountStr)
-          createBet(
-            apiURL,
-            acceptAmountStr,
-            numArticles,
-            unixExpirationDate,
-            unixAcceptDate,
-            betAmountWei,
-            title,
-          )
+    <div style={{ margin: '5%' }}>
+      <Typography
+        sx={{
+          fontFamily: 'Spline Sans Mono',
+          fontSize: 30,
+          fontWeight: 700,
+          fontStyle: 'italic',
         }}
-      />
-      {isAuthenticated ? (
-        <h1>{user!.get('ethAddress')}</h1>
-      ) : (
-        <h1>User is not authenticated!</h1>
-      )}
+        gutterBottom
+        color="secondary.main"
+      >
+        Create Bet
+      </Typography>
+      <Box sx={{ width: '100%' }}>
+        <Card sx={{ minWidth: 275, mb: 5, p: 2 }} raised>
+          <MyForm
+            onSubmit={({
+              title,
+              acceptDeadline,
+              outcomeDeadline,
+              acceptAmount,
+              betAmount,
+              numArticles,
+              apiKeywords,
+              sources,
+            }) => {
+              const apiURL = buildApiURL(apiKeywords, sources)
+              console.log(apiURL)
+              const unixAcceptDate = convertToUnix(acceptDeadline)
+              console.log(unixAcceptDate)
+              const unixExpirationDate = convertToUnix(outcomeDeadline)
+              console.log(unixExpirationDate)
+              const acceptAmountStr = acceptAmount.toString()
+              console.log('Accept:', acceptAmountStr)
+              const betAmountStr = betAmount.toString()
+              let betAmountWei = web3.utils.toWei(betAmountStr, 'ether')
+              console.log('Bet:', betAmountStr)
+              createBet(
+                apiURL,
+                acceptAmountStr,
+                numArticles,
+                unixExpirationDate,
+                unixAcceptDate,
+                betAmountWei,
+                title,
+              )
+            }}
+          />
+          {isAuthenticated ? (
+            <h1>{user!.get('ethAddress')}</h1>
+          ) : (
+            <h1>User is not authenticated!</h1>
+          )}
+        </Card>
+      </Box>
     </div>
   )
 }

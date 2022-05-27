@@ -8,6 +8,7 @@ import BetMarketplace from './components/BetMarketplace'
 import Chat from './components/Chat'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from './theme'
+import { CssBaseline } from '@mui/material'
 
 function App() {
   return (

@@ -1,4 +1,3 @@
-import { red } from '@mui/material/colors';
 import { createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
@@ -17,11 +16,12 @@ declare module '@mui/material/styles' {
 
 // Create a theme instance.
 const theme = createTheme({
+    
     palette: {
         primary: {
           main: '#b4f8c8',
           light: '#C3F9D3',
-          dark: '#7DAD8C'
+          dark: '#457954'
         },
         secondary: {
           main: '#72435c',
@@ -37,8 +37,10 @@ const theme = createTheme({
         },
       },
       typography: {
-        fontFamily: 'Poppins',
+        fontFamily: ["'Poppins', sans-serif",
+        "'Righteous', cursive", "'Spline Sans Mono', cursive"].join(',')
       },
+      
 });
 
 export default theme;

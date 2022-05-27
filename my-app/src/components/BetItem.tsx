@@ -7,19 +7,25 @@ import {
   Container,
   Stack,
   Typography,
+  Box,
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { makeStyles } from '@mui/material/styles'
+import { useEffect, useState } from 'react'
 import { useMoralis } from 'react-moralis'
 import betgame from '../betgame'
 import web3 from '../web3'
 import { Bet } from './BetMarketplace'
+import { styled } from '@mui/system'
+
+const MyThemedCard = styled(Card)(({ theme }) => ({
+  backgroundColor: theme.palette.text.primary,
+}))
 
 function BetItem({ bet }: { bet: Bet }) {
   const [keywords, setKeywords] = useState<string[]>([])
   const [sources, setSources] = useState<string[]>([])
   const [serviceFee, setServiceFee] = useState('')
   const [chargeAmount, setChargeAmount] = useState('')
-
 
   const { authenticate, isAuthenticated, user } = useMoralis()
 
@@ -31,7 +37,7 @@ function BetItem({ bet }: { bet: Bet }) {
     }
     // Execute the created function directly
     anyNameFunction()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const setContractProp = async () => {
@@ -153,15 +159,28 @@ function BetItem({ bet }: { bet: Bet }) {
           alignContent: 'space-between',
         }}
       >
-        <CardHeader style={{ width: '70%' }} title={bet.title} />
+        <Typography style={{ width: '70%' }} sx={{ fontSize: 30, pl: 2 }}>
+          {bet.title}
+        </Typography>
         <CardContent style={{ width: '30%' }}>
           <Typography
             align="right"
-            sx={{ fontSize: 14 }}
-            color="text.secondary"
+            sx={{ fontSize: 14, fontStyle: 'italic' }}
+            color="text.primary"
           >
             Created {convertToDate(bet.createdDate)}
           </Typography>
+          <>
+            {bet.accepted && (
+              <Typography
+                align="right"
+                sx={{ fontSize: 14, fontStyle: 'italic' }}
+                color="text.primary"
+              >
+                Accepted {convertToDate(bet.startDate)}
+              </Typography>
+            )}
+          </>
         </CardContent>
       </Stack>
 
@@ -174,137 +193,184 @@ function BetItem({ bet }: { bet: Bet }) {
         }}
       >
         <CardContent style={{ width: '70%', height: '100%' }}>
-          <Typography sx={{ mb: 1.5 }} color="text.secondary">
+          <Typography
+            sx={{ mb: 1.5, fontFamily: 'Spline Sans Mono', fontSize: 20 }}
+            color="secondary.main"
+          >
             Bet Conditions
           </Typography>
           <Container sx={{ mb: 2 }}>
             <Typography
-              sx={{ fontSize: 14 }}
-              color="text.secondary"
+              sx={{ fontSize: 14, fontStyle: 'italic' }}
+              color="text.primary"
               gutterBottom
+              component="div"
             >
-              Keywords: {keywords.join(', ')}
+              <Box fontWeight="600" display="inline">
+                Keywords:
+              </Box>{' '}
+              {keywords.join(', ')}
             </Typography>
+
             {sources.length === 0 ? (
               <Typography
-                sx={{ fontSize: 14 }}
-                color="text.secondary"
+                sx={{ fontSize: 14, fontStyle: 'italic', fontWeight: 600 }}
+                color="text.primary"
                 gutterBottom
               >
                 All sources
               </Typography>
             ) : (
               <Typography
-                sx={{ fontSize: 14 }}
-                color="text.secondary"
+                sx={{ fontSize: 14, fontStyle: 'italic' }}
+                color="text.primary"
                 gutterBottom
+                component="div"
               >
-                Sources: {sources.join(', ')}
+                <Box fontWeight="600" display="inline">
+                  Sources:
+                </Box>{' '}
+                {sources.join(', ')}
               </Typography>
             )}
 
-            <Typography sx={{ fontSize: 14 }} color="text.secondary">
-              At least {bet.countArts} articles
+            <Typography
+              sx={{ fontSize: 14, fontStyle: 'italic' }}
+              color="text.primary"
+              gutterBottom
+              component="div"
+            >
+              At least{' '}
+              <Box fontWeight="600" display="inline">
+                {bet.countArts} articles
+              </Box>
             </Typography>
           </Container>
-          <Typography sx={{ mb: 1.5 }} color="text.secondary" gutterBottom>
+          <Typography
+            sx={{ mb: 1.5, fontFamily: 'Spline Sans Mono', fontSize: 20 }}
+            color="secondary.main"
+            gutterBottom
+          >
             Wager Details
           </Typography>
           <Container>
             <Typography
-              sx={{ fontSize: 14 }}
-              color="text.secondary"
+              sx={{ fontSize: 14, fontStyle: 'italic' }}
+              color="text.primary"
               gutterBottom
+              component="div"
             >
-              Creator wagered {web3.utils.fromWei(bet.amount)} ETH
+              Creator wagered{' '}
+              <Box fontWeight="600" display="inline">
+                {web3.utils.fromWei(bet.amount)} ETH
+              </Box>
             </Typography>
 
             {bet.accepted ? (
               <Typography
-                sx={{ fontSize: 14 }}
-                color="text.secondary"
+                sx={{ fontSize: 14, fontStyle: 'italic' }}
+                color="text.primary"
                 gutterBottom
+                component="div"
               >
-                Acceptor wagered {web3.utils.fromWei(bet.acceptValue)} ETH
+                Acceptor wagered{' '}
+                <Box fontWeight="600" display="inline">
+                  {web3.utils.fromWei(bet.acceptValue)} ETH
+                </Box>
               </Typography>
             ) : (
               <Typography
-                sx={{ fontSize: 14 }}
-                color="text.secondary"
+                sx={{ fontSize: 14, fontStyle: 'italic' }}
+                color="text.primary"
                 gutterBottom
+                component="div"
               >
-                Acceptor must wager {web3.utils.fromWei(bet.acceptValue)} ETH
+                Acceptor must wager{' '}
+                <Box fontWeight="600" display="inline">
+                  {web3.utils.fromWei(bet.acceptValue)} ETH
+                </Box>
               </Typography>
             )}
 
-            <Typography
-              sx={{ fontSize: 14 }}
-              color="text.secondary"
-              gutterBottom
-            >
+            <Typography sx={{ fontSize: 14 }} color="text.primary" gutterBottom>
               You will also be charged a service fee of{' '}
               {web3.utils.fromWei(serviceFee.toString())} ETH when accepting the
               bet
+            </Typography>
+            <Typography sx={{ fontSize: 14 }} color="secondary.main">
+              Transaction total: {chargeAmount} ETH
             </Typography>
           </Container>
         </CardContent>
 
         <CardContent style={{ width: '30%' }}>
-          <Card style={{ height: '100%' }} raised>
+          <MyThemedCard style={{ height: '100%' }} raised>
             <Stack
               direction="column"
-              justifyContent="space-around"
+              justifyContent="space-evenly"
               alignItems="center"
               spacing={2}
               style={{ height: '100%' }}
+              sx={{ mt: 0 }}
             >
               {bet.accepted ? (
-                <Typography
-                  align="center"
-                  sx={{ pr: 6, pl: 6 }}
-                  color="text.secondary"
-                >
-                  Bet was accepted on {convertToDate(bet.startDate)}
+                <Typography align="center" color="text.secondary">
+                  <Stack>
+                    <Typography sx={{ fontSize: 50, fontWeight: 600, pb: 0 }}>
+                      {calculateDaysLeft(bet.outcomeDeadline)}
+                    </Typography>
+                    <Typography sx={{ mx: '2%' }}>
+                      days until outcome is determined
+                    </Typography>
+                  </Stack>
                 </Typography>
               ) : (
-                <Typography align="center" sx={{}} color="text.secondary">
-                  {calculateDaysLeft(bet.acceptDeadline)} days left to accept
+                <Typography align="center" color="text.secondary">
+                  <Stack>
+                    <Typography sx={{ fontSize: 50, fontWeight: 600, pb: 0 }}>
+                      {calculateDaysLeft(bet.acceptDeadline)}
+                    </Typography>
+                    <Typography>days left to accept</Typography>
+                  </Stack>
                 </Typography>
               )}
               <CardActions>
                 {bet.accepted ? (
                   <Button
                     onClick={() => checkBet(bet.id)}
-                    size="small"
-                    sx={{ m: 0, p: 0 }}
+                    size="medium"
+                    variant="contained"
+                    sx={{ m: 0, p: 2 }}
                   >
                     Check Bet
                   </Button>
                 ) : (
                   <Button
                     onClick={() => acceptBet(bet.id, bet.apiURL)}
-                    size="small"
-                    sx={{ m: 0, p: 0 }}
+                    size="medium"
+                    variant="contained"
+                    sx={{ m: 0, p: 2 }}
                   >
                     Accept Bet
                   </Button>
                 )}
               </CardActions>
-              <Typography align="center" sx={{}} color="text.secondary">
-                Transaction total: {chargeAmount} ETH
-              </Typography>
             </Stack>
-          </Card>
+          </MyThemedCard>
         </CardContent>
       </Stack>
-      <Typography
-        sx={{ mb: 1.5, pt: 2, pr: 6, pl: 6 }}
-        color="text.secondary"
-        align="center"
-      >
-        Outcome will be determined by 11:59pm on{' '}
-        {convertToDate(bet.outcomeDeadline)}
-      </Typography>
+      <>
+        {!bet.accepted && (
+          <Typography
+            sx={{ mb: 1.5, pt: 2, pr: 6, pl: 6 }}
+            color="text.primary"
+            align="center"
+          >
+            Outcome will be determined by 11:59pm on{' '}
+            {convertToDate(bet.outcomeDeadline)}
+          </Typography>
+        )}
+      </>
     </Card>
   )
 }
