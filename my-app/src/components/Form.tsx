@@ -54,24 +54,8 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
       value: 'associated-press',
     },
     {
-      label: 'BBC News',
-      value: 'bbc-news',
-    },
-    {
-      label: 'Bloomberg',
-      value: 'bloomberg',
-    },
-    {
-      label: 'Business Insider',
-      value: 'business-insider',
-    },
-    {
       label: 'Buzzfeed',
       value: 'buzzfeed',
-    },
-    {
-      label: 'CBS News',
-      value: 'cbs-news',
     },
     {
       label: 'CNN',
@@ -81,22 +65,10 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
       label: 'Entertainment Weekly',
       value: 'entertainment-weekly',
     },
-    {
-      label: 'ESPN',
-      value: 'espn',
-    },
 
     {
       label: 'Fortune',
       value: 'fortune',
-    },
-    {
-      label: 'Fox News',
-      value: 'fox-news',
-    },
-    {
-      label: 'Google News',
-      value: 'google-news',
     },
     {
       label: 'MTV News',
@@ -115,10 +87,6 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
       value: 'new-york-magazine',
     },
     {
-      label: 'Politico',
-      value: 'politico',
-    },
-    {
       label: 'Reuters',
       value: 'reuters',
     },
@@ -133,10 +101,6 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
     {
       label: 'The Verge',
       value: 'the-verge',
-    },
-    {
-      label: 'The Wall Street Journal',
-      value: 'the-wall-street-journal',
     },
     {
       label: 'Time',
@@ -237,22 +201,13 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
   })
 
   return (
-    // <Box>
-    //   <Card
-    //     sx={{
-    //       width: '90%',
-    //       margin: 10,
-    //       border: '1px solid purple',
-    //     }}
-    //   >
-    //     <CardContent>
     <Formik
       initialValues={{
         title: '',
         acceptDeadline: new Date(Date.now()),
         outcomeDeadline: new Date(Date.now()),
-        acceptAmount: 0.0, //should these be initialized to minBet?
-        betAmount: 0.0, //should these be initialized to minBet?
+        acceptAmount: 0.0,
+        betAmount: 0.0,
         numArticles: 1,
         currKeyword: '',
         apiKeywords: [],
@@ -276,10 +231,12 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
         touched,
         submitForm,
       }) => (
-        <Form>
+        <Form style={{ width: '100%' }}>
           <div>
             <Typography component="div">
-              <Box sx={{ fontStyle: 'italic', m: 1 }}>
+              <Box
+                sx={{ fontFamily: 'Poppins', fontStyle: 'italic', m: 1, mb: 2 }}
+              >
                 All fields are required.
               </Box>
             </Typography>
@@ -287,6 +244,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
           <div>
             <TextField
               placeholder="Bet Title"
+              sx={{ width: '75%' }}
               label="Title"
               multiline
               maxRows={4}
@@ -299,10 +257,132 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               helperText={touched.title && errors.title}
             />
           </div>
+          <div className="margin-top">
+            <TextField
+              sx={{ width: '50%' }}
+              placeholder="i.e. Kanye West"
+              label="Keywords"
+              value={values.currKeyword}
+              onChange={handleChange('currKeyword')}
+              onBlur={handleBlur('currKeyword')}
+              className="amount-spacing"
+              error={touched.currKeyword && Boolean(errors.apiKeywords)}
+              helperText={touched.currKeyword && errors.apiKeywords}
+            />
+            <Button
+              onClick={() => {
+                addKeyword(values.apiKeywords, values.currKeyword)
+                setFieldValue('currKeyword', '')
+              }}
+              variant="contained"
+              style={{ marginTop: '10px', marginLeft: '10px' }}
+              sx={{ textTransform: 'none' }}
+            >
+              <Typography
+                textAlign="center"
+                sx={{
+                  color: 'text.primary',
+                  fontFamily: 'Spline Sans Mono',
+                  fontWeight: 900,
+                }}
+              >
+                ADD
+              </Typography>
+            </Button>
+          </div>
+
+          {values.apiKeywords && values.apiKeywords.length > 0 ? (
+            <div className="margin-bottom">
+              <br />
+              {/* <h4>Keywords:</h4> */}
+              <Stack direction="row" spacing={1}>
+                {values.apiKeywords.map((keyword, index) => (
+                  <Chip
+                    key={index}
+                    label={keyword}
+                    color="primary"
+                    onDelete={() => {
+                      setFieldValue(
+                        'apiKeywords',
+                        values.apiKeywords.filter((e: string) => e !== keyword), //if theres a duplicate word this will delete them both
+                      )
+                    }}
+                  />
+                ))}
+              </Stack>
+            </div>
+          ) : null}
+          <br />
+          <div className="margin-top">
+            <FormControl>
+              <Typography sx={{ color: 'text.primary' }}>
+                Would you like to pick the sources?
+              </Typography>
+              <RadioGroup
+                aria-labelledby="demo-controlled-radio-buttons-group"
+                name="controlled-radio-buttons-group"
+                value={values.chooseSources}
+                onChange={handleChange('chooseSources')}
+              >
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No" />
+              </RadioGroup>
+            </FormControl>
+          </div>
+          {values.chooseSources && values.chooseSources === 'yes' ? (
+            <div>
+              <br />
+              <FormControl style={{ display: 'flex' }}>
+                <Typography component="legend" sx={{ color: 'secondary' }}>
+                  Sources
+                </Typography>
+                <FormGroup style={{ marginLeft: '5%' }}>
+                  <Grid
+                    container
+                    // spacing={{ xs: 2 }}
+                    columns={{ xs: 4, sm: 8 }}
+                  >
+                    {options.map((opt, index) => (
+                      <Grid
+                        item
+                        xs={6}
+                        sm={4}
+                        md={4}
+                        key={index}
+                        textAlign="left"
+                      >
+                        <Field
+                          type="checkbox"
+                          component={CheckboxWithLabel}
+                          name="sources"
+                          key={opt.value}
+                          value={opt.value}
+                          Label={{ label: opt.label }}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </FormGroup>
+              </FormControl>
+            </div>
+          ) : null}
+          <div style={{ marginTop: '20px' }}>
+            <TextField
+              placeholder="Number of Articles"
+              label="Number of Articles"
+              value={values.numArticles}
+              onChange={handleChange('numArticles')}
+              onBlur={handleBlur('numArticles')}
+              //margin={'normal'}
+              className="amount-spacing"
+              error={touched.numArticles && Boolean(errors.numArticles)}
+              helperText={touched.numArticles && errors.numArticles}
+            />
+          </div>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <div className="spacing">
               <DesktopDatePicker
-                label="Accept by date"
+                label="Accept By Date"
                 minDate={new Date()}
                 inputFormat="MM/dd/yyyy"
                 value={values.acceptDeadline}
@@ -312,6 +392,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
+                    sx={{ width: '100%' }}
                     className="calendar-input"
                     onChange={handleChange('acceptDeadline')}
                     onBlur={handleBlur('acceptDeadline')}
@@ -328,7 +409,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
             </div>
             <div className="spacing">
               <DesktopDatePicker
-                label="Bet expiration date"
+                label="Expiration Date"
                 inputFormat="MM/dd/yyyy"
                 value={values.outcomeDeadline}
                 minDate={new Date()}
@@ -338,6 +419,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
+                    sx={{ width: '100%' }}
                     onChange={handleChange('outcomeDeadline')}
                     onBlur={handleBlur('outcomeDeadline')}
                     className="calendar-input"
@@ -391,131 +473,36 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               }}
             />
           </div>
-
-          <div style={{ marginTop: '20px' }}>
-            <TextField
-              placeholder="Number of Articles"
-              label="Number of Articles"
-              value={values.numArticles}
-              onChange={handleChange('numArticles')}
-              onBlur={handleBlur('numArticles')}
-              //margin={'normal'}
-              className="amount-spacing"
-              error={touched.numArticles && Boolean(errors.numArticles)}
-              helperText={touched.numArticles && errors.numArticles}
-            />
-          </div>
-
-          <div className="margin-top">
-            <TextField
-              placeholder='i.e. "Pop Book"'
-              label="Keywords"
-              value={values.currKeyword}
-              onChange={handleChange('currKeyword')}
-              onBlur={handleBlur('currKeyword')}
-              className="amount-spacing"
-              error={touched.currKeyword && Boolean(errors.apiKeywords)}
-              helperText={touched.currKeyword && errors.apiKeywords}
-            />
-            <Button
-              onClick={() => {
-                addKeyword(values.apiKeywords, values.currKeyword)
-                setFieldValue('currKeyword', '')
+          <br />
+          <Typography sx={{ fontStyle: 'italic' }}>
+            Note: A service fee of{' '}
+            <Box fontWeight="600" display="inline">
+              {serviceFee} ETH{' '}
+            </Box>
+            will be included in the transaction total.
+          </Typography>
+          <br />
+          <br />
+          <Button
+            type="button"
+            variant="contained"
+            style={{ marginTop: '10px', marginLeft: '10px' }}
+            sx={{ textTransform: 'none' }}
+            onClick={submitForm}
+          >
+            <Typography
+              textAlign="center"
+              sx={{
+                color: 'text.primary',
+                fontFamily: 'Spline Sans Mono',
+                fontWeight: 900,
               }}
-              variant="outlined"
-              style={{ marginTop: '10px', marginLeft: '10px' }}
             >
-              Add
-            </Button>
-          </div>
-          <br />
-          {values.apiKeywords && values.apiKeywords.length > 0 ? (
-            <div className="margin-bottom">
-              {/* <h4>Keywords:</h4> */}
-              <Stack direction="row" spacing={1}>
-                {values.apiKeywords.map((keyword, index) => (
-                  <Chip
-                    key={index}
-                    label={keyword}
-                    variant="outlined"
-                    onDelete={() => {
-                      setFieldValue(
-                        'apiKeywords',
-                        values.apiKeywords.filter((e: string) => e !== keyword), //if theres a duplicate word this will delete them both
-                      )
-                    }}
-                  />
-                ))}
-              </Stack>
-            </div>
-          ) : null}
-          <div className="margin-top">
-            <FormControl>
-              <FormLabel sx={{ color: 'text.primary' }}>
-                Would you like to pick the sources?
-              </FormLabel>
-              <RadioGroup
-                aria-labelledby="demo-controlled-radio-buttons-group"
-                name="controlled-radio-buttons-group"
-                value={values.chooseSources}
-                onChange={handleChange('chooseSources')}
-              >
-                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                <FormControlLabel value="no" control={<Radio />} label="No" />
-              </RadioGroup>
-            </FormControl>
-          </div>
-          {values.chooseSources && values.chooseSources === 'yes' ? (
-            <div>
-              <FormControl style={{ display: 'flex' }}>
-                <FormLabel component="legend">Sources</FormLabel>
-                <FormGroup>
-                  <Grid
-                    container
-                    // spacing={{ xs: 2 }}
-                    columns={{ xs: 4, sm: 8 }}
-                  >
-                    {options.map((opt, index) => (
-                      <Grid
-                        item
-                        xs={6}
-                        sm={4}
-                        md={4}
-                        key={index}
-                        textAlign="left"
-                      >
-                        <Field
-                          type="checkbox"
-                          component={CheckboxWithLabel}
-                          name="sources"
-                          key={opt.value}
-                          value={opt.value}
-                          Label={{ label: opt.label }}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </FormGroup>
-              </FormControl>
-            </div>
-          ) : null}
-
-          <br />
-          <i>
-            Note: A service fee of {serviceFee} ETH will be added to the
-            transaction total.
-          </i>
-          <br />
-          <br />
-          <Button type="button" variant="outlined" onClick={submitForm}>
-            Create
+              CREATE
+            </Typography>
           </Button>
-          {/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
         </Form>
       )}
     </Formik>
-    //     </CardContent>
-    //   </Card>
-    // </Box>
   )
 }

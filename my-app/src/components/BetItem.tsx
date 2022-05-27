@@ -289,15 +289,6 @@ function BetItem({ bet }: { bet: Bet }) {
                 </Box>
               </Typography>
             )}
-
-            <Typography sx={{ fontSize: 14 }} color="text.primary" gutterBottom>
-              You will also be charged a service fee of{' '}
-              {web3.utils.fromWei(serviceFee.toString())} ETH when accepting the
-              bet
-            </Typography>
-            <Typography sx={{ fontSize: 14 }} color="secondary.main">
-              Transaction total: {chargeAmount} ETH
-            </Typography>
           </Container>
         </CardContent>
 
@@ -309,7 +300,7 @@ function BetItem({ bet }: { bet: Bet }) {
               alignItems="center"
               spacing={2}
               style={{ height: '100%' }}
-              sx={{ mt: 0 }}
+              sx={{ mt: 0, pb: 4 }}
             >
               {bet.accepted ? (
                 <Typography align="center" color="text.secondary">
@@ -332,6 +323,7 @@ function BetItem({ bet }: { bet: Bet }) {
                   </Stack>
                 </Typography>
               )}
+
               <CardActions>
                 {bet.accepted ? (
                   <Button
@@ -340,17 +332,49 @@ function BetItem({ bet }: { bet: Bet }) {
                     variant="contained"
                     sx={{ m: 0, p: 2 }}
                   >
-                    Check Bet
+                    <Typography
+                      textAlign="center"
+                      sx={{
+                        color: 'text.primary',
+                        fontFamily: 'Spline Sans Mono',
+                        fontWeight: 900,
+                      }}
+                    >
+                      CHECK BET
+                    </Typography>
                   </Button>
                 ) : (
-                  <Button
-                    onClick={() => acceptBet(bet.id, bet.apiURL)}
-                    size="medium"
-                    variant="contained"
-                    sx={{ m: 0, p: 2 }}
-                  >
-                    Accept Bet
-                  </Button>
+                  <Stack>
+                    <Button
+                      onClick={() => acceptBet(bet.id, bet.apiURL)}
+                      size="medium"
+                      variant="contained"
+                      sx={{ my: 1, mx: 7, p: 2 }}
+                    >
+                      <Typography
+                        textAlign="center"
+                        sx={{
+                          color: 'text.primary',
+                          fontFamily: 'Spline Sans Mono',
+                          fontWeight: 900,
+                        }}
+                      >
+                        ACCEPT BET
+                      </Typography>
+                    </Button>
+                    <Typography
+                      sx={{ fontSize: 14, fontStyle: 'italic' }}
+                      color="text.secondary"
+                      gutterBottom
+                      component="div"
+                      align="center"
+                    >
+                      You will also be charged a service fee of{' '}
+                      <Box fontWeight="600" display="inline">
+                        {web3.utils.fromWei(serviceFee.toString())} ETH{' '}
+                      </Box>
+                    </Typography>
+                  </Stack>
                 )}
               </CardActions>
             </Stack>
@@ -360,8 +384,8 @@ function BetItem({ bet }: { bet: Bet }) {
       <>
         {!bet.accepted && (
           <Typography
-            sx={{ mb: 1.5, pt: 2, pr: 6, pl: 6 }}
-            color="text.primary"
+            sx={{ mb: 1.5, pt: 2, pr: 6, pl: 6, fontWeight: 500, fontSize: 20 }}
+            color="primary.dark"
             align="center"
           >
             Outcome will be determined by 11:59pm on{' '}

@@ -22,25 +22,22 @@ pagesMap.set(pages[0], 'BetMarketPlace')
 pagesMap.set(pages[1], 'CreateBet')
 pagesMap.set(pages[2], 'Chat')
 
-let kovNetwork = false;
-
+let kovNetwork = false
 
 const ResponsiveAppBar = () => {
   const { authenticate, isAuthenticated, user, logout } = useMoralis()
 
- 
-
   const login = async () => {
-    const provider = await detectEthereumProvider();
-    const chainId = await web3.eth.net.getId();
+    const provider = await detectEthereumProvider()
+    const chainId = await web3.eth.net.getId()
     if (!provider) {
-      alert("This application requires Metamask.  Please install to your browser");
-    } 
-    else if (chainId !== 42){
-      alert("Switch to Kovan Network")
-    }
-    else {
-      kovNetwork = true;
+      alert(
+        'This application requires Metamask.  Please install to your browser',
+      )
+    } else if (chainId !== 42) {
+      alert('Switch to Kovan Network')
+    } else {
+      kovNetwork = true
       if (!isAuthenticated) {
         await authenticate({ signingMessage: 'Please Log In' })
           .then(function (user) {
@@ -65,13 +62,13 @@ const ResponsiveAppBar = () => {
   }
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container style={{ backgroundColor: 'primary.main' }} maxWidth="xl">
         <Toolbar disableGutters>
           <img
             src="https://i.imgur.com/uMoBVbS.png"
             alt="logo"
-            style={{ height: '6%', width: '4%' }}
+            style={{ height: '4.5%', width: '3%', padding: 0, margin: 0 }}
           />
           <Typography
             variant="h6"
@@ -79,7 +76,8 @@ const ResponsiveAppBar = () => {
             component="a"
             href="/"
             sx={{
-              mr: 2,
+              mr: 4,
+              ml: 0,
               display: { xs: 'none', md: 'flex' },
               fontFamily: 'Righteous',
               fontWeight: 300,
@@ -140,11 +138,10 @@ const ResponsiveAppBar = () => {
                   >
                     <Typography
                       textAlign="center"
-                      sx={{ color: 'text.primary' }}>
-                    </Typography>
+                      sx={{ color: 'text.primary' }}
+                    ></Typography>
                   </Link>
                 </MenuItem>
-
               ) : (
                 <MenuItem key={pages[1]} onClick={login}>
                   <Typography textAlign="center" sx={{ color: 'text.primary' }}>
@@ -213,7 +210,6 @@ const ResponsiveAppBar = () => {
                   </Typography>
                 </Link>
               </Button>
-
             ) : (
               <Tooltip title="Sign In">
                 <Button
@@ -232,7 +228,6 @@ const ResponsiveAppBar = () => {
                 </Button>
               </Tooltip>
             )}
-
 
             <Button
               key={pages[2]}

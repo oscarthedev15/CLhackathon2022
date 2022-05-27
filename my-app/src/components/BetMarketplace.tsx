@@ -154,7 +154,7 @@ function BetMarketplace() {
       <Typography
         sx={{
           fontFamily: 'Spline Sans Mono',
-          fontSize: 30,
+          fontSize: 45,
           fontWeight: 700,
           fontStyle: 'italic',
         }}
