@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 function CreateBet() {
   // const [name, setName] = React.useState('Composed TextField');
   const [submitError, setSubmitError] = useState(false)
-  const { isAuthenticated, user } = useMoralis()
+  const { user } = useMoralis()
 
   const navigate = useNavigate()
 

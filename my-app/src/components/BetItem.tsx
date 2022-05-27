@@ -7,8 +7,6 @@ import {
   Stack,
   Typography,
   Box,
-  Alert,
-  AlertTitle
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useMoralis } from 'react-moralis'
@@ -26,7 +24,6 @@ function BetItem({ bet }: { bet: Bet }) {
   const [keywords, setKeywords] = useState<string[]>([])
   const [sources, setSources] = useState<string[]>([])
   const [serviceFee, setServiceFee] = useState('')
-  const [chargeAmount, setChargeAmount] = useState('')
   const { authenticate, isAuthenticated, user } = useMoralis()
 
   const navigate = useNavigate();
@@ -48,11 +45,7 @@ function BetItem({ bet }: { bet: Bet }) {
     let servFee = await betgame.methods.serviceFee().call()
     setServiceFee(servFee)
 
-    let cA = parseInt(bet.acceptValue) + parseInt(servFee)
-    console.log(cA)
-    let caStr = cA.toString()
-    let finalCA = web3.utils.fromWei(caStr)
-    setChargeAmount(finalCA)
+
   }
 
   const parseURLString = (apiURL: string) => {
