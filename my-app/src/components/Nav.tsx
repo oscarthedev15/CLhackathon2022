@@ -50,10 +50,10 @@ const ResponsiveAppBar = () => {
     const provider = await detectEthereumProvider();
     const chainId = await web3.eth.net.getId();
     if (!provider) {
-      alert("This application requires Metamask.  Please install to your browser");
+      alert("This application requires Metamask. Please install to your browser");
     } 
     else if (chainId !== 42){
-      alert("Switch to Kovan Network")
+      alert("Please switch to the Kovan Network")
     }
     else {
       setKovan(true);

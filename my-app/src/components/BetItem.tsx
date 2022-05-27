@@ -7,6 +7,8 @@ import {
   Stack,
   Typography,
   Box,
+  Alert,
+  AlertTitle
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useMoralis } from 'react-moralis'
@@ -14,6 +16,7 @@ import betgame from '../betgame'
 import web3 from '../web3'
 import { Bet } from './BetMarketplace'
 import { styled } from '@mui/system'
+import { useNavigate } from 'react-router-dom';
 
 const MyThemedCard = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.text.primary,
@@ -24,8 +27,9 @@ function BetItem({ bet }: { bet: Bet }) {
   const [sources, setSources] = useState<string[]>([])
   const [serviceFee, setServiceFee] = useState('')
   const [chargeAmount, setChargeAmount] = useState('')
-
   const { authenticate, isAuthenticated, user } = useMoralis()
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     parseURLString(bet.apiURL)
@@ -119,6 +123,7 @@ function BetItem({ bet }: { bet: Bet }) {
   }
 
   const acceptBet = async (id: number, apiURL: string) => {
+
     if (isAuthenticated) {
       let fromDate = new Date(Date.now())
       let fromDateStr = fromDate.toISOString()
@@ -137,7 +142,13 @@ function BetItem({ bet }: { bet: Bet }) {
       await betgame.methods.acceptBet(id, newApiURL).send({
         from: userAddress,
         value: cA,
-      })
+      }).then (function (result: any) {
+        navigate('/BetMarketplace', {state: {acceptSuccess: true, acceptFailure: false}});
+        window.location.reload();
+      }).catch (function (error: any){
+        navigate('/BetMarketplace', {state: {acceptSuccess: false, acceptFailure: true}});
+        window.location.reload();
+      });
     } else {
       login()
     }
@@ -147,7 +158,13 @@ function BetItem({ bet }: { bet: Bet }) {
     const userAddress = await user!.get('ethAddress');
     await betgame.methods.checkBet(id).send({
       from: userAddress
-    })
+    }).then (function (result: any) {
+      navigate('/BetMarketplace', {state: {checkSuccess: true, checkFailure: false}});
+      window.location.reload();
+    }).catch (function (error: any){
+      navigate('/BetMarketplace', {state: {checkSuccess: false, checkFailure: true}});
+      window.location.reload();
+    });
   }
 
   return (
