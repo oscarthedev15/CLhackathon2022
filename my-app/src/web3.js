@@ -27,7 +27,7 @@ let web3 = new Web3(Web3.givenProvider || "https://kovan.infura.io/v3/b050ae0729
                       params: [
                         {
                           chainId: '0x2A',
-                          rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+                          rpcUrl: 'https://kovan.infura.io',
                         },
                       ],
                     });
@@ -49,7 +49,6 @@ let web3 = new Web3(Web3.givenProvider || "https://kovan.infura.io/v3/b050ae0729
 async function handleChainChanged(_chainId)  {
     // We recommend reloading the page, unless you must do otherwise
         if (_chainId !== 0x2a){
-            window.location.reload();
             try {
                 // check if the chain to connect to is installed
                 await window.ethereum.request({

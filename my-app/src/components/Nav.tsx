@@ -13,6 +13,7 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import { Link } from 'react-router-dom'
 import { useMoralis } from 'react-moralis'
+import  { useEffect, useState } from 'react'
 import detectEthereumProvider from '@metamask/detect-provider'
 import web3 from '../web3'
 
@@ -24,10 +25,26 @@ pagesMap.set(pages[2], 'Chat')
 
 
 const ResponsiveAppBar = () => {
+  const [kovan, setKovan] = useState(false);
   const { authenticate, isAuthenticated, user, logout } = useMoralis()
-  const [kovNetwork, setKovNetwork] = React.useState(false);
 
- 
+  useEffect(() => {
+    // Create a scoped async function in the hook
+    async function anyNameFunction() {
+      await checkKovan()
+    }
+    // Execute the created function directly
+    anyNameFunction()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const checkKovan = async () => {
+    const provider = await detectEthereumProvider();
+    const chainId = await web3.eth.net.getId();
+    if (provider && chainId === 42){
+      setKovan(true);
+    }
+  }
 
   const login = async () => {
     const provider = await detectEthereumProvider();
@@ -39,7 +56,7 @@ const ResponsiveAppBar = () => {
       alert("Please switch to the Kovan Network")
     }
     else {
-      setKovNetwork(true)
+      setKovan(true);
       if (!isAuthenticated) {
         await authenticate({ signingMessage: 'Please Log In' })
           .then(function (user) {
@@ -131,7 +148,7 @@ const ResponsiveAppBar = () => {
                 </Link>
               </MenuItem>
 
-              {isAuthenticated && kovNetwork ? (
+              {isAuthenticated && kovan ? (
                 <MenuItem key={pages[1]} onClick={handleCloseNavMenu}>
                   <Link
                     style={{ textDecoration: 'none', color: 'text.primary' }}
@@ -192,7 +209,7 @@ const ResponsiveAppBar = () => {
               </Link>
             </Button>
 
-            {isAuthenticated && kovNetwork ? (
+            {isAuthenticated && kovan ? (
               <Button
                 key={pages[1]}
                 onClick={handleCloseNavMenu}
@@ -214,6 +231,7 @@ const ResponsiveAppBar = () => {
               </Button>
 
             ) : (
+              
               <Tooltip title="Sign In">
                 <Button
                   key={pages[1]}
