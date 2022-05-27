@@ -67,7 +67,11 @@ function BetMarketplace() {
   const [openBets, setOpenBets] = useState<Bet[]>([])
   const [acceptedBets, setAcceptedBets] = useState<Bet[]>([])
   const [value, setValue] = React.useState(0)
-  const [success, setSuccess] = useState(false);
+  const [createSuccess, setCreateSuccess] = useState(false);
+  const [acceptSuccess, setAcceptSuccess] = useState(false);
+  const [acceptFailure, setAcceptFailure] = useState(false);
+  const [checkSuccess, setCheckSuccess] = useState(false);
+  const [checkFailure, setCheckFailure] = useState(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
@@ -78,7 +82,11 @@ function BetMarketplace() {
     // Create a scoped async function in the hook
     async function anyNameFunction() {
       await getBets()
-      setSuccess(state && state.success);
+      setCreateSuccess(state && state.createSuccess);
+      setAcceptSuccess(state && state.acceptSuccess);
+      setAcceptFailure(state && state.acceptFailure);
+      setCheckSuccess(state && state.checkSuccess);
+      setCheckFailure(state && state.checkFailure);
     }
     // Execute the created function directly
     anyNameFunction()
@@ -152,8 +160,32 @@ function BetMarketplace() {
         marginRight: '10%',
       }}
     >
-      { success ? 
-      (<Alert severity="success" onClose={() => {setSuccess(false)}}>
+      { acceptSuccess ? 
+      (<Alert severity="success" onClose={() => {setAcceptSuccess(false)}}>
+      <AlertTitle>Success</AlertTitle>
+        Bet successfully accepted!
+        </Alert>) 
+        : null}
+      {acceptFailure ? 
+      (<Alert severity="error" onClose={() => {setAcceptFailure(false)}}>
+      <AlertTitle>Error</AlertTitle>
+        Bet wasn't accepted, please try again.
+        </Alert>) 
+        : null}
+      { checkSuccess ? 
+      (<Alert severity="success" onClose={() => {setCheckSuccess(false)}}>
+      <AlertTitle>Success</AlertTitle>
+        Checking bet results, please wait a few moments.
+        </Alert>) 
+        : null}
+      {checkFailure ? 
+      (<Alert severity="error" onClose={() => {setCheckFailure(false)}}>
+      <AlertTitle>Error</AlertTitle>
+        Bet results weren't checked, please try again.
+        </Alert>) 
+        : null}
+      { createSuccess ? 
+      (<Alert severity="success" onClose={() => {setCreateSuccess(false)}}>
       <AlertTitle>Success</AlertTitle>
         Bet successfully created!
         </Alert>) 

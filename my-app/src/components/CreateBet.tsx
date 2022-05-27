@@ -119,7 +119,7 @@ function CreateBet() {
         value: chargeAmount,
       }).then (function (result: any) {
         setSubmitError(false);
-        navigate('/BetMarketplace', {state: {success: true}});
+        navigate('/BetMarketplace', {state: {createSuccess: true}});
       }).catch (function (error: any){
         setSubmitError(true);
       });

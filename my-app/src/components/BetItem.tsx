@@ -16,6 +16,7 @@ import betgame from '../betgame'
 import web3 from '../web3'
 import { Bet } from './BetMarketplace'
 import { styled } from '@mui/system'
+import { useNavigate } from 'react-router-dom';
 
 const MyThemedCard = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.text.primary,
@@ -26,11 +27,9 @@ function BetItem({ bet }: { bet: Bet }) {
   const [sources, setSources] = useState<string[]>([])
   const [serviceFee, setServiceFee] = useState('')
   const [chargeAmount, setChargeAmount] = useState('')
-  const [acceptSuccess, setAcceptSuccess] = useState(false);
-  const [acceptFailure, setAcceptFailure] = useState(false);
-  const [checkSuccess, setCheckSuccess] = useState(false);
-  const [checkFailure, setCheckFailure] = useState(false);
   const { authenticate, isAuthenticated, user } = useMoralis()
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     parseURLString(bet.apiURL)
@@ -124,6 +123,7 @@ function BetItem({ bet }: { bet: Bet }) {
   }
 
   const acceptBet = async (id: number, apiURL: string) => {
+
     if (isAuthenticated) {
       let fromDate = new Date(Date.now())
       let fromDateStr = fromDate.toISOString()
@@ -143,11 +143,11 @@ function BetItem({ bet }: { bet: Bet }) {
         from: userAddress,
         value: cA,
       }).then (function (result: any) {
-        setAcceptSuccess(true);
-        setAcceptFailure(false);
+        navigate('/BetMarketplace', {state: {acceptSuccess: true, acceptFailure: false}});
+        window.location.reload();
       }).catch (function (error: any){
-        setAcceptSuccess(false);
-        setAcceptFailure(true);
+        navigate('/BetMarketplace', {state: {acceptSuccess: false, acceptFailure: true}});
+        window.location.reload();
       });
     } else {
       login()
@@ -159,40 +159,16 @@ function BetItem({ bet }: { bet: Bet }) {
     await betgame.methods.checkBet(id).send({
       from: userAddress
     }).then (function (result: any) {
-      setCheckSuccess(true);
-      setCheckFailure(false);
+      navigate('/BetMarketplace', {state: {checkSuccess: true, checkFailure: false}});
+      window.location.reload();
     }).catch (function (error: any){
-      setCheckSuccess(false);
-      setCheckFailure(true);
+      navigate('/BetMarketplace', {state: {checkSuccess: false, checkFailure: true}});
+      window.location.reload();
     });
   }
 
   return (
     <Card sx={{ minWidth: 275, mb: 5, p: 2 }} raised>
-      { acceptSuccess ? 
-      (<Alert severity="success" onClose={() => {setAcceptSuccess(false)}}>
-      <AlertTitle>Success</AlertTitle>
-        Bet successfully accepted!
-        </Alert>) 
-        : null}
-      {acceptFailure ? 
-      (<Alert severity="error" onClose={() => {setAcceptFailure(false)}}>
-      <AlertTitle>Error</AlertTitle>
-        Bet wasn't accepted, please try again.
-        </Alert>) 
-        : null}
-      { checkSuccess ? 
-      (<Alert severity="success" onClose={() => {setCheckSuccess(false)}}>
-      <AlertTitle>Success</AlertTitle>
-        Checking bet results, please wait a few moments.
-        </Alert>) 
-        : null}
-      {checkFailure ? 
-      (<Alert severity="error" onClose={() => {setCheckFailure(false)}}>
-      <AlertTitle>Error</AlertTitle>
-        Bet results weren't checked, please try again.
-        </Alert>) 
-        : null}
       <Stack
         direction="row"
         style={{
