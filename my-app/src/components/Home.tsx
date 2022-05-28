@@ -1,4 +1,4 @@
-import { Stack, Typography, Card, Box, Grid } from '@mui/material'
+import { Typography, Card } from '@mui/material'
 
 function Home() {
   return (
