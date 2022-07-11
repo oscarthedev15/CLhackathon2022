@@ -39,10 +39,11 @@ If you choose not to pick sources, News API will query its entire catalog of new
 
 Once a bet is created, it is listed in full on the bet marketplace under “open bets” and users can accept it by wagering the accept value. If a bet is accepted, it will appear under the “accepted bets” tab in the bet marketplace where users can check the status of their bets.
 
-Key details:
+# Key details:
 All bets are made in Ethereum.
 All bet creations carry a service fee of .001 ETH to cover the cost of Chainlink services used to validate the bet. 
 As there is a cost associated with checking if a bet has been won, the protocol will only automatically determine the winner at the bet expiration date. However users can pay gas fees to check the status of their bet at any time, and if the bet creator’s win conditions have been met the bet will immediately close and the payout will occur. 
 
+# Developer notes: 
 TeaLink is built using the Hardhat Framework and below explains commands of how to run hardhat tasks taken from chainlink hardhat repo and is bootstrapped from this repo:  https://github.com/smartcontractkit/hardhat-starter-kit
 
