@@ -9,32 +9,12 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import React, {
-  useEffect,
-  useState,
-  Suspense,
-  createContext,
-  useContext,
-} from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { initializeContract } from "@/lib/betgame";
 import BetItem, { Bet } from "@/components/BetItem";
 import { styled } from "@mui/system";
 import { useSearchParams } from "next/navigation";
-
-interface NotificationContextType {
-  showNotification: (
-    message: string,
-    severity: "info" | "success" | "error"
-  ) => void;
-  refreshBets: () => void;
-}
-
-const NotificationContext = createContext<NotificationContextType>({
-  showNotification: () => {},
-  refreshBets: () => {},
-});
-
-export const useNotificationContext = () => useContext(NotificationContext);
+import { NotificationContext } from "@/lib/NotificationContext";
 
 interface TabPanelProps {
   children?: React.ReactNode;

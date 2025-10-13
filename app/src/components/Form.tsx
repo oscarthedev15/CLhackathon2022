@@ -435,7 +435,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit, betgame }) => {
               }}
             >
               {(() => {
-                const betAmt = parseFloat(values.betAmount || "0");
+                const betAmt = values.betAmount || 0;
                 if (betAmt > 0 && serviceFee > 0) {
                   // serviceFee is stored as percentage (e.g., 5 for 5%)
                   // Convert to basis points for calculation: 5% = 500 basis points

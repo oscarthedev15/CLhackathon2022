@@ -227,7 +227,7 @@ export default function UserHistory() {
     <Card sx={{ mb: 2, border: "1px solid #e0e0e0" }}>
       <CardContent>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Typography
               variant="h6"
               sx={{ fontFamily: "Spline Sans Mono", mb: 1 }}
@@ -263,9 +263,7 @@ export default function UserHistory() {
             </Typography>
           </Grid>
           <Grid
-            item
-            xs={12}
-            md={4}
+            size={{ xs: 12, md: 4 }}
             sx={{
               display: "flex",
               flexDirection: "column",

@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { useWeb3 } from "../lib/Web3Context";
 import web3 from "../lib/web3";
 import { styled } from "@mui/system";
-import { useNotificationContext } from "../app/bet-marketplace/page";
+import { useNotificationContext } from "../lib/NotificationContext";
 
 export interface Bet {
   id: number;
